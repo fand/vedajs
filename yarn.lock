@@ -291,6 +291,15 @@ babel-plugin-transform-decorators@^6.24.1:
     babel-template "^6.24.1"
     babel-types "^6.24.1"
 
+babel-plugin-transform-es2015-modules-commonjs@^6.26.0:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-commonjs/-/babel-plugin-transform-es2015-modules-commonjs-6.26.0.tgz#0d8394029b7dc6abe1a97ef181e00758dd2e5d8a"
+  dependencies:
+    babel-plugin-transform-strict-mode "^6.24.1"
+    babel-runtime "^6.26.0"
+    babel-template "^6.26.0"
+    babel-types "^6.26.0"
+
 babel-plugin-transform-exponentiation-operator@^6.24.1:
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-exponentiation-operator/-/babel-plugin-transform-exponentiation-operator-6.24.1.tgz#2ab0c9c7f3098fa48907772bb813fe41e8de3a0e"
@@ -312,6 +321,13 @@ babel-plugin-transform-object-rest-spread@^6.22.0:
   dependencies:
     babel-plugin-syntax-object-rest-spread "^6.8.0"
     babel-runtime "^6.26.0"
+
+babel-plugin-transform-strict-mode@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-strict-mode/-/babel-plugin-transform-strict-mode-6.24.1.tgz#d5faf7aa578a65bbe591cf5edae04a0c67020758"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
 
 babel-polyfill@^6.26.0:
   version "6.26.0"

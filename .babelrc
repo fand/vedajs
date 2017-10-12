@@ -1,3 +1,4 @@
 {
-  "presets": ["flow", "es2017", "stage-2"]
+  "presets": ["flow", "es2017", "stage-2"],
+  "plugins": ["transform-es2015-modules-commonjs"]
 }
