@@ -1,0 +1,37 @@
+{
+  "name": "vedajs",
+  "description": "Shader Art Framework",
+  "version": "0.0.0",
+  "author": "fand <fand.gmork@gmail.com>",
+  "dependencies": {
+    "is-video": "^1.0.1",
+    "three": "^0.87.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "flow-bin": "^0.56.0"
+  },
+  "license": "MIT",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "prepublish": "npm run lint && npm run build",
+    "lint": "flow"
+  },
+  "files": [
+    "README.md",
+    "package.json",
+    "lib"
+  ],
+  "repository": "https://github.com/fand/veda",
+  "bugs": "https://github.com/fand/veda/issues",
+  "homepage": "https://github.com/fand/veda",
+  "keywords": [
+    "WebGL",
+    "GLSL",
+    "Shader"
+  ]
+}

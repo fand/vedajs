@@ -1,0 +1,3 @@
+{
+  "presets": ["flow", "es2017", "stage-2"]
+}

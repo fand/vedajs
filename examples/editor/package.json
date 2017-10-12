@@ -1,0 +1,17 @@
+{
+  "name": "veda-example",
+  "author": "fand <fand.gmork@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "webpack": "^3.7.1",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server"
+  }
+}
