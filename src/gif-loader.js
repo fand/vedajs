@@ -32,7 +32,10 @@ export default class GifLoader {
     (document.body: any).appendChild(img);
 
     img.classList.add('veda-video-source');
-    img.style.position = 'absolute';
+    img.style.position = 'fixed';
+    img.style.top = '99.99999%';
+    img.style.width = '1px';
+    img.style.height = '1px';
     img.src = url;
 
     const texture = new THREE.Texture(img);
