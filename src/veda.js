@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import AudioLoader from './audio-loader';
 import MidiLoader from './midi-loader';
 import VideoLoader from './video-loader';
+import GifLoader from './gif-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
 import KeyLoader from './key-loader';
@@ -46,6 +47,8 @@ type Uniforms = {
   }
 }
 
+const isGif = file => file.match(/\.gif$/i);
+
 export default class ThreeShader {
   _pixelRatio: number;
   _frameskip: number;
@@ -66,6 +69,7 @@ export default class ThreeShader {
   _keyLoader: KeyLoader;
   _midiLoader: MidiLoader;
   _videoLoader: VideoLoader;
+  _gifLoader: GifLoader;
   _uniforms: Uniforms;
 
   _vertexMode: string;
@@ -100,6 +104,7 @@ export default class ThreeShader {
     this._keyLoader = new KeyLoader();
     this._midiLoader = new MidiLoader();
     this._videoLoader = new VideoLoader();
+    this._gifLoader = new GifLoader();
 
     // Prepare uniforms
     this._start = Date.now();
@@ -256,7 +261,10 @@ export default class ThreeShader {
   }
 
   loadTexture(name: string, textureUrl: string): void {
-    const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl) : this._textureLoader.load(textureUrl);
+    const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl) :
+      isGif(textureUrl) ? this._gifLoader.load(name, textureUrl) :
+      this._textureLoader.load(textureUrl);
+
     this._uniforms[name] = {
       type: 't',
       value: texture,
@@ -269,6 +277,9 @@ export default class ThreeShader {
 
     if (remove && isVideo(textureUrl)) {
       this._videoLoader.unload(textureUrl);
+    }
+    if (remove && isGif(textureUrl)) {
+      this._gifLoader.unload(textureUrl);
     }
   }
 
@@ -322,6 +333,8 @@ export default class ThreeShader {
     this._uniforms.time.value = (Date.now() - this._start) / 1000;
     this._targets = [this._targets[1], this._targets[0]];
     this._uniforms.backbuffer.value = this._targets[0].texture;
+
+    this._gifLoader.update();
 
     if (this._audioLoader.isEnabled) {
       this._audioLoader.update();

@@ -22,7 +22,8 @@ export default class VideoLoader {
     const video = document.createElement('video');
     (document.body: any).appendChild(video);
 
-    video.classList.add('glsl-livecoder-video');
+    video.classList.add('veda-video-source');
+    video.style.position = 'absolute';
     video.src = url;
     video.autoplay = true;
     video.loop = true;
