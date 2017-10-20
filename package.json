@@ -18,6 +18,7 @@
   },
   "license": "MIT",
   "main": "lib/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "npm run build:flow && npm run build:copy",
     "build:flow": "babel src --out-dir lib",
