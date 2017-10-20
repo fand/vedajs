@@ -13,12 +13,15 @@
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-2": "^6.24.1",
-    "flow-bin": "^0.56.0"
+    "flow-bin": "^0.56.0",
+    "flow-copy-source": "^1.2.1"
   },
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "npm run build:flow && npm run build:copy",
+    "build:flow": "babel src --out-dir lib",
+    "build:copy": "flow-copy-source src lib",
     "prepublish": "npm run lint && npm run build",
     "lint": "flow"
   },
