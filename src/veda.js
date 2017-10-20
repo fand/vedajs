@@ -47,6 +47,8 @@ type Uniforms = {
   }
 }
 
+type Shader = Pass[]
+
 const isGif = file => file.match(/\.gif$/i);
 
 export default class ThreeShader {
@@ -246,7 +248,7 @@ export default class ThreeShader {
     return { scene, camera, target };
   }
 
-  loadShader(passes: Pass[]): void {
+  loadShader(shader: Shader): void {
     // Dispose old targets
     this._passes.forEach(pass => {
       const target = pass.target;
