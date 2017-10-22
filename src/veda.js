@@ -47,7 +47,7 @@ type Uniforms = {
   }
 }
 
-type Shader = Pass[]
+type Shader = Pass | Pass[]
 
 const isGif = file => file.match(/\.gif$/i);
 
@@ -248,9 +248,28 @@ export default class ThreeShader {
     return { scene, camera, target };
   }
 
+  loadFragmentShader(fs: string): void {
+    this.loadShader([{ fs }]);
+  }
+
+  loadVertexShader(vs: string): void {
+    this.loadShader([{ vs }]);
+  }
+
   loadShader(shader: Shader): void {
+    let passes;
+    if (shader instanceof Array) {
+      passes = shader;
+    } else {
+      passes = [shader];
+    }
+
     // Dispose old targets
     this._passes.forEach(pass => {
+      if (!pass.fs && !pass.vs) {
+        throw TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
+      }
+
       const target = pass.target;
       if (target) {
         target.targets[0].texture.dispose();
