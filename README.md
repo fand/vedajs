@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <h1>VEDA</h1>
+  <h1>VEDA.js</h1>
   <i>Shader Art Framework</i>
   <br>
   <br>
@@ -39,14 +39,104 @@ import Veda from 'vedajs';
 const veda = new Veda();
 
 veda.setCanvas(canvas);
-veda.loadShader([{
-  fs: fragmentShaderCode,
-}]);
+veda.loadFragmentShader(code);
 
 veda.play();
 ```
 
-See [examples](./examples) for details.
+
+## Advanced Usage
+
+### Fragment shader
+
+```js
+veda.loadFragmentShader(code);
+```
+
+This is equivalent to
+
+```js
+veda.loadShader({ fs: code });
+```
+
+
+### Vertex shader
+
+```js
+veda.loadVertexShader(code);
+```
+
+This is equivalent to
+
+```js
+veda.loadShader({ vs: code });
+```
+
+
+### Using both
+
+Pass a shader object to `loadShader`.
+
+```js
+veda.loadShader({
+  vs: vertexShaderCode,
+  fs: fragmentShaderCode,
+});
+```
+
+
+### Multipath rendering
+
+Pass an array of shaders to `loadShader`.
+
+```js
+veda.loadShader([{
+  vs: vertexShaderFor1stPass,
+  fs: fragmentShaderFor1stPass
+}, {
+  fs: fragmentShaderFor2ndPass
+}]);
+```
+
+
+### Audio input
+
+```js
+veda.toggleAudio(true);
+veda.loadShader(shader);
+```
+
+
+### MIDI input
+
+```js
+veda.toggleMidi(true);
+veda.loadShader(shader);
+```
+
+
+### WebCam input
+
+```js
+veda.toggleCamera(true);
+veda.loadShader(shader);
+```
+
+
+## Keyboard input
+
+```js
+veda.toggleKeyboard(true);
+veda.loadShader(shader);
+```
+
+
+## Gamepad input
+
+```js
+veda.toggleGamepad(true);
+veda.loadShader(shader);
+```
 
 
 ## Author
