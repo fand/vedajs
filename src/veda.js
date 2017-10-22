@@ -64,6 +64,7 @@ export default class ThreeShader {
   _renderer: THREE.Renderer;
   _targets: THREE.RenderTarget[];
   _textureLoader: THREE.TextureLoader;
+  _canvas: HTMLCanvasElement;
 
   _audioLoader: AudioLoader;
   _cameraLoader: CameraLoader;
@@ -123,9 +124,12 @@ export default class ThreeShader {
   }
 
   setPixelRatio(pixelRatio: number): void {
+    if (!this._canvas) {
+      return;
+    }
     this._pixelRatio = pixelRatio;
     this._renderer.setPixelRatio(1 / pixelRatio);
-    this._resize();
+    this.resize(this._canvas.offsetWidth, this._canvas.offsetHeight);
   }
 
   setFrameskip(frameskip: number): void {
@@ -141,15 +145,15 @@ export default class ThreeShader {
   }
 
   setCanvas(canvas: HTMLCanvasElement): void {
-    if (!canvas) {
-      return;
+    if (this._canvas) {
+      this._canvas.removeEventListener('mousemove', this.mousemove);
     }
 
+    this._canvas = canvas;
     this._renderer = new THREE.WebGLRenderer({ canvas });
     this._renderer.setPixelRatio(1 / this._pixelRatio);
-    this._resize();
-    window.addEventListener('resize', this._resize);
-    window.addEventListener('mousemove', this.mousemove);
+    this.resize(canvas.offsetWidth, canvas.offsetHeight);
+    canvas.addEventListener('mousemove', this.mousemove);
 
     this._frame = 0;
     this.animate();
@@ -234,11 +238,11 @@ export default class ThreeShader {
         name: targetName,
         targets: [
           new THREE.WebGLRenderTarget(
-            window.innerWidth / this._pixelRatio, window.innerHeight / this._pixelRatio,
+            this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
           ),
           new THREE.WebGLRenderTarget(
-            window.innerWidth / this._pixelRatio, window.innerHeight / this._pixelRatio,
+            this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
           ),
         ],
@@ -266,10 +270,6 @@ export default class ThreeShader {
 
     // Dispose old targets
     this._passes.forEach(pass => {
-      if (!pass.fs && !pass.vs) {
-        throw TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
-      }
-
       const target = pass.target;
       if (target) {
         target.targets[0].texture.dispose();
@@ -278,7 +278,12 @@ export default class ThreeShader {
     });
 
     // Create new Passes
-    this._passes = passes.map(pass => this._createRenderPass(pass));
+    this._passes = passes.map(pass => {
+      if (!pass.fs && !pass.vs) {
+        throw TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
+      }
+      return this._createRenderPass(pass);
+    });
   }
 
   loadTexture(name: string, textureUrl: string): void {
@@ -305,12 +310,11 @@ export default class ThreeShader {
   }
 
   mousemove = (e: MouseEvent) => {
-    this._uniforms.mouse.value.x = e.clientX / window.innerWidth;
-    this._uniforms.mouse.value.y = 1 - e.clientY / window.innerHeight;
+    this._uniforms.mouse.value.x = e.clientX / this._canvas.offsetWidth;
+    this._uniforms.mouse.value.y = 1 - e.clientY / this._canvas.offsetHeight;
   }
 
-  _resize = () => {
-    const [width, height] = [window.innerWidth, window.innerHeight];
+  resize = (width: number, height: number) => {
     this._renderer.setSize(width, height);
 
     const [bufferWidth, bufferHeight] = [width / this._pixelRatio, height / this._pixelRatio];
