@@ -51,7 +51,7 @@ type Shader = Pass | Pass[]
 
 const isGif = file => file.match(/\.gif$/i);
 
-export default class ThreeShader {
+export default class Veda {
   _pixelRatio: number;
   _frameskip: number;
   _start: number;
