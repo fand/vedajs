@@ -311,10 +311,13 @@ export default class Veda {
 
   _mousemove = (e: MouseEvent) => {
     const rect = this._canvas.getBoundingClientRect();
-    const left = rect.top + document.documentElement.scrollLeft;
-    const top = rect.top + document.documentElement.scrollTop;
-    this._uniforms.mouse.value.x = (e.pageX - left) / this._canvas.offsetWidth;
-    this._uniforms.mouse.value.y = 1 - (e.pageY - top) / this._canvas.offsetHeight;
+    const root = document.documentElement;
+    if (root) {
+      const left = rect.top + root.scrollLeft;
+      const top = rect.top + root.scrollTop;
+      this._uniforms.mouse.value.x = (e.pageX - left) / this._canvas.offsetWidth;
+      this._uniforms.mouse.value.y = 1 - (e.pageY - top) / this._canvas.offsetHeight;
+    }
   }
 
   resize = (width: number, height: number) => {
