@@ -23,7 +23,8 @@ export default class VideoLoader {
     (document.body: any).appendChild(video);
 
     video.classList.add('veda-video-source');
-    video.style.position = 'absolute';
+    video.style.position = 'fixed';
+    video.style.top = '-100%';
     video.src = url;
     video.autoplay = true;
     video.loop = true;

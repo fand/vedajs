@@ -1,0 +1,17 @@
+{
+  "name": "typescript",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "fand <fand@gmork.in>",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^3.0.3",
+    "typescript": "^2.5.3",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  }
+}
