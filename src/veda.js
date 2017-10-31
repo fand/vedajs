@@ -146,14 +146,14 @@ export default class Veda {
 
   setCanvas(canvas: HTMLCanvasElement): void {
     if (this._canvas) {
-      this._canvas.removeEventListener('mousemove', this.mousemove);
+      window.removeEventListener('mousemove', this._mousemove);
     }
 
     this._canvas = canvas;
     this._renderer = new THREE.WebGLRenderer({ canvas });
     this._renderer.setPixelRatio(1 / this._pixelRatio);
     this.resize(canvas.offsetWidth, canvas.offsetHeight);
-    canvas.addEventListener('mousemove', this.mousemove);
+    window.addEventListener('mousemove', this._mousemove);
 
     this._frame = 0;
     this.animate();
@@ -309,9 +309,12 @@ export default class Veda {
     }
   }
 
-  mousemove = (e: MouseEvent) => {
-    this._uniforms.mouse.value.x = e.clientX / this._canvas.offsetWidth;
-    this._uniforms.mouse.value.y = 1 - e.clientY / this._canvas.offsetHeight;
+  _mousemove = (e: MouseEvent) => {
+    const rect = this._canvas.getBoundingClientRect();
+    const left = rect.top + document.documentElement.scrollLeft;
+    const top = rect.top + document.documentElement.scrollTop;
+    this._uniforms.mouse.value.x = (e.pageX - left) / this._canvas.offsetWidth;
+    this._uniforms.mouse.value.y = 1 - (e.pageY - top) / this._canvas.offsetHeight;
   }
 
   resize = (width: number, height: number) => {
