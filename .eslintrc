@@ -13,6 +13,7 @@
         "yoda": 0,
         "flowtype/define-flow-type": 1,
         "flowtype/use-flow-type": 1,
+        "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }]
     },
     "globals": {
         "atom": false,
