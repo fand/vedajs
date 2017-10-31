@@ -280,7 +280,7 @@ export default class Veda {
     // Create new Passes
     this._passes = passes.map(pass => {
       if (!pass.fs && !pass.vs) {
-        throw TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
+        throw new TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
       }
       return this._createRenderPass(pass);
     });
@@ -289,7 +289,7 @@ export default class Veda {
   loadTexture(name: string, textureUrl: string): void {
     const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl) :
       isGif(textureUrl) ? this._gifLoader.load(name, textureUrl) :
-      this._textureLoader.load(textureUrl);
+        this._textureLoader.load(textureUrl);
 
     this._uniforms[name] = {
       type: 't',
