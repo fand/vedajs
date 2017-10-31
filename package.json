@@ -32,8 +32,8 @@
     "watch": "npm-run-all -p watch:flow watch:copy",
     "watch:flow": "babel -w src --out-dir lib",
     "watch:copy": "flow-copy-source -w src lib",
-    "prepublish": "npm run lint && npm run build",
-    "lint": "flow"
+    "prepublish": "npm run test && npm run build",
+    "test": "eslint src && flow"
   },
   "files": [
     "README.md",
