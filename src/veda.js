@@ -150,7 +150,7 @@ export default class Veda {
     }
 
     this._canvas = canvas;
-    this._renderer = new THREE.WebGLRenderer({ canvas });
+    this._renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
     this._renderer.setPixelRatio(1 / this._pixelRatio);
     this.resize(canvas.offsetWidth, canvas.offsetHeight);
     window.addEventListener('mousemove', this._mousemove);

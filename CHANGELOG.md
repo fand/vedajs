@@ -1,3 +1,6 @@
+### 0.2.0
+* Make the canvas transparent
+
 ### 0.1.2
 * Fix: `mouse` not working
 
