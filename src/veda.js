@@ -144,6 +144,10 @@ export default class Veda {
     this._vertexMode = mode;
   }
 
+  resetTime(): void {
+    this._start = Date.now();
+  }
+
   setCanvas(canvas: HTMLCanvasElement): void {
     if (this._canvas) {
       window.removeEventListener('mousemove', this._mousemove);

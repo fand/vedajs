@@ -19,6 +19,7 @@ export default class Veda {
     setFrameskip(frameskip: number): void;
     setVertexCount(vertexCount: number): void;
     setVertexMode(vertexMode: string): void;
+    resetTime(): void;
     setCanvas(canvas: HTMLCanvasElement): void;
     resize(width: number, height: number): void;
     loadShader(shader: Shader): void;
