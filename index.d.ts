@@ -13,6 +13,18 @@ type Pass = {
 
 type Shader = Pass[];
 
+// ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
+type UniformType = (
+  '1i' | '1f' | '2f' | '3f' |
+  '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
+  'Matrix3fv' | 'Matric4fv' |
+  'i' | 'f' |
+  'v2' | 'v3' | 'v4' |
+  'c' | 'm4' | 't' |
+  'iv1' | 'iv' | 'fv1' | 'fv' |
+  'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
+);
+
 export default class Veda {
     constructor(options: VedaOptions);
     setPixelRatio(pixelRatio: number): void;
@@ -20,6 +32,7 @@ export default class Veda {
     setVertexCount(vertexCount: number): void;
     setVertexMode(vertexMode: string): void;
     resetTime(): void;
+    setUniform(name: string, type: UniformType, value: any): void;
     setCanvas(canvas: HTMLCanvasElement): void;
     resize(width: number, height: number): void;
     loadShader(shader: Shader): void;

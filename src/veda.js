@@ -12,6 +12,18 @@ import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
 
 const DUMMY_TEXTURE = new THREE.Texture();
 
+// ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
+type UniformType = (
+  '1i' | '1f' | '2f' | '3f' |
+  '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
+  'Matrix3fv' | 'Matric4fv' |
+  'i' | 'f' |
+  'v2' | 'v3' | 'v4' |
+  'c' | 'm4' | 't' |
+  'iv1' | 'iv' | 'fv1' | 'fv' |
+  'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
+);
+
 type VedaOptions = {
   pixelRatio?: number;
   frameskip?: number;
@@ -311,6 +323,10 @@ export default class Veda {
     if (remove && isGif(textureUrl)) {
       this._gifLoader.unload(textureUrl);
     }
+  }
+
+  setUniform(name: string, type: UniformType, value: any) {
+    this._uniforms[name] = { type, value };
   }
 
   _mousemove = (e: MouseEvent) => {
