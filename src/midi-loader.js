@@ -1,6 +1,13 @@
 /* @flow */
 import * as THREE from 'three';
 
+interface MIDIAccess {
+  inputs: Map<number, any>;
+  outputs: Map<number, any>;
+  sysexEnabled: boolean;
+  onstatechange: () => void;
+}
+
 export default class MidiLoader {
   _midiArray: Uint8Array;
   _noteArray: Uint8Array;
@@ -29,11 +36,16 @@ export default class MidiLoader {
 
     (navigator: any).requestMIDIAccess({ sysex: false })
       .then(access => {
-        access.inputs.forEach(i => {
-          i.onmidimessage = m => this.onmidimessage(m.data);
-        });
+        this.onstatechange(access);
+        access.onstatechange = () => this.onstatechange(access);
       })
       .catch(e => console.log('Failed to load MIDI API', e));
+  }
+
+  onstatechange = (access: MIDIAccess) => {
+    access.inputs.forEach(i => {
+      i.onmidimessage = m => this.onmidimessage(m.data);
+    });
   }
 
   onmidimessage = (midi: number[]): void => {
