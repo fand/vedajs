@@ -1,3 +1,8 @@
+### 0.3.0
+* Add `setUniform()`
+* Add `resetTime()`
+* Fix: MIDI not working when MIDI ports are not ready on initialization
+
 ### 0.2.0
 * Make the canvas transparent
 
