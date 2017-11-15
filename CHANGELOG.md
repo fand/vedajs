@@ -1,3 +1,6 @@
+### 0.3.1
+* Fix: initialize MIDI only when enabled
+
 ### 0.3.0
 * Add `setUniform()`
 * Add `resetTime()`

@@ -33,13 +33,6 @@ export default class MidiLoader {
       THREE.LuminanceFormat,
       THREE.UnsignedByteType
     );
-
-    (navigator: any).requestMIDIAccess({ sysex: false })
-      .then(access => {
-        this.onstatechange(access);
-        access.onstatechange = () => this.onstatechange(access);
-      })
-      .catch(e => console.log('Failed to load MIDI API', e));
   }
 
   onstatechange = (access: MIDIAccess) => {
@@ -72,6 +65,18 @@ export default class MidiLoader {
 
   enable() {
     this._isEnabled = true;
+
+    if (!navigator.requestMIDIAccess) {
+      console.error('[VEDA] This browser doesn\'t support Web MIDI API.');
+      return;
+    }
+
+    (navigator: any).requestMIDIAccess({ sysex: false })
+      .then(access => {
+        this.onstatechange(access);
+        access.onstatechange = () => this.onstatechange(access);
+      })
+      .catch(e => console.log('Failed to load MIDI API', e));
   }
 
   disable() {
