@@ -20,6 +20,7 @@
     "eslint-plugin-flowtype": "^2.39.1",
     "flow-bin": "^0.56.0",
     "flow-copy-source": "^1.2.1",
+    "husky": "^0.14.3",
     "npm-run-all": "^4.1.1"
   },
   "license": "MIT",
@@ -33,7 +34,8 @@
     "watch:flow": "babel -w src --out-dir lib",
     "watch:copy": "flow-copy-source -w src lib",
     "prepublish": "npm run test && npm run build",
-    "test": "eslint src && flow"
+    "test": "eslint src && flow",
+    "precommit": "npm run build && git add ."
   },
   "files": [
     "README.md",
