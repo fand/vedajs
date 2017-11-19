@@ -302,8 +302,8 @@ export default class Veda {
     });
   }
 
-  loadTexture(name: string, textureUrl: string): void {
-    const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl) :
+  loadTexture(name: string, textureUrl: string, speed?: number = 1): void {
+    const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl, speed) :
       isGif(textureUrl) ? this._gifLoader.load(name, textureUrl) :
         this._textureLoader.load(textureUrl);
 

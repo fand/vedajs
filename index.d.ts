@@ -36,7 +36,7 @@ export default class Veda {
     setCanvas(canvas: HTMLCanvasElement): void;
     resize(width: number, height: number): void;
     loadShader(shader: Shader): void;
-    loadTexture(name: string, textureUrl: string): void;
+    loadTexture(name: string, textureUrl: string, speed?: number): void;
     unloadTexture(name: string, textureUrl: string, remove: boolean): void;
     play(): void;
     stop(): void;

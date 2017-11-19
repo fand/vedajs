@@ -13,9 +13,10 @@ export default class VideoLoader {
     this._cache = {};
   }
 
-  load(name: string, url: string): THREE.VideoTexture {
+  load(name: string, url: string, speed: number): THREE.VideoTexture {
     const cache = this._cache[url];
     if (cache) {
+      cache.video.playbackRate = speed;
       return cache.texture;
     }
 
@@ -29,6 +30,7 @@ export default class VideoLoader {
     video.autoplay = true;
     video.loop = true;
     video.muted = true;
+    video.playbackRate = speed;
 
     const texture = new THREE.VideoTexture(video);
     texture.minFilter = THREE.LinearFilter;

@@ -1,3 +1,6 @@
+### 0.3.2
+* Add param `speed` to `loadTexture()`
+
 ### 0.3.1
 * Fix: initialize MIDI only when enabled
 
