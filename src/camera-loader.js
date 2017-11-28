@@ -9,7 +9,7 @@ export default class CameraLoader {
 
   constructor() {
     this._video = document.createElement('video');
-    this._video.classList.add('glsl-livecoder-video');
+    this._video.classList.add('veda-video-source');
     this._video.loop = true;
     this._video.muted = true;
 
