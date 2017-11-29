@@ -1,3 +1,6 @@
+### 0.3.3
+* Fix styles of video elements
+
 ### 0.3.2
 * Add param `speed` to `loadTexture()`
 
