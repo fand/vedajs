@@ -1,3 +1,7 @@
+### 0.3.4
+* Fix styles
+* Allow loading cross-origin texture
+
 ### 0.3.3
 * Fix styles of video elements
 

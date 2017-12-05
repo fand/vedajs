@@ -113,6 +113,9 @@ export default class Veda {
       ),
     ];
 
+    // for TextureLoader & VideoLoader
+    THREE.ImageUtils.crossOrigin = '*';
+
     this._audioLoader = new AudioLoader();
     this._cameraLoader = new CameraLoader();
     this._gamepadLoader = new GamepadLoader();

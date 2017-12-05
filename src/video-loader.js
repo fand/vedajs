@@ -25,7 +25,7 @@ export default class VideoLoader {
 
     video.classList.add('veda-video-source');
     video.style.position = 'fixed';
-    video.style.top = '-100%';
+    video.style.top = '-99999px';
     video.src = url;
     video.autoplay = true;
     video.loop = true;
