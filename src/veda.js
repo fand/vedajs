@@ -1,6 +1,7 @@
 /* @flow */
 import * as THREE from 'three';
 import AudioLoader from './audio-loader';
+import type AudioOptions from './audio-loader';
 import MidiLoader from './midi-loader';
 import VideoLoader from './video-loader';
 import GifLoader from './gif-loader';
@@ -29,6 +30,7 @@ type VedaOptions = {
   frameskip?: number;
   vertexMode?: string;
   vertexCount?: number;
+  ...AudioOptions;
 }
 
 const DEFAULT_VEDA_OPTIONS = {
@@ -36,6 +38,8 @@ const DEFAULT_VEDA_OPTIONS = {
   frameskip: 1,
   vertexCount: 3000,
   vertexMode: 'TRIANGLES',
+  fftSize: 2048,
+  fftSmoothingTimeConstant: 0.8,
 };
 
 type RenderPassTarget = {
@@ -116,7 +120,7 @@ export default class Veda {
     // for TextureLoader & VideoLoader
     THREE.ImageUtils.crossOrigin = '*';
 
-    this._audioLoader = new AudioLoader();
+    this._audioLoader = new AudioLoader(rc);
     this._cameraLoader = new CameraLoader();
     this._gamepadLoader = new GamepadLoader();
     this._keyLoader = new KeyLoader();
@@ -157,6 +161,14 @@ export default class Veda {
 
   setVertexMode(mode: string): void {
     this._vertexMode = mode;
+  }
+
+  setFftSize(fftSize: number): void {
+    this._audioLoader.setFftSize(fftSize);
+  }
+
+  setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
+    this._audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
   }
 
   resetTime(): void {
