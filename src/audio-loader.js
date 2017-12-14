@@ -20,11 +20,13 @@ export default class AudioLoader {
   _input: MediaStreamAudioSourceNode;
 
   spectrum: THREE.DataTexture;
+  intspectrum: THREE.DataTexture;
   samples: THREE.DataTexture;
   isPlaying: boolean = false;
   isEnabled: boolean = false;
 
   _spectrumArray: Uint8Array;
+  _intspectrumArray: Uint8Array;
   _samplesArray: Uint8Array;
   _stream: any;
 
@@ -45,11 +47,20 @@ export default class AudioLoader {
 
     this._analyser.fftSize = rc.fftSize;
     this._analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
+
     this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this._intspectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
     this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
 
     this.spectrum = new THREE.DataTexture(
       this._spectrumArray,
+      this._analyser.frequencyBinCount,
+      1,
+      THREE.LuminanceFormat,
+      THREE.UnsignedByteType
+    );
+    this.intspectrum = new THREE.DataTexture(
+      this._intspectrumArray,
       this._analyser.frequencyBinCount,
       1,
       THREE.LuminanceFormat,
@@ -92,7 +103,13 @@ export default class AudioLoader {
   update(): void {
     this._analyser.getByteFrequencyData(this._spectrumArray);
     this._analyser.getByteTimeDomainData(this._samplesArray);
+
+    this._spectrumArray.forEach((amplitude, i) => {
+      this._intspectrumArray[i] += amplitude;
+    });
+
     this.spectrum.needsUpdate = true;
+    this.intspectrum.needsUpdate = true;
     this.samples.needsUpdate = true;
   }
 
@@ -103,9 +120,12 @@ export default class AudioLoader {
   setFftSize(fftSize: number): void {
     this._analyser.fftSize = fftSize;
     this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this._intspectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
     this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
     this.spectrum.image.data = this._spectrumArray;
     this.spectrum.image.width = this._analyser.frequencyBinCount;
+    this.intspectrum.image.data = this._intspectrumArray;
+    this.intspectrum.image.width = this._analyser.frequencyBinCount;
     this.samples.image.data = this._samplesArray;
     this.samples.image.width = this._analyser.frequencyBinCount;
   }

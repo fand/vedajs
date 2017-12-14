@@ -442,10 +442,12 @@ export default class Veda {
         ...this._uniforms,
         volume: { type: 'f', value: 0 },
         spectrum: { type: 't', value: this._audioLoader.spectrum },
+        intspectrum: { type: 't', value: this._audioLoader.intspectrum },
         samples: { type: 't', value: this._audioLoader.samples },
       };
     } else if (this._uniforms.spectrum) {
       this._uniforms.spectrum.value.dispose();
+      this._uniforms.intspectrum.value.dispose();
       this._uniforms.samples.value.dispose();
       this._audioLoader.disable();
     }
