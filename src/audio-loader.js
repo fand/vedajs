@@ -1,10 +1,15 @@
 /* @flow */
 import * as THREE from 'three';
 
-export type AudioOptions = {
+type AudioOptions = {
   fftSize?: number;
   fftSmoothingTimeConstant?: number;
 }
+
+const DEFAULT_AUDIO_OPTIONS = {
+  fftSize: 2048,
+  fftSmoothingTimeConstant: 0.8,
+};
 
 export default class AudioLoader {
   static ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -25,7 +30,12 @@ export default class AudioLoader {
 
   _willPlay: Promise<any>;
 
-  constructor(rc: AudioOptions) {
+  constructor(_rc: AudioOptions) {
+    const rc = {
+      ...DEFAULT_AUDIO_OPTIONS,
+      ..._rc,
+    };
+
     this._ctx = AudioLoader.ctx;
     this._gain = this._ctx.createGain();
     this._analyser = this._ctx.createAnalyser();

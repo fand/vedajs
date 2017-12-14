@@ -1,7 +1,6 @@
 /* @flow */
 import * as THREE from 'three';
 import AudioLoader from './audio-loader';
-import type AudioOptions from './audio-loader';
 import MidiLoader from './midi-loader';
 import VideoLoader from './video-loader';
 import GifLoader from './gif-loader';
@@ -30,7 +29,8 @@ type VedaOptions = {
   frameskip?: number;
   vertexMode?: string;
   vertexCount?: number;
-  ...AudioOptions;
+  fftSize?: number;
+  fftSmoothingTimeConstant?: number;
 }
 
 const DEFAULT_VEDA_OPTIONS = {
@@ -38,8 +38,6 @@ const DEFAULT_VEDA_OPTIONS = {
   frameskip: 1,
   vertexCount: 3000,
   vertexMode: 'TRIANGLES',
-  fftSize: 2048,
-  fftSmoothingTimeConstant: 0.8,
 };
 
 type RenderPassTarget = {
