@@ -29,6 +29,8 @@ type VedaOptions = {
   frameskip?: number;
   vertexMode?: string;
   vertexCount?: number;
+  fftSize?: number;
+  fftSmoothingTimeConstant?: number;
 }
 
 const DEFAULT_VEDA_OPTIONS = {
@@ -116,7 +118,7 @@ export default class Veda {
     // for TextureLoader & VideoLoader
     THREE.ImageUtils.crossOrigin = '*';
 
-    this._audioLoader = new AudioLoader();
+    this._audioLoader = new AudioLoader(rc);
     this._cameraLoader = new CameraLoader();
     this._gamepadLoader = new GamepadLoader();
     this._keyLoader = new KeyLoader();
@@ -157,6 +159,14 @@ export default class Veda {
 
   setVertexMode(mode: string): void {
     this._vertexMode = mode;
+  }
+
+  setFftSize(fftSize: number): void {
+    this._audioLoader.setFftSize(fftSize);
+  }
+
+  setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
+    this._audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
   }
 
   resetTime(): void {

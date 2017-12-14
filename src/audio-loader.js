@@ -1,6 +1,16 @@
 /* @flow */
 import * as THREE from 'three';
 
+type AudioOptions = {
+  fftSize?: number;
+  fftSmoothingTimeConstant?: number;
+}
+
+const DEFAULT_AUDIO_OPTIONS = {
+  fftSize: 2048,
+  fftSmoothingTimeConstant: 0.8,
+};
+
 export default class AudioLoader {
   static ctx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -20,7 +30,12 @@ export default class AudioLoader {
 
   _willPlay: Promise<any>;
 
-  constructor() {
+  constructor(_rc: AudioOptions) {
+    const rc = {
+      ...DEFAULT_AUDIO_OPTIONS,
+      ..._rc,
+    };
+
     this._ctx = AudioLoader.ctx;
     this._gain = this._ctx.createGain();
     this._analyser = this._ctx.createAnalyser();
@@ -28,8 +43,8 @@ export default class AudioLoader {
     this._gain.gain.value = 0;
     this._gain.connect(this._ctx.destination);
 
-    this._analyser.fftSize = 512;
-    this._analyser.smoothingTimeConstant = 0.4;
+    this._analyser.fftSize = rc.fftSize;
+    this._analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
     this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
     this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
 
@@ -83,5 +98,19 @@ export default class AudioLoader {
 
   getVolume(): number {
     return this._spectrumArray.reduce((x, y) => x + y, 0) / this._spectrumArray.length;
+  }
+
+  setFftSize(fftSize: number): void {
+    this._analyser.fftSize = fftSize;
+    this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this.spectrum.image.data = this._spectrumArray;
+    this.spectrum.image.width = this._analyser.frequencyBinCount;
+    this.samples.image.data = this._samplesArray;
+    this.samples.image.width = this._analyser.frequencyBinCount;
+  }
+
+  setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
+    this._analyser.smoothingTimeConstant = fftSmoothingTimeConstant;
   }
 }
