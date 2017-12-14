@@ -1,3 +1,6 @@
+### 0.4.0
+* Add methodsf for FFT settings #2
+
 ### 0.3.4
 * Fix styles
 * Allow loading cross-origin texture
