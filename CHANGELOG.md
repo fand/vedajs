@@ -1,3 +1,6 @@
+### 0.4.1
+* Fix: Disable culling on vertex shader
+
 ### 0.4.0
 * Add methodsf for FFT settings #2
 

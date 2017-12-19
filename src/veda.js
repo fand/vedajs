@@ -212,6 +212,7 @@ export default class Veda {
           shaderTextureLOD: false,
         },
       });
+      material.side = THREE.DoubleSide;
 
       if (this._vertexMode === 'POINTS') {
         plane = new THREE.Points(geometry, material);
