@@ -34,7 +34,7 @@
     "watch:flow": "babel -w src --out-dir lib",
     "watch:copy": "flow-copy-source -w src lib",
     "prepublish": "npm run test && npm run build",
-    "test": "eslint src && flow",
+    "test": "eslint src && flow && npm run build",
     "precommit": "npm run build && git add ."
   },
   "files": [
