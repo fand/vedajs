@@ -26,6 +26,8 @@
 
 ## Install
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/fand/vedajs.svg)](https://greenkeeper.io/)
+
 ```
 npm install vedajs
 ```
