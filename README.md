@@ -17,6 +17,7 @@
 
 ![npm version](https://img.shields.io/npm/v/vedajs.svg)
 ![license MIT](https://img.shields.io/npm/l/vedajs.svg)
+[![Greenkeeper badge](https://badges.greenkeeper.io/fand/vedajs.svg)](https://greenkeeper.io/)
 [![hashtag #vedajs](https://img.shields.io/badge/hashtag-vedajs-blue.svg)](https://twitter.com/search?f=tweets&q=%23vedajs&src=typd)
 </div>
 <br>
@@ -25,8 +26,6 @@
 
 
 ## Install
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/fand/vedajs.svg)](https://greenkeeper.io/)
 
 ```
 npm install vedajs
