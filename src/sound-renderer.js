@@ -1,8 +1,8 @@
 /* @flow */
 import * as THREE from 'three';
 
-const WIDTH = 512; // sqrt(48000 * 30)
-const HEIGHT = 512; // sqrt(48000 * 30)
+const WIDTH = 32;
+const HEIGHT = 64;
 const PIXELS = WIDTH * HEIGHT;
 
 const createShader = (shader, width) => `
@@ -36,11 +36,14 @@ export default class SoundRenderer {
   _soundMode: string = 'LOOP';
   _soundLength: number = 3;
   _isPlaying: boolean = false;
+  _start: number;
+  _renderingId: ?number;
 
   constructor() {
     this._ctx = new window.AudioContext();
     this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
     this._node = this._createNode();
+    this._start = this._ctx.currentTime;
 
     const canvas = document.createElement('canvas');
     canvas.width = WIDTH;
@@ -112,6 +115,7 @@ export default class SoundRenderer {
     if (!this._isPlaying) {
       this._isPlaying = true;
       this._node.start();
+      this._start = this._ctx.currentTime;
     }
   }
 
@@ -126,14 +130,23 @@ export default class SoundRenderer {
   }
 
   render = () => {
+    if (this._renderingId) {
+      cancelAnimationFrame(this._renderingId);
+    }
+
     const outputDataL = this._audioBuffer.getChannelData(0);
     const outputDataR = this._audioBuffer.getChannelData(1);
 
-    const numBlocks = (this._ctx.sampleRate * this._soundLength) / PIXELS;
+    const allPixels = this._ctx.sampleRate * this._soundLength;
+    const numBlocks = allPixels / PIXELS;
+
+    const timeOffset = (this._ctx.currentTime - this._start) % this._soundLength;
+    let pixelsForTimeOffset = timeOffset * this._ctx.sampleRate;
+    pixelsForTimeOffset -= pixelsForTimeOffset % PIXELS;
 
     let j = 0;
     const renderOnce = (remain) => {
-      const off = j * PIXELS;
+      const off = j * PIXELS + pixelsForTimeOffset;
 
       // Update uniform
       this._uniforms.iBlockOffset.value = off / this._ctx.sampleRate;
@@ -144,16 +157,20 @@ export default class SoundRenderer {
       this._wctx.readPixels(0, 0, WIDTH, HEIGHT, this._wctx.RGBA, this._wctx.UNSIGNED_BYTE, pixels);
 
       for (let i = 0; i < PIXELS; i++) {
-        outputDataL[off + i] = (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 - 1;
-        outputDataR[off + i] = (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 - 1;
+        const ii = (off + i) % allPixels;
+        outputDataL[ii] = (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 - 1;
+        outputDataR[ii] = (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 - 1;
       }
 
       j++;
       if (j < numBlocks) {
-        setTimeout(renderOnce, 100);
+        this._renderingId = requestAnimationFrame(renderOnce);
+      }
+      else {
+        this._renderingId = null;
       }
     }
 
-    setTimeout(renderOnce, 100);
+    this._renderingId = requestAnimationFrame(renderOnce);
   }
 }
