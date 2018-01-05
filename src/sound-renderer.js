@@ -130,7 +130,9 @@ export default class SoundRenderer {
     const outputDataR = this._audioBuffer.getChannelData(1);
 
     const numBlocks = (this._ctx.sampleRate * this._soundLength) / PIXELS;
-    for (let j = 0; j < numBlocks; j++) {
+
+    let j = 0;
+    const renderOnce = (remain) => {
       const off = j * PIXELS;
 
       // Update uniform
@@ -145,6 +147,13 @@ export default class SoundRenderer {
         outputDataL[off + i] = (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 - 1;
         outputDataR[off + i] = (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 - 1;
       }
+
+      j++;
+      if (j < numBlocks) {
+        setTimeout(renderOnce, 100);
+      }
     }
+
+    setTimeout(renderOnce, 100);
   }
 }
