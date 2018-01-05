@@ -82,6 +82,7 @@ export default class SoundRenderer {
     if (this._isPlaying) {
       this._node.start();
     }
+    this._start = this._ctx.currentTime;
   }
 
   setMode(mode: string) {
@@ -111,12 +112,12 @@ export default class SoundRenderer {
   }
 
   play() {
-    this.render();
     if (!this._isPlaying) {
       this._isPlaying = true;
       this._node.start();
       this._start = this._ctx.currentTime;
     }
+    this.render();
   }
 
   stop() {
