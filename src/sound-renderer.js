@@ -33,7 +33,6 @@ export default class SoundRenderer {
   _ctx: AudioContext;
   _node: AudioBufferSourceNode;
 
-  _soundMode: string = 'LOOP';
   _soundLength: number = 3;
   _isPlaying: boolean = false;
   _start: number;
@@ -78,20 +77,10 @@ export default class SoundRenderer {
 
     // Create new node
     this._node = this._createNode();
-    this.setMode(this._soundMode);
     if (this._isPlaying) {
       this._node.start();
     }
     this._start = this._ctx.currentTime;
-  }
-
-  setMode(mode: string) {
-    this._soundMode = mode.toUpperCase();
-    if (this._soundMode === 'LOOP') {
-      this._node.loop = true;
-    } else {
-      this._node.loop = false;
-    }
   }
 
   loadShader(fs: string) {
@@ -127,7 +116,6 @@ export default class SoundRenderer {
 
     // Create new node
     this._node = this._createNode();
-    this.setMode(this._soundMode);
   }
 
   render = () => {
