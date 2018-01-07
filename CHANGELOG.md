@@ -1,3 +1,6 @@
+### 0.5.0
+* Support sound shaders
+
 ### 0.4.1
 * Fix: Disable culling on vertex shader
 
