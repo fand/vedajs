@@ -66,21 +66,18 @@ export default class SoundRenderer {
   }
 
   setLength(length: number) {
-    if (this._isPlaying) {
-      this._node.stop();
-    }
-    this._node.disconnect();
-
     this._soundLength = length;
     this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
-    // this._node.buffer = this._audioBuffer;
+    const node = this._createNode();
 
-    // Create new node
-    this._node = this._createNode();
-    if (this._isPlaying) {
-      this._node.start();
-    }
     this._start = this._ctx.currentTime;
+
+    if (this._isPlaying) {
+      this._node.stop();
+      node.start();
+    }
+    this._node.disconnect();
+    this._node = node;
   }
 
   loadShader(fs: string) {
@@ -110,6 +107,8 @@ export default class SoundRenderer {
   }
 
   stop() {
+    this._isPlaying = false;
+
     // Destroy old node
     this._node.stop();
     this._node.disconnect();
@@ -135,7 +134,7 @@ export default class SoundRenderer {
 
     let j = 0;
     const renderOnce = (remain) => {
-      const off = j * PIXELS + pixelsForTimeOffset;
+      const off = (j * PIXELS + pixelsForTimeOffset) % allPixels;
 
       // Update uniform
       this._uniforms.iBlockOffset.value = off / this._ctx.sampleRate;
