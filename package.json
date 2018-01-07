@@ -1,7 +1,7 @@
 {
   "name": "vedajs",
   "description": "Shader Art Framework",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": "fand <fand.gmork@gmail.com>",
   "dependencies": {
     "is-video": "^1.0.1",
