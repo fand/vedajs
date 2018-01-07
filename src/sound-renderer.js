@@ -36,7 +36,7 @@ export default class SoundRenderer {
   _soundLength: number = 3;
   _isPlaying: boolean = false;
   _start: number;
-  _renderingId: ?number;
+  _renderingId: ?AnimationFrameID;
 
   constructor() {
     this._ctx = new window.AudioContext();
