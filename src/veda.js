@@ -7,6 +7,7 @@ import GifLoader from './gif-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
 import KeyLoader from './key-loader';
+import SoundRenderer from './sound-renderer';
 import isVideo from 'is-video';
 import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
 
@@ -88,6 +89,7 @@ export default class Veda {
   _videoLoader: VideoLoader;
   _gifLoader: GifLoader;
   _uniforms: Uniforms;
+  _soundRenderer: SoundRenderer;
 
   _vertexMode: string;
 
@@ -125,6 +127,7 @@ export default class Veda {
     this._midiLoader = new MidiLoader();
     this._videoLoader = new VideoLoader();
     this._gifLoader = new GifLoader();
+    this._soundRenderer = new SoundRenderer();
 
     // Prepare uniforms
     this._start = Date.now();
@@ -167,6 +170,10 @@ export default class Veda {
 
   setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
     this._audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
+  }
+
+  setSoundLength(length: number): void {
+    this._soundRenderer.setLength(length);
   }
 
   resetTime(): void {
@@ -378,6 +385,18 @@ export default class Veda {
     if (this._frame % this._frameskip === 0) {
       this._render();
     }
+  }
+
+  loadSoundShader(fs: string): void {
+    this._soundRenderer.loadShader(fs);
+  }
+
+  playSound(): void {
+    this._soundRenderer.play();
+  }
+
+  stopSound(): void {
+    this._soundRenderer.stop();
   }
 
   play(): void {
