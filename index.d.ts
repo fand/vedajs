@@ -34,12 +34,17 @@ export default class Veda {
     resetTime(): void;
     setUniform(name: string, type: UniformType, value: any): void;
     setCanvas(canvas: HTMLCanvasElement): void;
+    setSoundMode(mode: string): void;
+    setSoundLength(length: number): void;
     resize(width: number, height: number): void;
     loadShader(shader: Shader): void;
+    loadSoundShader(shader: string): void;
     loadTexture(name: string, textureUrl: string, speed?: number): void;
     unloadTexture(name: string, textureUrl: string, remove: boolean): void;
     play(): void;
     stop(): void;
+    playSound(): void;
+    stopSound(): void;
     toggleAudio(flag: boolean): void;
     toggleMidi(flag: boolean): void;
     toggleCamera(flag: boolean): void;

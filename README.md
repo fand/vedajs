@@ -140,6 +140,14 @@ veda.loadShader(shader);
 ```
 
 
+## Sound shader
+
+```js
+veda.loadSoundShader(shader);
+veda.playSound();
+```
+
+
 ## Author
 
 Takayosi Amagi
