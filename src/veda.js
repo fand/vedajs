@@ -172,10 +172,6 @@ export default class Veda {
     this._audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
   }
 
-  setSoundMode(mode: string): void {
-    this._soundRenderer.setMode(mode);
-  }
-
   setSoundLength(length: number): void {
     this._soundRenderer.setLength(length);
   }

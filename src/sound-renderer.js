@@ -119,7 +119,7 @@ export default class SoundRenderer {
 
   render = () => {
     if (this._renderingId) {
-      cancelAnimationFrame(this._renderingId);
+      window.cancelAnimationFrame(this._renderingId);
     }
 
     const outputDataL = this._audioBuffer.getChannelData(0);
@@ -133,7 +133,7 @@ export default class SoundRenderer {
     pixelsForTimeOffset -= pixelsForTimeOffset % PIXELS;
 
     let j = 0;
-    const renderOnce = (remain) => {
+    const renderOnce = () => {
       const off = (j * PIXELS + pixelsForTimeOffset) % allPixels;
 
       // Update uniform
@@ -153,11 +153,10 @@ export default class SoundRenderer {
       j++;
       if (j < numBlocks) {
         this._renderingId = requestAnimationFrame(renderOnce);
-      }
-      else {
+      } else {
         this._renderingId = null;
       }
-    }
+    };
 
     this._renderingId = requestAnimationFrame(renderOnce);
   }
