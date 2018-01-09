@@ -5,10 +5,25 @@ const WIDTH = 32;
 const HEIGHT = 64;
 const PIXELS = WIDTH * HEIGHT;
 
+const SAMPLE_WIDTH = 1280;
+const SAMPLE_HEIGHT = 720;
+
 const createShader = (shader, width) => `
 precision mediump float;
 uniform float iBlockOffset;
 uniform float iSampleRate;
+
+vec2 loadSound(in sampler2D sound, in float t) {
+  vec2 uv = vec2(
+    mod(t, ${SAMPLE_WIDTH}.) / ${SAMPLE_WIDTH}.,
+    floor(t / ${SAMPLE_WIDTH}.) / ${SAMPLE_HEIGHT}.
+  );
+  vec4 p = texture2D(sound, uv);
+  return vec2(
+    (p.x * 65536. + p.y * 256.) / 65536.,
+    (p.z * 65536. + p.w * 256.) / 65536.
+  );
+}
 
 ${shader}
 
