@@ -13,15 +13,16 @@ precision mediump float;
 uniform float iBlockOffset;
 uniform float iSampleRate;
 
-vec2 loadSound(in sampler2D sound, in float t) {
+vec2 loadSound(in sampler2D soundname, in float t) {
+  t *= iSampleRate;
   vec2 uv = vec2(
     mod(t, ${SAMPLE_WIDTH}.) / ${SAMPLE_WIDTH}.,
     floor(t / ${SAMPLE_WIDTH}.) / ${SAMPLE_HEIGHT}.
   );
-  vec4 p = texture2D(sound, uv);
+  vec4 p = texture2D(soundname, uv);
   return vec2(
-    (p.x * 65536. + p.y * 256.) / 65536.,
-    (p.z * 65536. + p.w * 256.) / 65536.
+    (p.x * 65535. + p.y * 255.) / 65535.,
+    (p.z * 65535. + p.w * 255.) / 65535.
   );
 }
 
@@ -36,13 +37,20 @@ void main(){
   gl_FragColor = vec4(vh.x, vl.x, vh.y, vl.y);
 }`;
 
+type Uniforms = {
+  [key: string]: {
+    type: string;
+    value: any;
+  }
+}
 export default class SoundRenderer {
   _target: THREE.WebGLRenderTarget;
   _scene: THREE.Scene;
   _camera: THREE.Camera;
   _renderer: THREE.Renderer;
   _wctx: WebGLRenderingContext;
-  _uniforms: any;
+  _uniforms: Uniforms;
+  _soundUniforms: Uniforms;
 
   _audioBuffer: AudioBuffer;
   _ctx: AudioContext;
@@ -53,7 +61,7 @@ export default class SoundRenderer {
   _start: number;
   _renderingId: ?AnimationFrameID;
 
-  constructor() {
+  constructor(uniforms: Uniforms) {
     this._ctx = new window.AudioContext();
     this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
     this._node = this._createNode();
@@ -66,7 +74,8 @@ export default class SoundRenderer {
     this._wctx = this._renderer.getContext();
     this._target = new THREE.WebGLRenderTarget(WIDTH, HEIGHT, { format: THREE.RGBAFormat });
 
-    this._uniforms = {
+    this._uniforms = uniforms;
+    this._soundUniforms = {
       iBlockOffset: { type: 'f', value: 0.0 },
       iSampleRate: { type: 'f', value: this._ctx.sampleRate },
     };
@@ -99,11 +108,10 @@ export default class SoundRenderer {
     const fragmentShader = createShader(fs, WIDTH);
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.ShaderMaterial({
-      uniforms: this._uniforms,
+      uniforms: { ...this._uniforms, ...this._soundUniforms },
       fragmentShader,
     });
     const plane = new THREE.Mesh(geometry, material);
-
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
     this._camera.position.set(0, 0, 1);
@@ -152,7 +160,7 @@ export default class SoundRenderer {
       const off = (j * PIXELS + pixelsForTimeOffset) % allPixels;
 
       // Update uniform
-      this._uniforms.iBlockOffset.value = off / this._ctx.sampleRate;
+      this._soundUniforms.iBlockOffset.value = off / this._ctx.sampleRate;
       this._renderer.render(this._scene, this._camera, this._target, true);
 
       // Get pixels

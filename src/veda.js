@@ -7,6 +7,7 @@ import GifLoader from './gif-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
 import KeyLoader from './key-loader';
+import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import isVideo from 'is-video';
 import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
@@ -65,6 +66,7 @@ type Uniforms = {
 type Shader = Pass | Pass[]
 
 const isGif = file => file.match(/\.gif$/i);
+const isSound = file => file.match(/\.(mp3|wav)$/i);
 
 export default class Veda {
   _pixelRatio: number;
@@ -88,6 +90,7 @@ export default class Veda {
   _midiLoader: MidiLoader;
   _videoLoader: VideoLoader;
   _gifLoader: GifLoader;
+  _soundLoader: SoundLoader;
   _uniforms: Uniforms;
   _soundRenderer: SoundRenderer;
 
@@ -127,7 +130,7 @@ export default class Veda {
     this._midiLoader = new MidiLoader();
     this._videoLoader = new VideoLoader();
     this._gifLoader = new GifLoader();
-    this._soundRenderer = new SoundRenderer();
+    this._soundLoader = new SoundLoader();
 
     // Prepare uniforms
     this._start = Date.now();
@@ -140,6 +143,7 @@ export default class Veda {
       PASSINDEX: { type: 'i', value: 0 },
     };
 
+    this._soundRenderer = new SoundRenderer(this._uniforms);
     this._textureLoader = new THREE.TextureLoader();
   }
 
@@ -323,10 +327,17 @@ export default class Veda {
     });
   }
 
-  loadTexture(name: string, textureUrl: string, speed?: number = 1): void {
-    const texture = isVideo(textureUrl) ? this._videoLoader.load(name, textureUrl, speed) :
-      isGif(textureUrl) ? this._gifLoader.load(name, textureUrl) :
-        this._textureLoader.load(textureUrl);
+  async loadTexture(name: string, textureUrl: string, speed?: number = 1): Promise<void> {
+    let texture;
+    if (isVideo(textureUrl)) {
+      texture = this._videoLoader.load(name, textureUrl, speed);
+    } else if (isGif(textureUrl)) {
+      texture = this._gifLoader.load(name, textureUrl);
+    } else if (isSound(textureUrl)) {
+      texture = await this._soundLoader.load(textureUrl);
+    } else {
+      texture = this._textureLoader.load(textureUrl);
+    }
 
     this._uniforms[name] = {
       type: 't',
@@ -343,6 +354,9 @@ export default class Veda {
     }
     if (remove && isGif(textureUrl)) {
       this._gifLoader.unload(textureUrl);
+    }
+    if (remove && isSound(textureUrl)) {
+      this._soundLoader.unload(textureUrl);
     }
   }
 
