@@ -13,3 +13,6 @@ void main() {
   gl_FragColor = v_color;
 }
 `;
+
+export const SAMPLE_WIDTH = 1280;
+export const SAMPLE_HEIGHT = 720;

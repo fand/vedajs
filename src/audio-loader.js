@@ -1,5 +1,6 @@
 /* @flow */
 import * as THREE from 'three';
+import { getCtx } from './get-ctx';
 
 type AudioOptions = {
   fftSize?: number;
@@ -12,8 +13,6 @@ const DEFAULT_AUDIO_OPTIONS = {
 };
 
 export default class AudioLoader {
-  static ctx = new (window.AudioContext || window.webkitAudioContext)();
-
   _ctx: AudioContext;
   _gain: GainNode;
   _analyser: AnalyserNode;
@@ -36,7 +35,7 @@ export default class AudioLoader {
       ..._rc,
     };
 
-    this._ctx = AudioLoader.ctx;
+    this._ctx = getCtx();
     this._gain = this._ctx.createGain();
     this._analyser = this._ctx.createAnalyser();
     this._analyser.connect(this._gain);
