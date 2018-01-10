@@ -14,7 +14,7 @@ export default class SoundLoader {
   load(url: string): Promise<THREE.DataTexture> {
     const cache = this._cache[url];
     if (cache) {
-      return cache;
+      return Promise.resolve(cache);
     }
 
     let f;
