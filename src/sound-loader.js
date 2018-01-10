@@ -2,6 +2,7 @@
 import fs from 'fs';
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
+import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 export default class SoundLoader {
   _cache: { [url: string]: THREE.DataTexture };
@@ -45,7 +46,7 @@ export default class SoundLoader {
           audioBuffer.getChannelData(1) : c0;
 
         // Copy data to Uint8Array
-        const array = new Uint8Array(1280 * 720 * 4);
+        const array = new Uint8Array(SAMPLE_WIDTH * SAMPLE_HEIGHT * 4);
         for (let i = 0; i < c0.length; i++) {
           const off = i * 4;
           if (off + 3 >= array.length) {
@@ -63,8 +64,8 @@ export default class SoundLoader {
 
         const texture = new THREE.DataTexture(
           array,
-          1280,
-          720,
+          SAMPLE_WIDTH,
+          SAMPLE_HEIGHT,
           THREE.RGBAFormat
         );
         texture.needsUpdate = true;

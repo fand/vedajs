@@ -1,12 +1,10 @@
 /* @flow */
 import * as THREE from 'three';
+import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 const WIDTH = 32;
 const HEIGHT = 64;
 const PIXELS = WIDTH * HEIGHT;
-
-const SAMPLE_WIDTH = 1280;
-const SAMPLE_HEIGHT = 720;
 
 const createShader = (shader, width) => `
 precision mediump float;
