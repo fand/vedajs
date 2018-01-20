@@ -280,11 +280,11 @@ export default class Veda {
         targets: [
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
           ),
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
           ),
         ],
       };
