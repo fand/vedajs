@@ -1,3 +1,11 @@
+### 0.5.3
+* Fix errors around Web Audio API
+* Use XHR instead of `fs` to fix errors on browsers
+
+### 0.5.1, 0.5.2
+* Support audio files for `loadTexture()`
+* Update deps
+
 ### 0.5.0
 * Support sound shaders
 
