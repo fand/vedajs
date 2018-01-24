@@ -1,5 +1,4 @@
 /* @flow */
-import fs from 'fs';
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
 import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
@@ -17,28 +16,19 @@ export default class SoundLoader {
       return Promise.resolve(cache);
     }
 
-    let f;
-    if (url.match('^(https?:)?//')) {
-      f = window.fetch(url).then(res => res.arrayBuffer());
-    } else {
-      f = new Promise((resolve, reject) => {
-        fs.readFile(url, (err, data) => {
-          if (err) {
-            reject(err);
-          }
-
-          const ab = new ArrayBuffer(data.length);
-          const ua = new Uint8Array(ab);
-          for (var i = 0; i < data.length; ++i) {
-            ua[i] = data[i];
-          }
-          return resolve(ab);
-        });
-      });
-    }
-
     const ctx = getCtx();
-    return f
+    return new Promise((resolve, reject) => {
+      const xhr = new window.XMLHttpRequest();
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = () => {
+        resolve(xhr.response);
+      };
+      xhr.onerror = () => {
+        reject(new TypeError('Local request failed'));
+      };
+      xhr.open('GET', url);
+      xhr.send(null);
+    })
       .then(res => ctx.decodeAudioData(res))
       .then(audioBuffer => {
         const c0 = audioBuffer.getChannelData(0); // -1 to 1
