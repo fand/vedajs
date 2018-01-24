@@ -39,7 +39,7 @@ export default class AudioLoader {
     this._gain = this._ctx.createGain();
     this._analyser = this._ctx.createAnalyser();
     this._analyser.connect(this._gain);
-    this._gain.gain.value = 0;
+    this._gain.gain.setValueAtTime(0, this._ctx.currentTime);
     this._gain.connect(this._ctx.destination);
 
     this._analyser.fftSize = rc.fftSize;

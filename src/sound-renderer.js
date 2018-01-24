@@ -1,6 +1,7 @@
 /* @flow */
 import * as THREE from 'three';
 import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
+import { getCtx } from './get-ctx';
 
 const WIDTH = 32;
 const HEIGHT = 64;
@@ -60,7 +61,7 @@ export default class SoundRenderer {
   _renderingId: ?AnimationFrameID;
 
   constructor(uniforms: Uniforms) {
-    this._ctx = new window.AudioContext();
+    this._ctx = getCtx();
     this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
     this._node = this._createNode();
     this._start = this._ctx.currentTime;
