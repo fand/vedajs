@@ -275,16 +275,17 @@ export default class Veda {
     if (pass.TARGET) {
       const targetName = pass.TARGET;
       this._uniforms[targetName] = DUMMY_TEXTURE;
+      const textureType = (pass.TARGET_TYPE && pass.TARGET_TYPE === 'f') ? THREE.FloatType : THREE.UnsignedByteType;
       target = {
         name: targetName,
         targets: [
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
         ],
       };
