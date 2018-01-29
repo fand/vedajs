@@ -12,8 +12,6 @@ import SoundRenderer from './sound-renderer';
 import isVideo from 'is-video';
 import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
 
-const DUMMY_TEXTURE = new THREE.Texture();
-
 // ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
 type UniformType = (
   '1i' | '1f' | '2f' | '3f' |
@@ -274,7 +272,6 @@ export default class Veda {
     let target: RenderPassTarget;
     if (pass.TARGET) {
       const targetName = pass.TARGET;
-      this._uniforms[targetName] = DUMMY_TEXTURE;
       const textureType = (pass.TARGET_TYPE && pass.TARGET_TYPE === 'f') ? THREE.FloatType : THREE.UnsignedByteType;
       target = {
         name: targetName,
@@ -288,6 +285,10 @@ export default class Veda {
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
         ],
+      };
+      this._uniforms[targetName] = {
+        type: 't',
+        value: target.targets[0].texture,
       };
     }
 
