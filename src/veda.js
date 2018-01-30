@@ -139,6 +139,7 @@ export default class Veda {
       time: { type: 'f', value: 0.0 },
       vertexCount: { type: 'f', value: rc.vertexCount },
       PASSINDEX: { type: 'i', value: 0 },
+      FRAMEINDEX: { type: 'i', value: 0 },
     };
 
     this._soundRenderer = new SoundRenderer(this._uniforms);
@@ -327,6 +328,8 @@ export default class Veda {
       }
       return this._createRenderPass(pass);
     });
+
+    this._uniforms.FRAMEINDEX.value = 0;
   }
 
   async loadTexture(name: string, textureUrl: string, speed?: number = 1): Promise<void> {
@@ -469,6 +472,8 @@ export default class Veda {
 
     // Render result to backbuffer
     this._renderer.render(lastPass.scene, lastPass.camera, this._targets[1], true);
+
+    this._uniforms.FRAMEINDEX.value++;
   }
 
   toggleAudio(flag: boolean): void {
