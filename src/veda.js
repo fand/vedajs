@@ -273,7 +273,7 @@ export default class Veda {
     let target: RenderPassTarget;
     if (pass.TARGET) {
       const targetName = pass.TARGET;
-      const textureType = (pass.TARGET_TYPE && pass.TARGET_TYPE === 'f') ? THREE.FloatType : THREE.UnsignedByteType;
+      const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
       target = {
         name: targetName,
         targets: [
