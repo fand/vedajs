@@ -1,3 +1,6 @@
+### 0.6.0
+* Support float textures with `FLOAT` in `PASSES`
+
 ### 0.5.3
 * Fix errors around Web Audio API
 * Use XHR instead of `fs` to fix errors on browsers

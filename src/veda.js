@@ -12,8 +12,6 @@ import SoundRenderer from './sound-renderer';
 import isVideo from 'is-video';
 import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
 
-const DUMMY_TEXTURE = new THREE.Texture();
-
 // ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
 type UniformType = (
   '1i' | '1f' | '2f' | '3f' |
@@ -141,6 +139,7 @@ export default class Veda {
       time: { type: 'f', value: 0.0 },
       vertexCount: { type: 'f', value: rc.vertexCount },
       PASSINDEX: { type: 'i', value: 0 },
+      FRAMEINDEX: { type: 'i', value: 0 },
     };
 
     this._soundRenderer = new SoundRenderer(this._uniforms);
@@ -274,19 +273,23 @@ export default class Veda {
     let target: RenderPassTarget;
     if (pass.TARGET) {
       const targetName = pass.TARGET;
-      this._uniforms[targetName] = DUMMY_TEXTURE;
+      const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
       target = {
         name: targetName,
         targets: [
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
         ],
+      };
+      this._uniforms[targetName] = {
+        type: 't',
+        value: target.targets[0].texture,
       };
     }
 
@@ -325,6 +328,8 @@ export default class Veda {
       }
       return this._createRenderPass(pass);
     });
+
+    this._uniforms.FRAMEINDEX.value = 0;
   }
 
   async loadTexture(name: string, textureUrl: string, speed?: number = 1): Promise<void> {
@@ -467,6 +472,8 @@ export default class Veda {
 
     // Render result to backbuffer
     this._renderer.render(lastPass.scene, lastPass.camera, this._targets[1], true);
+
+    this._uniforms.FRAMEINDEX.value++;
   }
 
   toggleAudio(flag: boolean): void {
