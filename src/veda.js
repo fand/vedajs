@@ -43,6 +43,8 @@ const DEFAULT_VEDA_OPTIONS = {
 type RenderPassTarget = {
   name: string;
   targets: THREE.RenderTarget[];
+  getWidth: () => number;
+  getHeight: () => number;
 }
 type RenderPass = {
   scene: THREE.Scene;
@@ -54,6 +56,8 @@ type Pass = {
   vs?: string;
   fs?: string;
   FLOAT?: boolean;
+  WIDTH?: string;
+  HEIGHT?: string;
 }
 type Uniforms = {
   [key: string]: {
@@ -283,8 +287,15 @@ export default class Veda {
     if (pass.TARGET) {
       const targetName = pass.TARGET;
       const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
+
       target = {
         name: targetName,
+        getWidth: () => {
+          return pass.WIDTH ? +pass.WIDTH : this._canvas.offsetWidth / this._pixelRatio;
+        },
+        getHeight: () => {
+          return pass.HEIGHT ? +pass.HEIGHT : this._canvas.offsetHeight / this._pixelRatio;
+        },
         targets: [
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
@@ -469,6 +480,7 @@ export default class Veda {
 
       const target = pass.target;
       if (target) {
+        target.targets[1].setSize(target.getWidth(), target.getHeight());
         this._renderer.render(pass.scene, pass.camera, target.targets[1], true);
 
         // Swap buffers after render so that we can use the buffer in latter passes
