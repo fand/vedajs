@@ -135,6 +135,7 @@ export default class Veda {
     this._uniforms = {
       backbuffer: { type: 't', value: new THREE.Texture() },
       mouse: { type: 'v2', value: new THREE.Vector2() },
+      mouseButtons: { type: 'v3', value: new THREE.Vector3() },
       resolution: { type: 'v2', value: new THREE.Vector2() },
       time: { type: 'f', value: 0.0 },
       vertexCount: { type: 'f', value: rc.vertexCount },
@@ -186,6 +187,8 @@ export default class Veda {
   setCanvas(canvas: HTMLCanvasElement): void {
     if (this._canvas) {
       window.removeEventListener('mousemove', this._mousemove);
+      window.removeEventListener('mousedown', this._mousedown);
+      window.removeEventListener('mouseup', this._mouseup);
     }
 
     this._canvas = canvas;
@@ -193,6 +196,8 @@ export default class Veda {
     this._renderer.setPixelRatio(1 / this._pixelRatio);
     this.resize(canvas.offsetWidth, canvas.offsetHeight);
     window.addEventListener('mousemove', this._mousemove);
+    window.addEventListener('mousedown', this._mousedown);
+    window.addEventListener('mouseup', this._mouseup);
 
     this._frame = 0;
     this.animate();
@@ -379,6 +384,13 @@ export default class Veda {
       this._uniforms.mouse.value.y = 1 - (e.pageY - top) / this._canvas.offsetHeight;
     }
   }
+
+  _mousedown = (e: MouseEvent) => {
+    const b = e.buttons;
+    this._uniforms.mouseButtons.value = new THREE.Vector3((b >> 0) & 1, (b >> 1) & 1, (b >> 2) & 1);
+  }
+
+  _mouseup = this._mousedown
 
   resize = (width: number, height: number) => {
     this._renderer.setSize(width, height);
