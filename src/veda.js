@@ -220,6 +220,9 @@ export default class Veda {
         uniforms: this._uniforms,
         vertexShader: vs,
         fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
+        blending: THREE.AdditiveBlending,
+        depthTest: true,
+        transparent: true,
         extensions: {
           derivatives: true,
           drawBuffers: false,
