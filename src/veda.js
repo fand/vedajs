@@ -53,6 +53,7 @@ type Pass = {
   TARGET?: string;
   vs?: string;
   fs?: string;
+  FLOAT?: boolean;
 }
 type Uniforms = {
   [key: string]: {
