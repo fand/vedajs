@@ -1,3 +1,7 @@
+### 0.6.1
+* Add `uniform vec3 mouseButtons`
+* Fix blendmode in vertex shaders
+
 ### 0.6.0
 * Support float textures with `FLOAT` in `PASSES`
 
