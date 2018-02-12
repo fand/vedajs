@@ -1,3 +1,6 @@
+### 0.6.3
+* Accept `WIDTH`, `HEIGHT` properties in `PASSES`
+
 ### 0.6.1
 * Add `uniform vec3 mouseButtons`
 * Fix blendmode in vertex shaders
