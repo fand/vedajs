@@ -43,8 +43,8 @@ const DEFAULT_VEDA_OPTIONS = {
 type RenderPassTarget = {
   name: string;
   targets: THREE.RenderTarget[];
-  getWidth: () => number;
-  getHeight: () => number;
+  getWidth: ($WIDTH: number, $HEIGHT: number) => any;
+  getHeight: ($WIDTH: number, $HEIGHT: number) => any;
 }
 type RenderPass = {
   scene: THREE.Scene;
@@ -288,17 +288,19 @@ export default class Veda {
       const targetName = pass.TARGET;
       const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
 
-      let getWidth = ($WIDTH, $HEIGHT) => $WIDTH;
-      let getHeight = ($WIDTH, $HEIGHT) => $HEIGHT;
+      let getWidth = ($WIDTH, _) => $WIDTH;
+      let getHeight = (_, $HEIGHT) => $HEIGHT;
       if (pass.WIDTH) {
         try {
+          // eslint-disable-next-line no-new-func
           getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`);
-        } catch(e) {}
+        } catch (e) {}
       }
       if (pass.HEIGHT) {
         try {
+          // eslint-disable-next-line no-new-func
           getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`);
-        } catch(e) {}
+        } catch (e) {}
       }
 
       target = {
