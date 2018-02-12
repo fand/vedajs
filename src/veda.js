@@ -43,6 +43,8 @@ const DEFAULT_VEDA_OPTIONS = {
 type RenderPassTarget = {
   name: string;
   targets: THREE.RenderTarget[];
+  getWidth: () => number;
+  getHeight: () => number;
 }
 type RenderPass = {
   scene: THREE.Scene;
@@ -54,6 +56,8 @@ type Pass = {
   vs?: string;
   fs?: string;
   FLOAT?: boolean;
+  WIDTH?: string;
+  HEIGHT?: string;
 }
 type Uniforms = {
   [key: string]: {
@@ -283,8 +287,24 @@ export default class Veda {
     if (pass.TARGET) {
       const targetName = pass.TARGET;
       const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
+
+      let getWidth = ($WIDTH, $HEIGHT) => $WIDTH;
+      let getHeight = ($WIDTH, $HEIGHT) => $HEIGHT;
+      if (pass.WIDTH) {
+        try {
+          getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`);
+        } catch(e) {}
+      }
+      if (pass.HEIGHT) {
+        try {
+          getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`);
+        } catch(e) {}
+      }
+
       target = {
         name: targetName,
+        getWidth,
+        getHeight,
         targets: [
           new THREE.WebGLRenderTarget(
             this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
@@ -469,6 +489,9 @@ export default class Veda {
 
       const target = pass.target;
       if (target) {
+        const $width = this._canvas.offsetWidth / this._pixelRatio;
+        const $height = this._canvas.offsetHeight / this._pixelRatio;
+        target.targets[1].setSize(target.getWidth($width, $height), target.getHeight($width, $height));
         this._renderer.render(pass.scene, pass.camera, target.targets[1], true);
 
         // Swap buffers after render so that we can use the buffer in latter passes
