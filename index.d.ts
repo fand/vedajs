@@ -9,6 +9,9 @@ type Pass = {
     TARGET?: string;
     vs?: string;
     fs?: string;
+    FLOAT?: boolean;
+    WIDTH?: string;
+    HEIGHT?: string;
 }
 
 type Shader = Pass[];
