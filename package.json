@@ -5,7 +5,7 @@
   "author": "fand <fand.gmork@gmail.com>",
   "dependencies": {
     "is-video": "^1.0.1",
-    "three": "^0.89.0"
+    "three": "^0.90.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
