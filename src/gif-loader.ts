@@ -2,12 +2,13 @@
 import * as THREE from 'three';
 
 interface ICache {
+  name: string;
   img: HTMLImageElement;
   texture: THREE.Texture;
 }
 
 export default class GifLoader {
-  _cache: { [url: string]: ?ICache };
+  _cache: { [url: string]: ICache | null };
 
   constructor() {
     this._cache = {};
@@ -29,7 +30,7 @@ export default class GifLoader {
     }
 
     const img = document.createElement('img');
-    (document.body: any).appendChild(img);
+    (document.body as any).appendChild(img);
 
     img.classList.add('veda-video-source');
     img.style.position = 'fixed';
@@ -43,7 +44,7 @@ export default class GifLoader {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    this._cache[url] = { img, texture };
+    this._cache[url] = { name, img, texture };
 
     return texture;
   }
@@ -51,7 +52,7 @@ export default class GifLoader {
   unload(url: string): void {
     const cache = this._cache[url];
     if (cache) {
-      (document.body: any).removeChild(cache.img);
+      (document.body as any).removeChild(cache.img);
     }
     this._cache[url] = null;
   }

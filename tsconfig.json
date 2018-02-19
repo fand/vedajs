@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
+    "lib": ["es2015", "dom"],
     "sourceMap": true,
     "outDir": "lib",
     "removeComments": true,
@@ -12,6 +13,6 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
   },
-  "include": ["src"],
+  "include": ["src", "typings"],
   "exclude": ["examples"],
 }

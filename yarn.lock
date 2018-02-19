@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+"@types/three@^0.89.10":
+  version "0.89.10"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.89.10.tgz#60c7f8584566e3d58990c19321a658342892acaf"
+  dependencies:
+    "@types/webvr-api" "*"
+
+"@types/webmidi@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
+
+"@types/webvr-api@*":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/webvr-api/-/webvr-api-0.0.31.tgz#f6061fe88a035d34a8b6a0c55f8758901ec8a08e"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

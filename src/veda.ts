@@ -1,4 +1,3 @@
-/* @flow */
 import * as THREE from 'three';
 import AudioLoader from './audio-loader';
 import MidiLoader from './midi-loader';
@@ -42,14 +41,14 @@ const DEFAULT_VEDA_OPTIONS = {
 
 type RenderPassTarget = {
   name: string;
-  targets: THREE.RenderTarget[];
+  targets: THREE.WebGLRenderTarget[];
   getWidth: ($WIDTH: number, $HEIGHT: number) => any;
   getHeight: ($WIDTH: number, $HEIGHT: number) => any;
 }
 type RenderPass = {
   scene: THREE.Scene;
   camera: THREE.Camera;
-  target: ?RenderPassTarget;
+  target: RenderPassTarget | null;
 }
 type Pass = {
   TARGET?: string;
@@ -68,23 +67,23 @@ type Uniforms = {
 
 type Shader = Pass | Pass[]
 
-const isGif = file => file.match(/\.gif$/i);
-const isSound = file => file.match(/\.(mp3|wav)$/i);
+const isGif = (file: string) => file.match(/\.gif$/i);
+const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);
 
 export default class Veda {
   _pixelRatio: number;
   _frameskip: number;
   _start: number;
-  _isPlaying: boolean;
-  _frame: number;
+  _isPlaying: boolean = false;
+  _frame: number = 0;
 
   _passes: RenderPass[];
 
-  _plane: THREE.Mesh;
-  _renderer: THREE.Renderer;
-  _targets: THREE.RenderTarget[];
+  _plane: THREE.Mesh | null = null;
+  _renderer: THREE.WebGLRenderer | null = null;
+  _canvas: HTMLCanvasElement | null = null;
+  _targets: THREE.WebGLRenderTarget[];
   _textureLoader: THREE.TextureLoader;
-  _canvas: HTMLCanvasElement;
 
   _audioLoader: AudioLoader;
   _cameraLoader: CameraLoader;
@@ -153,7 +152,7 @@ export default class Veda {
   }
 
   setPixelRatio(pixelRatio: number): void {
-    if (!this._canvas) {
+    if (!this._canvas || !this._renderer) {
       return;
     }
     this._pixelRatio = pixelRatio;
@@ -208,7 +207,7 @@ export default class Veda {
     this.animate();
   }
 
-  _createPlane(fs: ?string, vs: ?string) {
+  _createPlane(fs?: string, vs?: string) {
     let plane;
     if (vs) {
       // Create an object for vertexMode
@@ -216,7 +215,7 @@ export default class Veda {
       var vertices = new Float32Array(this._uniforms.vertexCount.value * 3);
       geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
       const vertexIds = new Float32Array(this._uniforms.vertexCount.value);
-      vertexIds.forEach((v, i) => {
+      vertexIds.forEach((_, i) => {
         vertexIds[i] = i;
       });
       geometry.addAttribute('vertexId', new THREE.BufferAttribute(vertexIds, 1));
@@ -228,29 +227,29 @@ export default class Veda {
         blending: THREE.AdditiveBlending,
         depthTest: true,
         transparent: true,
-        extensions: {
-          derivatives: true,
-          drawBuffers: false,
-          fragDepth: false,
-          shaderTextureLOD: false,
-        },
       });
       material.side = THREE.DoubleSide;
+      material.extensions = {
+        derivatives: false,
+        fragDepth: false,
+        drawBuffers: false,
+        shaderTextureLOD: false,
+      };
 
       if (this._vertexMode === 'POINTS') {
         plane = new THREE.Points(geometry, material);
       } else if (this._vertexMode === 'LINE_LOOP') {
-        plane = new THREE.LineLoop(geometry, material);
+        plane = new (THREE as any).LineLoop(geometry, material);
       } else if (this._vertexMode === 'LINE_STRIP') {
         plane = new THREE.Line(geometry, material);
       } else if (this._vertexMode === 'LINES') {
         plane = new THREE.LineSegments(geometry, material);
       } else if (this._vertexMode === 'TRI_STRIP') {
         plane = new THREE.Mesh(geometry, material);
-        plane.setDrawMode(THREE.TrianglesStripDrawMode);
+        plane.setDrawMode(THREE.TriangleStripDrawMode);
       } else if (this._vertexMode === 'TRI_FAN') {
         plane = new THREE.Mesh(geometry, material);
-        plane.setDrawMode(THREE.TrianglesFanDrawMode);
+        plane.setDrawMode(THREE.TriangleFanDrawMode);
       } else {
         plane = new THREE.Mesh(geometry, material);
       }
@@ -261,13 +260,13 @@ export default class Veda {
         uniforms: this._uniforms,
         vertexShader: DEFAULT_VERTEX_SHADER,
         fragmentShader: fs,
-        extensions: {
-          derivatives: true,
-          drawBuffers: false,
-          fragDepth: false,
-          shaderTextureLOD: false,
-        },
       });
+      material.extensions = {
+        derivatives: true,
+        drawBuffers: false,
+        fragDepth: false,
+        shaderTextureLOD: false,
+      };
       plane = new THREE.Mesh(geometry, material);
     }
 
@@ -275,6 +274,10 @@ export default class Veda {
   }
 
   _createRenderPass(pass: Pass): RenderPass {
+    if (!this._canvas) {
+      throw new Error('Call setCanvas() before loading shaders');
+    }
+
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
     camera.position.set(0, 0, 1);
@@ -283,23 +286,23 @@ export default class Veda {
     const plane = this._createPlane(pass.fs, pass.vs);
     scene.add(plane);
 
-    let target: RenderPassTarget;
+    let target: RenderPassTarget | null = null;
     if (pass.TARGET) {
       const targetName = pass.TARGET;
       const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
 
-      let getWidth = ($WIDTH, _) => $WIDTH;
-      let getHeight = (_, $HEIGHT) => $HEIGHT;
+      let getWidth = ($WIDTH: number, _: number) => $WIDTH;
+      let getHeight = (_: number, $HEIGHT: number) => $HEIGHT;
       if (pass.WIDTH) {
         try {
           // eslint-disable-next-line no-new-func
-          getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`);
+          getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`) as (w: number, _: number) => number;
         } catch (e) {}
       }
       if (pass.HEIGHT) {
         try {
           // eslint-disable-next-line no-new-func
-          getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`);
+          getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`) as (w: number, _: number) => number;
         } catch (e) {}
       }
 
@@ -363,7 +366,7 @@ export default class Veda {
     this._uniforms.FRAMEINDEX.value = 0;
   }
 
-  async loadTexture(name: string, textureUrl: string, speed?: number = 1): Promise<void> {
+  async loadTexture(name: string, textureUrl: string, speed: number = 1): Promise<void> {
     let texture;
     if (isVideo(textureUrl)) {
       texture = this._videoLoader.load(name, textureUrl, speed);
@@ -401,6 +404,7 @@ export default class Veda {
   }
 
   _mousemove = (e: MouseEvent) => {
+    if (!this._canvas) { return; }
     const rect = this._canvas.getBoundingClientRect();
     const root = document.documentElement;
     if (root) {
@@ -419,6 +423,7 @@ export default class Veda {
   _mouseup = this._mousedown
 
   resize = (width: number, height: number) => {
+    if (!this._renderer) { return; }
     this._renderer.setSize(width, height);
 
     const [bufferWidth, bufferHeight] = [width / this._pixelRatio, height / this._pixelRatio];
@@ -471,6 +476,12 @@ export default class Veda {
   }
 
   _render(): void {
+    if (!this._canvas || !this._renderer) {
+      return;
+    }
+    const canvas = this._canvas;
+    const renderer = this._renderer;
+
     this._uniforms.time.value = (Date.now() - this._start) / 1000;
     this._targets = [this._targets[1], this._targets[0]];
     this._uniforms.backbuffer.value = this._targets[0].texture;
@@ -491,16 +502,16 @@ export default class Veda {
 
       const target = pass.target;
       if (target) {
-        const $width = this._canvas.offsetWidth / this._pixelRatio;
-        const $height = this._canvas.offsetHeight / this._pixelRatio;
+        const $width = canvas.offsetWidth / this._pixelRatio;
+        const $height = canvas.offsetHeight / this._pixelRatio;
         target.targets[1].setSize(target.getWidth($width, $height), target.getHeight($width, $height));
-        this._renderer.render(pass.scene, pass.camera, target.targets[1], true);
+        renderer.render(pass.scene, pass.camera, target.targets[1], true);
 
         // Swap buffers after render so that we can use the buffer in latter passes
         target.targets = [target.targets[1], target.targets[0]];
         this._uniforms[target.name].value = target.targets[0].texture;
       } else {
-        this._renderer.render(pass.scene, pass.camera, null);
+        renderer.render(pass.scene, pass.camera, undefined);
       }
     });
 
@@ -508,11 +519,11 @@ export default class Veda {
 
     // Render last pass to canvas even if target is specified
     if (lastPass.target) {
-      this._renderer.render(lastPass.scene, lastPass.camera, null);
+      renderer.render(lastPass.scene, lastPass.camera, undefined);
     }
 
     // Render result to backbuffer
-    this._renderer.render(lastPass.scene, lastPass.camera, this._targets[1], true);
+    renderer.render(lastPass.scene, lastPass.camera, this._targets[1], true);
 
     this._uniforms.FRAMEINDEX.value++;
   }

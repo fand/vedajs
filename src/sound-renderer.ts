@@ -7,7 +7,7 @@ const WIDTH = 32;
 const HEIGHT = 64;
 const PIXELS = WIDTH * HEIGHT;
 
-const createShader = (shader, width) => `
+const createShader = (shader: string, width: number) => `
 precision mediump float;
 uniform float iBlockOffset;
 uniform float iSampleRate;
@@ -44,9 +44,9 @@ type Uniforms = {
 }
 export default class SoundRenderer {
   _target: THREE.WebGLRenderTarget;
-  _scene: THREE.Scene;
-  _camera: THREE.Camera;
-  _renderer: THREE.Renderer;
+  _scene: THREE.Scene | null = null;
+  _camera: THREE.Camera | null = null;
+  _renderer: THREE.WebGLRenderer;
   _wctx: WebGLRenderingContext;
   _uniforms: Uniforms;
   _soundUniforms: Uniforms;
@@ -58,7 +58,7 @@ export default class SoundRenderer {
   _soundLength: number = 3;
   _isPlaying: boolean = false;
   _start: number;
-  _renderingId: ?AnimationFrameID;
+  _renderingId: number | null = null;
 
   constructor(uniforms: Uniforms) {
     this._ctx = getCtx();
@@ -160,7 +160,7 @@ export default class SoundRenderer {
 
       // Update uniform
       this._soundUniforms.iBlockOffset.value = off / this._ctx.sampleRate;
-      this._renderer.render(this._scene, this._camera, this._target, true);
+      this._renderer.render(this._scene as any, this._camera as any, this._target, true);
 
       // Get pixels
       const pixels = new Uint8Array(PIXELS * 4);

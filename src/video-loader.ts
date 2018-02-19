@@ -1,13 +1,13 @@
-/* @flow */
 import * as THREE from 'three';
 
 interface ICache {
+  name: string;
   video: HTMLVideoElement;
   texture: THREE.VideoTexture;
 }
 
 export default class VideoLoader {
-  _cache: { [url: string]: ?ICache };
+  _cache: { [url: string]: ICache | null };
 
   constructor() {
     this._cache = {};
@@ -21,7 +21,7 @@ export default class VideoLoader {
     }
 
     const video = document.createElement('video');
-    (document.body: any).appendChild(video);
+    (document.body as any).appendChild(video);
 
     video.classList.add('veda-video-source');
     video.style.position = 'fixed';
@@ -37,7 +37,7 @@ export default class VideoLoader {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBAFormat;
 
-    this._cache[url] = { video, texture };
+    this._cache[url] = { name, video, texture };
 
     return texture;
   }
@@ -45,7 +45,7 @@ export default class VideoLoader {
   unload(url: string): void {
     const cache = this._cache[url];
     if (cache) {
-      (document.body: any).removeChild(cache.video);
+      (document.body as any).removeChild(cache.video);
     }
     this._cache[url] = null;
   }

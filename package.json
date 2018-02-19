@@ -8,6 +8,8 @@
     "three": "^0.89.0"
   },
   "devDependencies": {
+    "@types/three": "^0.89.10",
+    "@types/webmidi": "^2.0.2",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-plugin-add-module-exports": "^0.2.1",

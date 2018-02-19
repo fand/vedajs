@@ -1,4 +1,3 @@
-/* @flow */
 import * as THREE from 'three';
 
 export default class GamepadLoader {
@@ -27,7 +26,7 @@ export default class GamepadLoader {
       return;
     }
 
-    Array.from((navigator: any).getGamepads()).forEach((gamepad: any) => {
+    Array.from(navigator.getGamepads()).forEach((gamepad: any) => {
       if (!gamepad) {
         return;
       }

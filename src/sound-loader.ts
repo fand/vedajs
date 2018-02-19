@@ -4,7 +4,7 @@ import { getCtx } from './get-ctx';
 import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 export default class SoundLoader {
-  _cache: { [url: string]: THREE.DataTexture };
+  _cache: { [url: string]: THREE.DataTexture | null };
 
   constructor() {
     this._cache = {};
@@ -17,8 +17,8 @@ export default class SoundLoader {
     }
 
     const ctx = getCtx();
-    return new Promise((resolve, reject) => {
-      const xhr = new window.XMLHttpRequest();
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
       xhr.responseType = 'arraybuffer';
       xhr.onload = () => {
         resolve(xhr.response);

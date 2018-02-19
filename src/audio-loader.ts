@@ -1,4 +1,3 @@
-/* @flow */
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
 
@@ -16,18 +15,18 @@ export default class AudioLoader {
   _ctx: AudioContext;
   _gain: GainNode;
   _analyser: AnalyserNode;
-  _input: MediaStreamAudioSourceNode;
+  _input: MediaStreamAudioSourceNode | null = null;
 
   spectrum: THREE.DataTexture;
   samples: THREE.DataTexture;
   isPlaying: boolean = false;
   isEnabled: boolean = false;
 
-  _spectrumArray: Uint8Array;
-  _samplesArray: Uint8Array;
+  _spectrumArray: Uint8ClampedArray;
+  _samplesArray: Uint8ClampedArray;
   _stream: any;
 
-  _willPlay: Promise<any>;
+  _willPlay: Promise<any> | null = null;
 
   constructor(_rc: AudioOptions) {
     const rc = {
@@ -44,8 +43,8 @@ export default class AudioLoader {
 
     this._analyser.fftSize = rc.fftSize;
     this._analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
-    this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
-    this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this._spectrumArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
+    this._samplesArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
 
     this.spectrum = new THREE.DataTexture(
       this._spectrumArray,
@@ -64,10 +63,10 @@ export default class AudioLoader {
   }
 
   enable(): void {
-    this._willPlay = new Promise((resolve, reject) => {
-      (navigator: any).mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    this._willPlay = new Promise<void>((resolve, reject) => {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
         this._stream = stream;
-        this._input = (this._ctx.createMediaStreamSource: (s: MediaStream) => MediaStreamAudioSourceNode)(stream);
+        this._input = (this._ctx.createMediaStreamSource as (s: MediaStream) => MediaStreamAudioSourceNode)(stream);
         this._input.connect(this._analyser);
         this.isEnabled = true;
         resolve();
@@ -82,15 +81,15 @@ export default class AudioLoader {
     if (this.isEnabled && this._willPlay) {
       this._willPlay.then(() => {
         this.isEnabled = false;
-        this._input.disconnect();
-        this._stream.getTracks().forEach(t => t.stop());
+        this._input && this._input.disconnect();
+        this._stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
       });
     }
   }
 
   update(): void {
-    this._analyser.getByteFrequencyData(this._spectrumArray);
-    this._analyser.getByteTimeDomainData(this._samplesArray);
+    this._analyser.getByteFrequencyData(new Uint8Array(this._spectrumArray));
+    this._analyser.getByteTimeDomainData(new Uint8Array(this._samplesArray));
     this.spectrum.needsUpdate = true;
     this.samples.needsUpdate = true;
   }
@@ -101,12 +100,12 @@ export default class AudioLoader {
 
   setFftSize(fftSize: number): void {
     this._analyser.fftSize = fftSize;
-    this._spectrumArray = new Uint8Array(this._analyser.frequencyBinCount);
-    this._samplesArray = new Uint8Array(this._analyser.frequencyBinCount);
+    this._spectrumArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
+    this._samplesArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
     this.spectrum.image.data = this._spectrumArray;
-    this.spectrum.image.width = this._analyser.frequencyBinCount;
+    (this.spectrum.image as any).width = this._analyser.frequencyBinCount;
     this.samples.image.data = this._samplesArray;
-    this.samples.image.width = this._analyser.frequencyBinCount;
+    (this.samples.image as any).width = this._analyser.frequencyBinCount;
   }
 
   setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {

@@ -1,4 +1,3 @@
-/* @flow */
 import * as THREE from 'three';
 
 export default class KeyLoader {
@@ -31,13 +30,13 @@ export default class KeyLoader {
   }
 
   enable() {
-    (document.body: any).addEventListener('keydown', this.onKeyDown);
-    (document.body: any).addEventListener('keyup', this.onKeyUp);
+    (document.body as any).addEventListener('keydown', this.onKeyDown);
+    (document.body as any).addEventListener('keyup', this.onKeyUp);
   }
 
   disable() {
     this.texture.dispose();
-    (document.body: any).removeEventListener('keydown', this.onKeyDown);
-    (document.body: any).removeEventListener('keyup', this.onKeyUp);
+    (document.body as any).removeEventListener('keydown', this.onKeyDown);
+    (document.body as any).removeEventListener('keyup', this.onKeyUp);
   }
 }

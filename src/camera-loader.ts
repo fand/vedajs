@@ -1,11 +1,10 @@
-/* @flow */
 import * as THREE from 'three';
 
 export default class CameraLoader {
   _video: HTMLVideoElement;
   _stream: any;
   texture: THREE.VideoTexture;
-  _willPlay: Promise<any>;
+  _willPlay: Promise<any> | null = null;
 
   constructor() {
     this._video = document.createElement('video');
@@ -17,7 +16,7 @@ export default class CameraLoader {
     this._video.style.width = '1px';
     this._video.style.height = '1px';
 
-    (document.body: any).appendChild(this._video);
+    (document.body as any).appendChild(this._video);
 
     this.texture = new THREE.VideoTexture(this._video);
     this.texture.minFilter = THREE.LinearFilter;
@@ -27,7 +26,7 @@ export default class CameraLoader {
 
   enable() {
     this._willPlay = new Promise((resolve, reject) => {
-      (navigator: any).mediaDevices.getUserMedia({ video: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream: MediaStream) => {
         this._stream = stream;
         this._video.src = window.URL.createObjectURL(stream);
         this._video.play();
@@ -43,7 +42,7 @@ export default class CameraLoader {
     this.texture.dispose();
     if (this._willPlay) {
       this._willPlay.then(() => {
-        this._stream.getTracks().forEach(t => t.stop());
+        this._stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
       });
     }
   }
