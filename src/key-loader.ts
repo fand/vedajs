@@ -2,12 +2,12 @@ import * as THREE from 'three';
 
 export default class KeyLoader {
   texture: THREE.DataTexture;
-  _array: Uint8Array;
+  private array: Uint8Array;
 
   constructor() {
-    this._array = new Uint8Array(256);
+    this.array = new Uint8Array(256);
     this.texture = new THREE.DataTexture(
-      this._array,
+      this.array,
       256,
       1,
       THREE.LuminanceFormat,
@@ -17,15 +17,15 @@ export default class KeyLoader {
 
   onKeyDown = (e: any) => {
     if (e.keyCode === 27) { // ESC
-      this._array.fill(0);
+      this.array.fill(0);
     } else {
-      this._array[e.keyCode] = 255;
+      this.array[e.keyCode] = 255;
     }
     this.texture.needsUpdate = true;
   }
 
   onKeyUp = (e: any) => {
-    this._array[e.keyCode] = 0;
+    this.array[e.keyCode] = 0;
     this.texture.needsUpdate = true;
   }
 

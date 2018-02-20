@@ -1,35 +1,35 @@
 import * as THREE from 'three';
 
 export default class CameraLoader {
-  _video: HTMLVideoElement;
-  _stream: any;
+  private video: HTMLVideoElement;
+  private stream: any;
   texture: THREE.VideoTexture;
-  _willPlay: Promise<any> | null = null;
+  private willPlay: Promise<any> | null = null;
 
   constructor() {
-    this._video = document.createElement('video');
-    this._video.classList.add('veda-video-source');
-    this._video.loop = true;
-    this._video.muted = true;
-    this._video.style.position = 'fixed';
-    this._video.style.top = '99.99999%';
-    this._video.style.width = '1px';
-    this._video.style.height = '1px';
+    this.video = document.createElement('video');
+    this.video.classList.add('veda-video-source');
+    this.video.loop = true;
+    this.video.muted = true;
+    this.video.style.position = 'fixed';
+    this.video.style.top = '99.99999%';
+    this.video.style.width = '1px';
+    this.video.style.height = '1px';
 
-    (document.body as any).appendChild(this._video);
+    (document.body as any).appendChild(this.video);
 
-    this.texture = new THREE.VideoTexture(this._video);
+    this.texture = new THREE.VideoTexture(this.video);
     this.texture.minFilter = THREE.LinearFilter;
     this.texture.magFilter = THREE.LinearFilter;
     this.texture.format = THREE.RGBFormat;
   }
 
   enable() {
-    this._willPlay = new Promise((resolve, reject) => {
+    this.willPlay = new Promise((resolve, reject) => {
       navigator.mediaDevices.getUserMedia({ video: true }).then((stream: MediaStream) => {
-        this._stream = stream;
-        this._video.src = window.URL.createObjectURL(stream);
-        this._video.play();
+        this.stream = stream;
+        this.video.src = window.URL.createObjectURL(stream);
+        this.video.play();
         resolve();
       }, err => {
         console.error(err);
@@ -40,9 +40,9 @@ export default class CameraLoader {
 
   disable() {
     this.texture.dispose();
-    if (this._willPlay) {
-      this._willPlay.then(() => {
-        this._stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+    if (this.willPlay) {
+      this.willPlay.then(() => {
+        this.stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
       });
     }
   }

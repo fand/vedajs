@@ -12,21 +12,21 @@ const DEFAULT_AUDIO_OPTIONS = {
 };
 
 export default class AudioLoader {
-  _ctx: AudioContext;
-  _gain: GainNode;
-  _analyser: AnalyserNode;
-  _input: MediaStreamAudioSourceNode | null = null;
+  private ctx: AudioContext;
+  private gain: GainNode;
+  private analyser: AnalyserNode;
+  private input: MediaStreamAudioSourceNode | null = null;
 
   spectrum: THREE.DataTexture;
   samples: THREE.DataTexture;
   isPlaying: boolean = false;
   isEnabled: boolean = false;
 
-  _spectrumArray: Uint8ClampedArray;
-  _samplesArray: Uint8ClampedArray;
-  _stream: any;
+  private spectrumArray: Uint8ClampedArray;
+  private samplesArray: Uint8ClampedArray;
+  private stream: any;
 
-  _willPlay: Promise<any> | null = null;
+  private willPlay: Promise<any> | null = null;
 
   constructor(_rc: AudioOptions) {
     const rc = {
@@ -34,28 +34,28 @@ export default class AudioLoader {
       ..._rc,
     };
 
-    this._ctx = getCtx();
-    this._gain = this._ctx.createGain();
-    this._analyser = this._ctx.createAnalyser();
-    this._analyser.connect(this._gain);
-    this._gain.gain.setValueAtTime(0, this._ctx.currentTime);
-    this._gain.connect(this._ctx.destination);
+    this.ctx = getCtx();
+    this.gain = this.ctx.createGain();
+    this.analyser = this.ctx.createAnalyser();
+    this.analyser.connect(this.gain);
+    this.gain.gain.setValueAtTime(0, this.ctx.currentTime);
+    this.gain.connect(this.ctx.destination);
 
-    this._analyser.fftSize = rc.fftSize;
-    this._analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
-    this._spectrumArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
-    this._samplesArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
+    this.analyser.fftSize = rc.fftSize;
+    this.analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
+    this.spectrumArray = new Uint8ClampedArray(this.analyser.frequencyBinCount);
+    this.samplesArray = new Uint8ClampedArray(this.analyser.frequencyBinCount);
 
     this.spectrum = new THREE.DataTexture(
-      this._spectrumArray,
-      this._analyser.frequencyBinCount,
+      this.spectrumArray,
+      this.analyser.frequencyBinCount,
       1,
       THREE.LuminanceFormat,
       THREE.UnsignedByteType
     );
     this.samples = new THREE.DataTexture(
-      this._samplesArray,
-      this._analyser.frequencyBinCount,
+      this.samplesArray,
+      this.analyser.frequencyBinCount,
       1,
       THREE.LuminanceFormat,
       THREE.UnsignedByteType
@@ -63,11 +63,11 @@ export default class AudioLoader {
   }
 
   enable(): void {
-    this._willPlay = new Promise<void>((resolve, reject) => {
+    this.willPlay = new Promise<void>((resolve, reject) => {
       navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        this._stream = stream;
-        this._input = (this._ctx.createMediaStreamSource as (s: MediaStream) => MediaStreamAudioSourceNode)(stream);
-        this._input.connect(this._analyser);
+        this.stream = stream;
+        this.input = (this.ctx.createMediaStreamSource as (s: MediaStream) => MediaStreamAudioSourceNode)(stream);
+        this.input.connect(this.analyser);
         this.isEnabled = true;
         resolve();
       }, err => {
@@ -78,37 +78,37 @@ export default class AudioLoader {
   }
 
   disable(): void {
-    if (this.isEnabled && this._willPlay) {
-      this._willPlay.then(() => {
+    if (this.isEnabled && this.willPlay) {
+      this.willPlay.then(() => {
         this.isEnabled = false;
-        this._input && this._input.disconnect();
-        this._stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+        this.input && this.input.disconnect();
+        this.stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
       });
     }
   }
 
   update(): void {
-    this._analyser.getByteFrequencyData(new Uint8Array(this._spectrumArray));
-    this._analyser.getByteTimeDomainData(new Uint8Array(this._samplesArray));
+    this.analyser.getByteFrequencyData(new Uint8Array(this.spectrumArray));
+    this.analyser.getByteTimeDomainData(new Uint8Array(this.samplesArray));
     this.spectrum.needsUpdate = true;
     this.samples.needsUpdate = true;
   }
 
   getVolume(): number {
-    return this._spectrumArray.reduce((x, y) => x + y, 0) / this._spectrumArray.length;
+    return this.spectrumArray.reduce((x, y) => x + y, 0) / this.spectrumArray.length;
   }
 
   setFftSize(fftSize: number): void {
-    this._analyser.fftSize = fftSize;
-    this._spectrumArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
-    this._samplesArray = new Uint8ClampedArray(this._analyser.frequencyBinCount);
-    this.spectrum.image.data = this._spectrumArray;
-    (this.spectrum.image as any).width = this._analyser.frequencyBinCount;
-    this.samples.image.data = this._samplesArray;
-    (this.samples.image as any).width = this._analyser.frequencyBinCount;
+    this.analyser.fftSize = fftSize;
+    this.spectrumArray = new Uint8ClampedArray(this.analyser.frequencyBinCount);
+    this.samplesArray = new Uint8ClampedArray(this.analyser.frequencyBinCount);
+    this.spectrum.image.data = this.spectrumArray;
+    (this.spectrum.image as any).width = this.analyser.frequencyBinCount;
+    this.samples.image.data = this.samplesArray;
+    (this.samples.image as any).width = this.analyser.frequencyBinCount;
   }
 
   setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
-    this._analyser.smoothingTimeConstant = fftSmoothingTimeConstant;
+    this.analyser.smoothingTimeConstant = fftSmoothingTimeConstant;
   }
 }

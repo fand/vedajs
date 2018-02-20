@@ -71,32 +71,31 @@ const isGif = (file: string) => file.match(/\.gif$/i);
 const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);
 
 export default class Veda {
-  _pixelRatio: number;
-  _frameskip: number;
-  _start: number;
-  _isPlaying: boolean = false;
-  _frame: number = 0;
+  private pixelRatio: number;
+  private frameskip: number;
+  private start: number;
+  private isPlaying: boolean = false;
+  private frame: number = 0;
 
-  _passes: RenderPass[];
+  private passes: RenderPass[];
 
-  _plane: THREE.Mesh | null = null;
-  _renderer: THREE.WebGLRenderer | null = null;
-  _canvas: HTMLCanvasElement | null = null;
-  _targets: THREE.WebGLRenderTarget[];
-  _textureLoader: THREE.TextureLoader;
+  private renderer: THREE.WebGLRenderer | null = null;
+  private canvas: HTMLCanvasElement | null = null;
+  private targets: THREE.WebGLRenderTarget[];
+  private textureLoader: THREE.TextureLoader;
 
-  _audioLoader: AudioLoader;
-  _cameraLoader: CameraLoader;
-  _gamepadLoader: GamepadLoader;
-  _keyLoader: KeyLoader;
-  _midiLoader: MidiLoader;
-  _videoLoader: VideoLoader;
-  _gifLoader: GifLoader;
-  _soundLoader: SoundLoader;
-  _uniforms: Uniforms;
-  _soundRenderer: SoundRenderer;
+  private audioLoader: AudioLoader;
+  private cameraLoader: CameraLoader;
+  private gamepadLoader: GamepadLoader;
+  private keyLoader: KeyLoader;
+  private midiLoader: MidiLoader;
+  private videoLoader: VideoLoader;
+  private gifLoader: GifLoader;
+  private soundLoader: SoundLoader;
+  private uniforms: Uniforms;
+  private soundRenderer: SoundRenderer;
 
-  _vertexMode: string;
+  private vertexMode: string;
 
   constructor(_rc: VedaOptions) {
     const rc = {
@@ -104,14 +103,14 @@ export default class Veda {
       ..._rc,
     };
 
-    this._pixelRatio = rc.pixelRatio;
-    this._frameskip = rc.frameskip;
-    this._vertexMode = rc.vertexMode;
+    this.pixelRatio = rc.pixelRatio;
+    this.frameskip = rc.frameskip;
+    this.vertexMode = rc.vertexMode;
 
-    this._passes = [];
+    this.passes = [];
 
     // Create a target for backbuffer
-    this._targets = [
+    this.targets = [
       new THREE.WebGLRenderTarget(
         0, 0,
         { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
@@ -125,18 +124,18 @@ export default class Veda {
     // for TextureLoader & VideoLoader
     THREE.ImageUtils.crossOrigin = '*';
 
-    this._audioLoader = new AudioLoader(rc);
-    this._cameraLoader = new CameraLoader();
-    this._gamepadLoader = new GamepadLoader();
-    this._keyLoader = new KeyLoader();
-    this._midiLoader = new MidiLoader();
-    this._videoLoader = new VideoLoader();
-    this._gifLoader = new GifLoader();
-    this._soundLoader = new SoundLoader();
+    this.audioLoader = new AudioLoader(rc);
+    this.cameraLoader = new CameraLoader();
+    this.gamepadLoader = new GamepadLoader();
+    this.keyLoader = new KeyLoader();
+    this.midiLoader = new MidiLoader();
+    this.videoLoader = new VideoLoader();
+    this.gifLoader = new GifLoader();
+    this.soundLoader = new SoundLoader();
 
     // Prepare uniforms
-    this._start = Date.now();
-    this._uniforms = {
+    this.start = Date.now();
+    this.uniforms = {
       backbuffer: { type: 't', value: new THREE.Texture() },
       mouse: { type: 'v2', value: new THREE.Vector2() },
       mouseButtons: { type: 'v3', value: new THREE.Vector3() },
@@ -147,81 +146,81 @@ export default class Veda {
       FRAMEINDEX: { type: 'i', value: 0 },
     };
 
-    this._soundRenderer = new SoundRenderer(this._uniforms);
-    this._textureLoader = new THREE.TextureLoader();
+    this.soundRenderer = new SoundRenderer(this.uniforms);
+    this.textureLoader = new THREE.TextureLoader();
   }
 
   setPixelRatio(pixelRatio: number): void {
-    if (!this._canvas || !this._renderer) {
+    if (!this.canvas || !this.renderer) {
       return;
     }
-    this._pixelRatio = pixelRatio;
-    this._renderer.setPixelRatio(1 / pixelRatio);
-    this.resize(this._canvas.offsetWidth, this._canvas.offsetHeight);
+    this.pixelRatio = pixelRatio;
+    this.renderer.setPixelRatio(1 / pixelRatio);
+    this.resize(this.canvas.offsetWidth, this.canvas.offsetHeight);
   }
 
   setFrameskip(frameskip: number): void {
-    this._frameskip = frameskip;
+    this.frameskip = frameskip;
   }
 
   setVertexCount(count: number): void {
-    this._uniforms.vertexCount.value = count;
+    this.uniforms.vertexCount.value = count;
   }
 
   setVertexMode(mode: string): void {
-    this._vertexMode = mode;
+    this.vertexMode = mode;
   }
 
   setFftSize(fftSize: number): void {
-    this._audioLoader.setFftSize(fftSize);
+    this.audioLoader.setFftSize(fftSize);
   }
 
   setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {
-    this._audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
+    this.audioLoader.setFftSmoothingTimeConstant(fftSmoothingTimeConstant);
   }
 
   setSoundLength(length: number): void {
-    this._soundRenderer.setLength(length);
+    this.soundRenderer.setLength(length);
   }
 
   resetTime(): void {
-    this._start = Date.now();
+    this.start = Date.now();
   }
 
   setCanvas(canvas: HTMLCanvasElement): void {
-    if (this._canvas) {
-      window.removeEventListener('mousemove', this._mousemove);
-      window.removeEventListener('mousedown', this._mousedown);
-      window.removeEventListener('mouseup', this._mouseup);
+    if (this.canvas) {
+      window.removeEventListener('mousemove', this.mousemove);
+      window.removeEventListener('mousedown', this.mousedown);
+      window.removeEventListener('mouseup', this.mouseup);
     }
 
-    this._canvas = canvas;
-    this._renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-    this._renderer.setPixelRatio(1 / this._pixelRatio);
+    this.canvas = canvas;
+    this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    this.renderer.setPixelRatio(1 / this.pixelRatio);
     this.resize(canvas.offsetWidth, canvas.offsetHeight);
-    window.addEventListener('mousemove', this._mousemove);
-    window.addEventListener('mousedown', this._mousedown);
-    window.addEventListener('mouseup', this._mouseup);
+    window.addEventListener('mousemove', this.mousemove);
+    window.addEventListener('mousedown', this.mousedown);
+    window.addEventListener('mouseup', this.mouseup);
 
-    this._frame = 0;
+    this.frame = 0;
     this.animate();
   }
 
-  _createPlane(fs?: string, vs?: string) {
+  private createPlane(fs?: string, vs?: string) {
     let plane;
     if (vs) {
       // Create an object for vertexMode
       const geometry = new THREE.BufferGeometry();
-      var vertices = new Float32Array(this._uniforms.vertexCount.value * 3);
+      var vertices = new Float32Array(this.uniforms.vertexCount.value * 3);
       geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
-      const vertexIds = new Float32Array(this._uniforms.vertexCount.value);
+      const vertexIds = new Float32Array(this.uniforms.vertexCount.value);
       vertexIds.forEach((_, i) => {
         vertexIds[i] = i;
       });
       geometry.addAttribute('vertexId', new THREE.BufferAttribute(vertexIds, 1));
 
       const material = new THREE.ShaderMaterial({
-        uniforms: this._uniforms,
+        uniforms: this.uniforms,
         vertexShader: vs,
         fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
         blending: THREE.AdditiveBlending,
@@ -236,18 +235,18 @@ export default class Veda {
         shaderTextureLOD: false,
       };
 
-      if (this._vertexMode === 'POINTS') {
+      if (this.vertexMode === 'POINTS') {
         plane = new THREE.Points(geometry, material);
-      } else if (this._vertexMode === 'LINE_LOOP') {
+      } else if (this.vertexMode === 'LINE_LOOP') {
         plane = new (THREE as any).LineLoop(geometry, material);
-      } else if (this._vertexMode === 'LINE_STRIP') {
+      } else if (this.vertexMode === 'LINE_STRIP') {
         plane = new THREE.Line(geometry, material);
-      } else if (this._vertexMode === 'LINES') {
+      } else if (this.vertexMode === 'LINES') {
         plane = new THREE.LineSegments(geometry, material);
-      } else if (this._vertexMode === 'TRI_STRIP') {
+      } else if (this.vertexMode === 'TRI_STRIP') {
         plane = new THREE.Mesh(geometry, material);
         plane.setDrawMode(THREE.TriangleStripDrawMode);
-      } else if (this._vertexMode === 'TRI_FAN') {
+      } else if (this.vertexMode === 'TRI_FAN') {
         plane = new THREE.Mesh(geometry, material);
         plane.setDrawMode(THREE.TriangleFanDrawMode);
       } else {
@@ -257,7 +256,7 @@ export default class Veda {
       // Create plane
       const geometry = new THREE.PlaneGeometry(2, 2);
       const material = new THREE.ShaderMaterial({
-        uniforms: this._uniforms,
+        uniforms: this.uniforms,
         vertexShader: DEFAULT_VERTEX_SHADER,
         fragmentShader: fs,
       });
@@ -273,8 +272,8 @@ export default class Veda {
     return plane;
   }
 
-  _createRenderPass(pass: Pass): RenderPass {
-    if (!this._canvas) {
+  private createRenderPass(pass: Pass): RenderPass {
+    if (!this.canvas) {
       throw new Error('Call setCanvas() before loading shaders');
     }
 
@@ -283,7 +282,7 @@ export default class Veda {
     camera.position.set(0, 0, 1);
     camera.lookAt(scene.position);
 
-    const plane = this._createPlane(pass.fs, pass.vs);
+    const plane = this.createPlane(pass.fs, pass.vs);
     scene.add(plane);
 
     let target: RenderPassTarget | null = null;
@@ -312,16 +311,16 @@ export default class Veda {
         getHeight,
         targets: [
           new THREE.WebGLRenderTarget(
-            this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
+            this.canvas.offsetWidth / this.pixelRatio, this.canvas.offsetHeight / this.pixelRatio,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
           new THREE.WebGLRenderTarget(
-            this._canvas.offsetWidth / this._pixelRatio, this._canvas.offsetHeight / this._pixelRatio,
+            this.canvas.offsetWidth / this.pixelRatio, this.canvas.offsetHeight / this.pixelRatio,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
           ),
         ],
       };
-      this._uniforms[targetName] = {
+      this.uniforms[targetName] = {
         type: 't',
         value: target.targets[0].texture,
       };
@@ -347,7 +346,7 @@ export default class Veda {
     }
 
     // Dispose old targets
-    this._passes.forEach(pass => {
+    this.passes.forEach(pass => {
       const target = pass.target;
       if (target) {
         target.targets[0].texture.dispose();
@@ -356,166 +355,166 @@ export default class Veda {
     });
 
     // Create new Passes
-    this._passes = passes.map(pass => {
+    this.passes = passes.map(pass => {
       if (!pass.fs && !pass.vs) {
         throw new TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
       }
-      return this._createRenderPass(pass);
+      return this.createRenderPass(pass);
     });
 
-    this._uniforms.FRAMEINDEX.value = 0;
+    this.uniforms.FRAMEINDEX.value = 0;
   }
 
   async loadTexture(name: string, textureUrl: string, speed: number = 1): Promise<void> {
     let texture;
     if (isVideo(textureUrl)) {
-      texture = this._videoLoader.load(name, textureUrl, speed);
+      texture = this.videoLoader.load(name, textureUrl, speed);
     } else if (isGif(textureUrl)) {
-      texture = this._gifLoader.load(name, textureUrl);
+      texture = this.gifLoader.load(name, textureUrl);
     } else if (isSound(textureUrl)) {
-      texture = await this._soundLoader.load(textureUrl);
+      texture = await this.soundLoader.load(textureUrl);
     } else {
-      texture = this._textureLoader.load(textureUrl);
+      texture = this.textureLoader.load(textureUrl);
     }
 
-    this._uniforms[name] = {
+    this.uniforms[name] = {
       type: 't',
       value: texture,
     };
   }
 
   unloadTexture(name: string, textureUrl: string, remove: boolean): void {
-    const texture = this._uniforms[name];
+    const texture = this.uniforms[name];
     texture.value.dispose();
 
     if (remove && isVideo(textureUrl)) {
-      this._videoLoader.unload(textureUrl);
+      this.videoLoader.unload(textureUrl);
     }
     if (remove && isGif(textureUrl)) {
-      this._gifLoader.unload(textureUrl);
+      this.gifLoader.unload(textureUrl);
     }
     if (remove && isSound(textureUrl)) {
-      this._soundLoader.unload(textureUrl);
+      this.soundLoader.unload(textureUrl);
     }
   }
 
   setUniform(name: string, type: UniformType, value: any) {
-    this._uniforms[name] = { type, value };
+    this.uniforms[name] = { type, value };
   }
 
-  _mousemove = (e: MouseEvent) => {
-    if (!this._canvas) { return; }
-    const rect = this._canvas.getBoundingClientRect();
+  private mousemove = (e: MouseEvent) => {
+    if (!this.canvas) { return; }
+    const rect = this.canvas.getBoundingClientRect();
     const root = document.documentElement;
     if (root) {
       const left = rect.top + root.scrollLeft;
       const top = rect.top + root.scrollTop;
-      this._uniforms.mouse.value.x = (e.pageX - left) / this._canvas.offsetWidth;
-      this._uniforms.mouse.value.y = 1 - (e.pageY - top) / this._canvas.offsetHeight;
+      this.uniforms.mouse.value.x = (e.pageX - left) / this.canvas.offsetWidth;
+      this.uniforms.mouse.value.y = 1 - (e.pageY - top) / this.canvas.offsetHeight;
     }
   }
 
-  _mousedown = (e: MouseEvent) => {
+  private mousedown = (e: MouseEvent) => {
     const b = e.buttons;
-    this._uniforms.mouseButtons.value = new THREE.Vector3((b >> 0) & 1, (b >> 1) & 1, (b >> 2) & 1);
+    this.uniforms.mouseButtons.value = new THREE.Vector3((b >> 0) & 1, (b >> 1) & 1, (b >> 2) & 1);
   }
 
-  _mouseup = this._mousedown
+  private mouseup = this.mousedown
 
   resize = (width: number, height: number) => {
-    if (!this._renderer) { return; }
-    this._renderer.setSize(width, height);
+    if (!this.renderer) { return; }
+    this.renderer.setSize(width, height);
 
-    const [bufferWidth, bufferHeight] = [width / this._pixelRatio, height / this._pixelRatio];
-    this._passes.forEach(p => {
+    const [bufferWidth, bufferHeight] = [width / this.pixelRatio, height / this.pixelRatio];
+    this.passes.forEach(p => {
       if (p.target) {
         p.target.targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
       }
     });
-    this._targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
-    this._uniforms.resolution.value.x = bufferWidth;
-    this._uniforms.resolution.value.y = bufferHeight;
+    this.targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
+    this.uniforms.resolution.value.x = bufferWidth;
+    this.uniforms.resolution.value.y = bufferHeight;
   }
 
   animate = () => {
-    this._frame++;
-    if (!this._isPlaying) {
+    this.frame++;
+    if (!this.isPlaying) {
       return;
     }
 
     requestAnimationFrame(this.animate);
-    if (this._frame % this._frameskip === 0) {
-      this._render();
+    if (this.frame % this.frameskip === 0) {
+      this.render();
     }
   }
 
   loadSoundShader(fs: string): void {
-    this._soundRenderer.loadShader(fs);
+    this.soundRenderer.loadShader(fs);
   }
 
   playSound(): void {
-    this._soundRenderer.play();
+    this.soundRenderer.play();
   }
 
   stopSound(): void {
-    this._soundRenderer.stop();
+    this.soundRenderer.stop();
   }
 
   play(): void {
-    this._isPlaying = true;
+    this.isPlaying = true;
     this.animate();
   }
 
   stop(): void {
-    this._isPlaying = false;
-    this._audioLoader.disable();
-    this._cameraLoader.disable();
-    this._keyLoader.disable();
-    this._midiLoader.disable();
-    this._gamepadLoader.disable();
+    this.isPlaying = false;
+    this.audioLoader.disable();
+    this.cameraLoader.disable();
+    this.keyLoader.disable();
+    this.midiLoader.disable();
+    this.gamepadLoader.disable();
   }
 
-  _render(): void {
-    if (!this._canvas || !this._renderer) {
+  private render(): void {
+    if (!this.canvas || !this.renderer) {
       return;
     }
-    const canvas = this._canvas;
-    const renderer = this._renderer;
+    const canvas = this.canvas;
+    const renderer = this.renderer;
 
-    this._uniforms.time.value = (Date.now() - this._start) / 1000;
-    this._targets = [this._targets[1], this._targets[0]];
-    this._uniforms.backbuffer.value = this._targets[0].texture;
+    this.uniforms.time.value = (Date.now() - this.start) / 1000;
+    this.targets = [this.targets[1], this.targets[0]];
+    this.uniforms.backbuffer.value = this.targets[0].texture;
 
-    this._gifLoader.update();
+    this.gifLoader.update();
 
-    if (this._audioLoader.isEnabled) {
-      this._audioLoader.update();
-      this._uniforms.volume.value = this._audioLoader.getVolume();
+    if (this.audioLoader.isEnabled) {
+      this.audioLoader.update();
+      this.uniforms.volume.value = this.audioLoader.getVolume();
     }
 
-    if (this._gamepadLoader.isEnabled) {
-      this._gamepadLoader.update();
+    if (this.gamepadLoader.isEnabled) {
+      this.gamepadLoader.update();
     }
 
-    this._passes.forEach((pass: RenderPass, i: number) => {
-      this._uniforms.PASSINDEX.value = i;
+    this.passes.forEach((pass: RenderPass, i: number) => {
+      this.uniforms.PASSINDEX.value = i;
 
       const target = pass.target;
       if (target) {
-        const $width = canvas.offsetWidth / this._pixelRatio;
-        const $height = canvas.offsetHeight / this._pixelRatio;
+        const $width = canvas.offsetWidth / this.pixelRatio;
+        const $height = canvas.offsetHeight / this.pixelRatio;
         target.targets[1].setSize(target.getWidth($width, $height), target.getHeight($width, $height));
         renderer.render(pass.scene, pass.camera, target.targets[1], true);
 
         // Swap buffers after render so that we can use the buffer in latter passes
         target.targets = [target.targets[1], target.targets[0]];
-        this._uniforms[target.name].value = target.targets[0].texture;
+        this.uniforms[target.name].value = target.targets[0].texture;
       } else {
         renderer.render(pass.scene, pass.camera, undefined);
       }
     });
 
-    const lastPass = this._passes[this._passes.length - 1];
+    const lastPass = this.passes[this.passes.length - 1];
 
     // Render last pass to canvas even if target is specified
     if (lastPass.target) {
@@ -523,75 +522,75 @@ export default class Veda {
     }
 
     // Render result to backbuffer
-    renderer.render(lastPass.scene, lastPass.camera, this._targets[1], true);
+    renderer.render(lastPass.scene, lastPass.camera, this.targets[1], true);
 
-    this._uniforms.FRAMEINDEX.value++;
+    this.uniforms.FRAMEINDEX.value++;
   }
 
   toggleAudio(flag: boolean): void {
     if (flag) {
-      this._audioLoader.enable();
-      this._uniforms = {
-        ...this._uniforms,
+      this.audioLoader.enable();
+      this.uniforms = {
+        ...this.uniforms,
         volume: { type: 'f', value: 0 },
-        spectrum: { type: 't', value: this._audioLoader.spectrum },
-        samples: { type: 't', value: this._audioLoader.samples },
+        spectrum: { type: 't', value: this.audioLoader.spectrum },
+        samples: { type: 't', value: this.audioLoader.samples },
       };
-    } else if (this._uniforms.spectrum) {
-      this._uniforms.spectrum.value.dispose();
-      this._uniforms.samples.value.dispose();
-      this._audioLoader.disable();
+    } else if (this.uniforms.spectrum) {
+      this.uniforms.spectrum.value.dispose();
+      this.uniforms.samples.value.dispose();
+      this.audioLoader.disable();
     }
   }
 
   toggleMidi(flag: boolean): void {
     if (flag) {
-      this._midiLoader.enable();
-      this._uniforms = {
-        ...this._uniforms,
-        midi: { type: 't', value: this._midiLoader.midiTexture },
-        note: { type: 't', value: this._midiLoader.noteTexture },
+      this.midiLoader.enable();
+      this.uniforms = {
+        ...this.uniforms,
+        midi: { type: 't', value: this.midiLoader.midiTexture },
+        note: { type: 't', value: this.midiLoader.noteTexture },
       };
-    } else if (this._uniforms.midi) {
-      this._uniforms.midi.value.dispose();
-      this._uniforms.note.value.dispose();
-      this._midiLoader.disable();
+    } else if (this.uniforms.midi) {
+      this.uniforms.midi.value.dispose();
+      this.uniforms.note.value.dispose();
+      this.midiLoader.disable();
     }
   }
 
   toggleCamera(flag: boolean): void {
     if (flag) {
-      this._cameraLoader.enable();
-      this._uniforms = {
-        ...this._uniforms,
-        camera: { type: 't', value: this._cameraLoader.texture },
+      this.cameraLoader.enable();
+      this.uniforms = {
+        ...this.uniforms,
+        camera: { type: 't', value: this.cameraLoader.texture },
       };
     } else {
-      this._cameraLoader.disable();
+      this.cameraLoader.disable();
     }
   }
 
   toggleKeyboard(flag: boolean): void {
     if (flag) {
-      this._keyLoader.enable();
-      this._uniforms = {
-        ...this._uniforms,
-        key: { type: 't', value: this._keyLoader.texture },
+      this.keyLoader.enable();
+      this.uniforms = {
+        ...this.uniforms,
+        key: { type: 't', value: this.keyLoader.texture },
       };
     } else {
-      this._keyLoader.disable();
+      this.keyLoader.disable();
     }
   }
 
   toggleGamepad(flag: boolean): void {
     if (flag) {
-      this._gamepadLoader.enable();
-      this._uniforms = {
-        ...this._uniforms,
-        gamepad: { type: 't', value: this._gamepadLoader.texture },
+      this.gamepadLoader.enable();
+      this.uniforms = {
+        ...this.uniforms,
+        gamepad: { type: 't', value: this.gamepadLoader.texture },
       };
     } else {
-      this._gamepadLoader.disable();
+      this.gamepadLoader.disable();
     }
   }
 }

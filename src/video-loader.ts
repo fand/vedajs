@@ -7,14 +7,14 @@ interface ICache {
 }
 
 export default class VideoLoader {
-  _cache: { [url: string]: ICache | null };
+  private cache: { [url: string]: ICache | null };
 
   constructor() {
-    this._cache = {};
+    this.cache = {};
   }
 
   load(name: string, url: string, speed: number): THREE.VideoTexture {
-    const cache = this._cache[url];
+    const cache = this.cache[url];
     if (cache) {
       cache.video.playbackRate = speed;
       return cache.texture;
@@ -37,16 +37,16 @@ export default class VideoLoader {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBAFormat;
 
-    this._cache[url] = { name, video, texture };
+    this.cache[url] = { name, video, texture };
 
     return texture;
   }
 
   unload(url: string): void {
-    const cache = this._cache[url];
+    const cache = this.cache[url];
     if (cache) {
       (document.body as any).removeChild(cache.video);
     }
-    this._cache[url] = null;
+    this.cache[url] = null;
   }
 }

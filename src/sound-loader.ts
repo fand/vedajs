@@ -4,14 +4,14 @@ import { getCtx } from './get-ctx';
 import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 export default class SoundLoader {
-  _cache: { [url: string]: THREE.DataTexture | null };
+  private cache: { [url: string]: THREE.DataTexture | null };
 
   constructor() {
-    this._cache = {};
+    this.cache = {};
   }
 
   load(url: string): Promise<THREE.DataTexture> {
-    const cache = this._cache[url];
+    const cache = this.cache[url];
     if (cache) {
       return Promise.resolve(cache);
     }
@@ -60,13 +60,13 @@ export default class SoundLoader {
         );
         texture.needsUpdate = true;
 
-        this._cache[url] = texture;
+        this.cache[url] = texture;
 
         return texture;
       });
   }
 
   unload(url: string): void {
-    this._cache[url] = null;
+    this.cache[url] = null;
   }
 }

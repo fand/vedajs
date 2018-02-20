@@ -1,25 +1,25 @@
 import * as THREE from 'three';
 
 export default class MidiLoader {
-  _midiArray: Uint8Array;
-  _noteArray: Uint8Array;
+  private midiArray: Uint8Array;
+  private noteArray: Uint8Array;
   midiTexture: THREE.DataTexture;
   noteTexture: THREE.DataTexture;
-  _isEnabled: boolean = false;
+  private isEnabled: boolean = false;
 
   constructor() {
-    this._midiArray = new Uint8Array(256 * 128);
-    this._noteArray = new Uint8Array(128);
+    this.midiArray = new Uint8Array(256 * 128);
+    this.noteArray = new Uint8Array(128);
 
     this.midiTexture = new THREE.DataTexture(
-      this._midiArray,
+      this.midiArray,
       256,
       128,
       THREE.LuminanceFormat,
       THREE.UnsignedByteType
     );
     this.noteTexture = new THREE.DataTexture(
-      this._noteArray,
+      this.noteArray,
       128,
       1,
       THREE.LuminanceFormat,
@@ -34,29 +34,29 @@ export default class MidiLoader {
   }
 
   onmidimessage = (midi: number[]): void => {
-    if (!this._isEnabled) {
+    if (!this.isEnabled) {
       return;
     }
 
     const offset = midi[0] + midi[1] * 256;
-    this._midiArray[offset] = midi[2];
+    this.midiArray[offset] = midi[2];
     this.midiTexture.needsUpdate = true;
 
     // note on
     if (0x90 <= midi[0] && midi[0] < 0xA0) {
-      this._noteArray[midi[1]] = midi[2] * 2; // Scale [0, 128) to [0, 256)
+      this.noteArray[midi[1]] = midi[2] * 2; // Scale [0, 128) to [0, 256)
       this.noteTexture.needsUpdate = true;
     }
 
     // note off
     if (0x80 <= midi[0] && midi[0] < 0x90) {
-      this._noteArray[midi[1]] = 0;
+      this.noteArray[midi[1]] = 0;
       this.noteTexture.needsUpdate = true;
     }
   }
 
   enable() {
-    this._isEnabled = true;
+    this.isEnabled = true;
 
     if (!navigator.requestMIDIAccess) {
       console.error('[VEDA] This browser doesn\'t support Web MIDI API.');
@@ -72,6 +72,6 @@ export default class MidiLoader {
   }
 
   disable() {
-    this._isEnabled = false;
+    this.isEnabled = false;
   }
 }

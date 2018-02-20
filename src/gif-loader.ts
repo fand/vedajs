@@ -8,15 +8,15 @@ interface ICache {
 }
 
 export default class GifLoader {
-  _cache: { [url: string]: ICache | null };
+  private cache: { [url: string]: ICache | null };
 
   constructor() {
-    this._cache = {};
+    this.cache = {};
   }
 
   update() {
-    Object.keys(this._cache).forEach(k => {
-      const cache = this._cache[k];
+    Object.keys(this.cache).forEach(k => {
+      const cache = this.cache[k];
       if (cache) {
         cache.texture.needsUpdate = true;
       }
@@ -24,7 +24,7 @@ export default class GifLoader {
   }
 
   load(name: string, url: string): THREE.Texture {
-    const cache = this._cache[url];
+    const cache = this.cache[url];
     if (cache) {
       return cache.texture;
     }
@@ -44,16 +44,16 @@ export default class GifLoader {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    this._cache[url] = { name, img, texture };
+    this.cache[url] = { name, img, texture };
 
     return texture;
   }
 
   unload(url: string): void {
-    const cache = this._cache[url];
+    const cache = this.cache[url];
     if (cache) {
       (document.body as any).removeChild(cache.img);
     }
-    this._cache[url] = null;
+    this.cache[url] = null;
   }
 }

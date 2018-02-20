@@ -43,115 +43,115 @@ type Uniforms = {
   }
 }
 export default class SoundRenderer {
-  _target: THREE.WebGLRenderTarget;
-  _scene: THREE.Scene | null = null;
-  _camera: THREE.Camera | null = null;
-  _renderer: THREE.WebGLRenderer;
-  _wctx: WebGLRenderingContext;
-  _uniforms: Uniforms;
-  _soundUniforms: Uniforms;
+  private target: THREE.WebGLRenderTarget;
+  private scene: THREE.Scene | null = null;
+  private camera: THREE.Camera | null = null;
+  private renderer: THREE.WebGLRenderer;
+  private wctx: WebGLRenderingContext;
+  private uniforms: Uniforms;
+  private soundUniforms: Uniforms;
 
-  _audioBuffer: AudioBuffer;
-  _ctx: AudioContext;
-  _node: AudioBufferSourceNode;
+  private audioBuffer: AudioBuffer;
+  private ctx: AudioContext;
+  private node: AudioBufferSourceNode;
 
-  _soundLength: number = 3;
-  _isPlaying: boolean = false;
-  _start: number;
-  _renderingId: number | null = null;
+  private soundLength: number = 3;
+  private isPlaying: boolean = false;
+  private start: number;
+  private renderingId: number | null = null;
 
   constructor(uniforms: Uniforms) {
-    this._ctx = getCtx();
-    this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
-    this._node = this._createNode();
-    this._start = this._ctx.currentTime;
+    this.ctx = getCtx();
+    this.audioBuffer = this.ctx.createBuffer(2, this.ctx.sampleRate * this.soundLength, this.ctx.sampleRate);
+    this.node = this.createNode();
+    this.start = this.ctx.currentTime;
 
     const canvas = document.createElement('canvas');
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
-    this._renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-    this._wctx = this._renderer.getContext();
-    this._target = new THREE.WebGLRenderTarget(WIDTH, HEIGHT, { format: THREE.RGBAFormat });
+    this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    this.wctx = this.renderer.getContext();
+    this.target = new THREE.WebGLRenderTarget(WIDTH, HEIGHT, { format: THREE.RGBAFormat });
 
-    this._uniforms = uniforms;
-    this._soundUniforms = {
+    this.uniforms = uniforms;
+    this.soundUniforms = {
       iBlockOffset: { type: 'f', value: 0.0 },
-      iSampleRate: { type: 'f', value: this._ctx.sampleRate },
+      iSampleRate: { type: 'f', value: this.ctx.sampleRate },
     };
   }
 
-  _createNode(): AudioBufferSourceNode {
-    const node = this._ctx.createBufferSource();
+  private createNode(): AudioBufferSourceNode {
+    const node = this.ctx.createBufferSource();
     node.loop = true;
-    node.buffer = this._audioBuffer;
-    node.connect(this._ctx.destination);
+    node.buffer = this.audioBuffer;
+    node.connect(this.ctx.destination);
     return node;
   }
 
   setLength(length: number) {
-    this._soundLength = length;
-    this._audioBuffer = this._ctx.createBuffer(2, this._ctx.sampleRate * this._soundLength, this._ctx.sampleRate);
-    const node = this._createNode();
+    this.soundLength = length;
+    this.audioBuffer = this.ctx.createBuffer(2, this.ctx.sampleRate * this.soundLength, this.ctx.sampleRate);
+    const node = this.createNode();
 
-    this._start = this._ctx.currentTime;
+    this.start = this.ctx.currentTime;
 
-    if (this._isPlaying) {
-      this._node.stop();
+    if (this.isPlaying) {
+      this.node.stop();
       node.start();
     }
-    this._node.disconnect();
-    this._node = node;
+    this.node.disconnect();
+    this.node = node;
   }
 
   loadShader(fs: string) {
     const fragmentShader = createShader(fs, WIDTH);
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.ShaderMaterial({
-      uniforms: { ...this._uniforms, ...this._soundUniforms },
+      uniforms: { ...this.uniforms, ...this.soundUniforms },
       fragmentShader,
     });
     const plane = new THREE.Mesh(geometry, material);
-    this._scene = new THREE.Scene();
-    this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-    this._camera.position.set(0, 0, 1);
-    this._camera.lookAt(this._scene.position);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    this.camera.position.set(0, 0, 1);
+    this.camera.lookAt(this.scene.position);
 
-    this._scene.add(plane);
+    this.scene.add(plane);
   }
 
   play() {
-    if (!this._isPlaying) {
-      this._isPlaying = true;
-      this._node.start();
-      this._start = this._ctx.currentTime;
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      this.node.start();
+      this.start = this.ctx.currentTime;
     }
     this.render();
   }
 
   stop() {
-    this._isPlaying = false;
+    this.isPlaying = false;
 
     // Destroy old node
-    this._node.stop();
-    this._node.disconnect();
+    this.node.stop();
+    this.node.disconnect();
 
     // Create new node
-    this._node = this._createNode();
+    this.node = this.createNode();
   }
 
   render = () => {
-    if (this._renderingId) {
-      window.cancelAnimationFrame(this._renderingId);
+    if (this.renderingId) {
+      window.cancelAnimationFrame(this.renderingId);
     }
 
-    const outputDataL = this._audioBuffer.getChannelData(0);
-    const outputDataR = this._audioBuffer.getChannelData(1);
+    const outputDataL = this.audioBuffer.getChannelData(0);
+    const outputDataR = this.audioBuffer.getChannelData(1);
 
-    const allPixels = this._ctx.sampleRate * this._soundLength;
+    const allPixels = this.ctx.sampleRate * this.soundLength;
     const numBlocks = allPixels / PIXELS;
 
-    const timeOffset = (this._ctx.currentTime - this._start) % this._soundLength;
-    let pixelsForTimeOffset = timeOffset * this._ctx.sampleRate;
+    const timeOffset = (this.ctx.currentTime - this.start) % this.soundLength;
+    let pixelsForTimeOffset = timeOffset * this.ctx.sampleRate;
     pixelsForTimeOffset -= pixelsForTimeOffset % PIXELS;
 
     let j = 0;
@@ -159,12 +159,12 @@ export default class SoundRenderer {
       const off = (j * PIXELS + pixelsForTimeOffset) % allPixels;
 
       // Update uniform
-      this._soundUniforms.iBlockOffset.value = off / this._ctx.sampleRate;
-      this._renderer.render(this._scene as any, this._camera as any, this._target, true);
+      this.soundUniforms.iBlockOffset.value = off / this.ctx.sampleRate;
+      this.renderer.render(this.scene as any, this.camera as any, this.target, true);
 
       // Get pixels
       const pixels = new Uint8Array(PIXELS * 4);
-      this._wctx.readPixels(0, 0, WIDTH, HEIGHT, this._wctx.RGBA, this._wctx.UNSIGNED_BYTE, pixels);
+      this.wctx.readPixels(0, 0, WIDTH, HEIGHT, this.wctx.RGBA, this.wctx.UNSIGNED_BYTE, pixels);
 
       for (let i = 0; i < PIXELS; i++) {
         const ii = (off + i) % allPixels;
@@ -174,12 +174,12 @@ export default class SoundRenderer {
 
       j++;
       if (j < numBlocks) {
-        this._renderingId = requestAnimationFrame(renderOnce);
+        this.renderingId = requestAnimationFrame(renderOnce);
       } else {
-        this._renderingId = null;
+        this.renderingId = null;
       }
     };
 
-    this._renderingId = requestAnimationFrame(renderOnce);
+    this.renderingId = requestAnimationFrame(renderOnce);
   }
 }
