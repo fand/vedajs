@@ -1,54 +1,54 @@
 import * as THREE from 'three';
 
 interface ICache {
-  name: string;
-  img: HTMLImageElement;
-  texture: THREE.Texture;
+    name: string;
+    img: HTMLImageElement;
+    texture: THREE.Texture;
 }
 
 export default class GifLoader {
-  private cache: { [url: string]: ICache | null } = {};
+    private cache: { [url: string]: ICache | null } = {};
 
-  update() {
-    Object.keys(this.cache).forEach(k => {
-      const cache = this.cache[k];
-      if (cache) {
-        cache.texture.needsUpdate = true;
-      }
-    });
-  }
-
-  load(name: string, url: string): THREE.Texture {
-    const cache = this.cache[url];
-    if (cache) {
-      return cache.texture;
+    update() {
+        Object.keys(this.cache).forEach(k => {
+            const cache = this.cache[k];
+            if (cache) {
+                cache.texture.needsUpdate = true;
+            }
+        });
     }
 
-    const img = document.createElement('img');
-    (document.body as any).appendChild(img);
+    load(name: string, url: string): THREE.Texture {
+        const cache = this.cache[url];
+        if (cache) {
+            return cache.texture;
+        }
 
-    img.classList.add('veda-video-source');
-    img.style.position = 'fixed';
-    img.style.top = '99.99999%';
-    img.style.width = '1px';
-    img.style.height = '1px';
-    img.src = url;
+        const img = document.createElement('img');
+        (document.body as any).appendChild(img);
 
-    const texture = new THREE.Texture(img);
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.format = THREE.RGBFormat;
+        img.classList.add('veda-video-source');
+        img.style.position = 'fixed';
+        img.style.top = '99.99999%';
+        img.style.width = '1px';
+        img.style.height = '1px';
+        img.src = url;
 
-    this.cache[url] = { name, img, texture };
+        const texture = new THREE.Texture(img);
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
 
-    return texture;
-  }
+        this.cache[url] = { name, img, texture };
 
-  unload(url: string): void {
-    const cache = this.cache[url];
-    if (cache) {
-      (document.body as any).removeChild(cache.img);
+        return texture;
     }
-    this.cache[url] = null;
-  }
+
+    unload(url: string): void {
+        const cache = this.cache[url];
+        if (cache) {
+            (document.body as any).removeChild(cache.img);
+        }
+        this.cache[url] = null;
+    }
 }

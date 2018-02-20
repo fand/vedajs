@@ -1,52 +1,52 @@
 import * as THREE from 'three';
 
 export default class GamepadLoader {
-  texture: THREE.DataTexture;
-  private array: Uint8Array;
-  private isConnected: boolean = false;
-  isEnabled: boolean = false;
+    texture: THREE.DataTexture;
+    private array: Uint8Array;
+    private isConnected: boolean = false;
+    isEnabled: boolean = false;
 
-  constructor() {
-    this.array = new Uint8Array(128 * 2);
-    this.texture = new THREE.DataTexture(
-      this.array,
-      128,
-      2,
-      THREE.LuminanceFormat,
-      THREE.UnsignedByteType
-    );
+    constructor() {
+        this.array = new Uint8Array(128 * 2);
+        this.texture = new THREE.DataTexture(
+            this.array,
+            128,
+            2,
+            THREE.LuminanceFormat,
+            THREE.UnsignedByteType
+        );
 
-    window.addEventListener('gamepadconnected', () => {
-      this.isConnected = true;
-    });
-  }
-
-  update(): void {
-    if (!this.isConnected) {
-      return;
+        window.addEventListener('gamepadconnected', () => {
+            this.isConnected = true;
+        });
     }
 
-    Array.from(navigator.getGamepads()).forEach((gamepad: any) => {
-      if (!gamepad) {
-        return;
-      }
-      gamepad.buttons.forEach((button: any, i: number) => {
-        this.array[i] = button.pressed ? 255 : 0;
-      });
-      gamepad.axes.forEach((axis: any, i: number) => {
-        this.array[i + 128] = axis * 128 + 128;
-      });
-    });
+    update(): void {
+        if (!this.isConnected) {
+            return;
+        }
 
-    this.texture.needsUpdate = true;
-  }
+        Array.from(navigator.getGamepads()).forEach((gamepad: any) => {
+            if (!gamepad) {
+                return;
+            }
+            gamepad.buttons.forEach((button: any, i: number) => {
+                this.array[i] = button.pressed ? 255 : 0;
+            });
+            gamepad.axes.forEach((axis: any, i: number) => {
+                this.array[i + 128] = axis * 128 + 128;
+            });
+        });
 
-  enable() {
-    this.isEnabled = true;
-  }
+        this.texture.needsUpdate = true;
+    }
 
-  disable() {
-    this.isEnabled = false;
-    this.texture.dispose();
-  }
+    enable() {
+        this.isEnabled = true;
+    }
+
+    disable() {
+        this.isEnabled = false;
+        this.texture.dispose();
+    }
 }
