@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
 export default class CameraLoader {
+    texture: THREE.VideoTexture;
     private video: HTMLVideoElement;
     private stream: any;
-    texture: THREE.VideoTexture;
     private willPlay: Promise<any> | null = null;
 
     constructor() {

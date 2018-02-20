@@ -1,32 +1,46 @@
 import * as THREE from 'three';
 import AudioLoader from './audio-loader';
-import MidiLoader from './midi-loader';
-import VideoLoader from './video-loader';
-import GifLoader from './gif-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
+import GifLoader from './gif-loader';
 import KeyLoader from './key-loader';
+import MidiLoader from './midi-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
+import VideoLoader from './video-loader';
+
 import isVideo from 'is-video';
 import {
-    DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER, DEFAULT_VEDA_OPTIONS,
-    VedaOptions, UniformType, Uniforms, Pass, Shader
+    DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER, DEFAULT_VEDA_OPTIONS,
+    IVedaOptions, UniformType, IUniforms, IPass, IShader,
 } from './constants';
 
-type RenderPassTarget = {
+interface IRenderPassTarget {
     name: string;
     targets: THREE.WebGLRenderTarget[];
     getWidth: ($WIDTH: number, $HEIGHT: number) => any;
     getHeight: ($WIDTH: number, $HEIGHT: number) => any;
 }
-type RenderPass = {
+
+interface IRenderPass {
     scene: THREE.Scene;
     camera: THREE.Camera;
-    target: RenderPassTarget | null;
+    target: IRenderPassTarget | null;
 }
+
 const isGif = (file: string) => file.match(/\.gif$/i);
 const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);
+
+const createTarget = (width: number, height: number, textureType: THREE.TextureDataType) => {
+    return new THREE.WebGLRenderTarget(width, height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat,
+        type: textureType,
+    });
+};
+
+type WidthHeightFunc = (w: number, _: number) => number;
 
 export default class Veda {
     private pixelRatio: number;
@@ -35,7 +49,7 @@ export default class Veda {
     private isPlaying: boolean = false;
     private frame: number = 0;
 
-    private passes: RenderPass[];
+    private passes: IRenderPass[];
 
     private renderer: THREE.WebGLRenderer | null = null;
     private canvas: HTMLCanvasElement | null = null;
@@ -50,15 +64,15 @@ export default class Veda {
     private videoLoader: VideoLoader;
     private gifLoader: GifLoader;
     private soundLoader: SoundLoader;
-    private uniforms: Uniforms;
+    private uniforms: IUniforms;
     private soundRenderer: SoundRenderer;
 
     private vertexMode: string;
 
-    constructor(_rc: VedaOptions) {
+    constructor(rcOpt: IVedaOptions) {
         const rc = {
             ...DEFAULT_VEDA_OPTIONS,
-            ..._rc,
+            ...rcOpt,
         };
 
         this.pixelRatio = rc.pixelRatio;
@@ -71,11 +85,11 @@ export default class Veda {
         this.targets = [
             new THREE.WebGLRenderTarget(
                 0, 0,
-                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat },
             ),
             new THREE.WebGLRenderTarget(
                 0, 0,
-                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat }
+                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat },
             ),
         ];
 
@@ -94,14 +108,14 @@ export default class Veda {
         // Prepare uniforms
         this.start = Date.now();
         this.uniforms = {
+            FRAMEINDEX: { type: 'i', value: 0 },
+            PASSINDEX: { type: 'i', value: 0 },
             backbuffer: { type: 't', value: new THREE.Texture() },
             mouse: { type: 'v2', value: new THREE.Vector2() },
             mouseButtons: { type: 'v3', value: new THREE.Vector3() },
             resolution: { type: 'v2', value: new THREE.Vector2() },
             time: { type: 'f', value: 0.0 },
             vertexCount: { type: 'f', value: rc.vertexCount },
-            PASSINDEX: { type: 'i', value: 0 },
-            FRAMEINDEX: { type: 'i', value: 0 },
         };
 
         this.soundRenderer = new SoundRenderer(this.uniforms);
@@ -169,7 +183,7 @@ export default class Veda {
         if (vs) {
             // Create an object for vertexMode
             const geometry = new THREE.BufferGeometry();
-            var vertices = new Float32Array(this.uniforms.vertexCount.value * 3);
+            const vertices = new Float32Array(this.uniforms.vertexCount.value * 3);
             geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
             const vertexIds = new Float32Array(this.uniforms.vertexCount.value);
             vertexIds.forEach((_, i) => {
@@ -178,18 +192,18 @@ export default class Veda {
             geometry.addAttribute('vertexId', new THREE.BufferAttribute(vertexIds, 1));
 
             const material = new THREE.ShaderMaterial({
-                uniforms: this.uniforms,
                 vertexShader: vs,
                 fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
                 blending: THREE.AdditiveBlending,
                 depthTest: true,
                 transparent: true,
+                uniforms: this.uniforms,
             });
             material.side = THREE.DoubleSide;
             material.extensions = {
                 derivatives: false,
-                fragDepth: false,
                 drawBuffers: false,
+                fragDepth: false,
                 shaderTextureLOD: false,
             };
 
@@ -214,9 +228,9 @@ export default class Veda {
             // Create plane
             const geometry = new THREE.PlaneGeometry(2, 2);
             const material = new THREE.ShaderMaterial({
-                uniforms: this.uniforms,
                 vertexShader: DEFAULT_VERTEX_SHADER,
                 fragmentShader: fs,
+                uniforms: this.uniforms,
             });
             material.extensions = {
                 derivatives: true,
@@ -230,7 +244,7 @@ export default class Veda {
         return plane;
     }
 
-    private createRenderPass(pass: Pass): RenderPass {
+    private createRenderPass(pass: IPass): IRenderPass {
         if (!this.canvas) {
             throw new Error('Call setCanvas() before loading shaders');
         }
@@ -243,7 +257,7 @@ export default class Veda {
         const plane = this.createPlane(pass.fs, pass.vs);
         scene.add(plane);
 
-        let target: RenderPassTarget | null = null;
+        let target: IRenderPassTarget | null = null;
         if (pass.TARGET) {
             const targetName = pass.TARGET;
             const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
@@ -253,30 +267,24 @@ export default class Veda {
             if (pass.WIDTH) {
                 try {
                     // eslint-disable-next-line no-new-func
-                    getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`) as (w: number, _: number) => number;
+                    getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`) as WidthHeightFunc;
                 } catch (e) {}
             }
             if (pass.HEIGHT) {
                 try {
                     // eslint-disable-next-line no-new-func
-                    getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`) as (w: number, _: number) => number;
+                    getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`) as WidthHeightFunc;
                 } catch (e) {}
             }
+
+            const w = this.canvas.offsetWidth / this.pixelRatio;
+            const h = this.canvas.offsetHeight / this.pixelRatio;
 
             target = {
                 name: targetName,
                 getWidth,
                 getHeight,
-                targets: [
-                    new THREE.WebGLRenderTarget(
-                        this.canvas.offsetWidth / this.pixelRatio, this.canvas.offsetHeight / this.pixelRatio,
-                        { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
-                    ),
-                    new THREE.WebGLRenderTarget(
-                        this.canvas.offsetWidth / this.pixelRatio, this.canvas.offsetHeight / this.pixelRatio,
-                        { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: textureType }
-                    ),
-                ],
+                targets: [createTarget(w, h, textureType), createTarget(w, h, textureType)],
             };
             this.uniforms[targetName] = {
                 type: 't',
@@ -295,7 +303,7 @@ export default class Veda {
         this.loadShader([{ vs }]);
     }
 
-    loadShader(shader: Shader): void {
+    loadShader(shader: IShader): void {
         let passes;
         if (shader instanceof Array) {
             passes = shader;
@@ -377,7 +385,7 @@ export default class Veda {
         this.uniforms.mouseButtons.value = new THREE.Vector3((b >> 0) & 1, (b >> 1) & 1, (b >> 2) & 1);
     }
 
-    private mouseup = this.mousedown
+    private mouseup = this.mousedown;
 
     resize = (width: number, height: number) => {
         if (!this.renderer) { return; }
@@ -454,7 +462,7 @@ export default class Veda {
             this.gamepadLoader.update();
         }
 
-        this.passes.forEach((pass: RenderPass, i: number) => {
+        this.passes.forEach((pass: IRenderPass, i: number) => {
             this.uniforms.PASSINDEX.value = i;
 
             const target = pass.target;

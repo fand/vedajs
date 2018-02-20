@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import { SAMPLE_HEIGHT, SAMPLE_WIDTH } from './constants';
 import { getCtx } from './get-ctx';
-import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 export default class SoundLoader {
     private cache: { [url: string]: THREE.DataTexture | null } = {};
@@ -51,7 +51,7 @@ export default class SoundLoader {
                 array,
                 SAMPLE_WIDTH,
                 SAMPLE_HEIGHT,
-                THREE.RGBAFormat
+                THREE.RGBAFormat,
             );
             texture.needsUpdate = true;
 

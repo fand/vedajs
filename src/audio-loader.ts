@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
 
-export type AudioOptions = {
+export interface IAudioOptions {
     fftSize?: number;
     fftSmoothingTimeConstant?: number;
 }
@@ -12,15 +12,15 @@ const DEFAULT_AUDIO_OPTIONS = {
 };
 
 export default class AudioLoader {
-    private ctx: AudioContext;
-    private gain: GainNode;
-    private analyser: AnalyserNode;
-    private input: MediaStreamAudioSourceNode | null = null;
-
     spectrum: THREE.DataTexture;
     samples: THREE.DataTexture;
     isPlaying: boolean = false;
     isEnabled: boolean = false;
+
+    private ctx: AudioContext;
+    private gain: GainNode;
+    private analyser: AnalyserNode;
+    private input: MediaStreamAudioSourceNode | null = null;
 
     private spectrumArray: Uint8ClampedArray;
     private samplesArray: Uint8ClampedArray;
@@ -28,10 +28,10 @@ export default class AudioLoader {
 
     private willPlay: Promise<any> | null = null;
 
-    constructor(_rc: AudioOptions) {
+    constructor(rcOpt: IAudioOptions) {
         const rc = {
             ...DEFAULT_AUDIO_OPTIONS,
-            ..._rc,
+            ...rcOpt,
         };
 
         this.ctx = getCtx();
@@ -51,14 +51,14 @@ export default class AudioLoader {
             this.analyser.frequencyBinCount,
             1,
             THREE.LuminanceFormat,
-            THREE.UnsignedByteType
+            THREE.UnsignedByteType,
         );
         this.samples = new THREE.DataTexture(
             this.samplesArray,
             this.analyser.frequencyBinCount,
             1,
             THREE.LuminanceFormat,
-            THREE.UnsignedByteType
+            THREE.UnsignedByteType,
         );
     }
 
@@ -66,7 +66,7 @@ export default class AudioLoader {
         this.willPlay = new Promise<void>((resolve, reject) => {
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 this.stream = stream;
-                this.input = (this.ctx.createMediaStreamSource as (s: MediaStream) => MediaStreamAudioSourceNode)(stream);
+                this.input = (this.ctx.createMediaStreamSource as (s: any) => MediaStreamAudioSourceNode)(stream);
                 this.input.connect(this.analyser);
                 this.isEnabled = true;
                 resolve();

@@ -1,8 +1,8 @@
-let _ctx: AudioContext;
+let ctx: AudioContext;
 
 export const getCtx = () => {
-    if (!_ctx) {
-        _ctx = new (AudioContext || (window as any).webkitAudioContext)();
+    if (!ctx) {
+        ctx = new (AudioContext || (window as any).webkitAudioContext)();
     }
-    return _ctx;
+    return ctx;
 };

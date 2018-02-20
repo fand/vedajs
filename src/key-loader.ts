@@ -11,7 +11,7 @@ export default class KeyLoader {
             256,
             1,
             THREE.LuminanceFormat,
-            THREE.UnsignedByteType
+            THREE.UnsignedByteType,
         );
     }
 

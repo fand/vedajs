@@ -2,9 +2,9 @@ import * as THREE from 'three';
 
 export default class GamepadLoader {
     texture: THREE.DataTexture;
+    isEnabled: boolean = false;
     private array: Uint8Array;
     private isConnected: boolean = false;
-    isEnabled: boolean = false;
 
     constructor() {
         this.array = new Uint8Array(128 * 2);
@@ -13,7 +13,7 @@ export default class GamepadLoader {
             128,
             2,
             THREE.LuminanceFormat,
-            THREE.UnsignedByteType
+            THREE.UnsignedByteType,
         );
 
         window.addEventListener('gamepadconnected', () => {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import { IUniforms, SAMPLE_HEIGHT, SAMPLE_WIDTH } from './constants';
 import { getCtx } from './get-ctx';
-import { SAMPLE_WIDTH, SAMPLE_HEIGHT, Uniforms } from './constants';
 
 const WIDTH = 32;
 const HEIGHT = 64;
@@ -41,8 +41,8 @@ export default class SoundRenderer {
     private camera: THREE.Camera | null = null;
     private renderer: THREE.WebGLRenderer;
     private wctx: WebGLRenderingContext;
-    private uniforms: Uniforms;
-    private soundUniforms: Uniforms;
+    private uniforms: IUniforms;
+    private soundUniforms: IUniforms;
 
     private audioBuffer: AudioBuffer;
     private ctx: AudioContext;
@@ -53,7 +53,7 @@ export default class SoundRenderer {
     private start: number;
     private renderingId: number | null = null;
 
-    constructor(uniforms: Uniforms) {
+    constructor(uniforms: IUniforms) {
         this.ctx = getCtx();
         this.audioBuffer = this.ctx.createBuffer(2, this.ctx.sampleRate * this.soundLength, this.ctx.sampleRate);
         this.node = this.createNode();
@@ -71,14 +71,6 @@ export default class SoundRenderer {
             iBlockOffset: { type: 'f', value: 0.0 },
             iSampleRate: { type: 'f', value: this.ctx.sampleRate },
         };
-    }
-
-    private createNode(): AudioBufferSourceNode {
-        const node = this.ctx.createBufferSource();
-        node.loop = true;
-        node.buffer = this.audioBuffer;
-        node.connect(this.ctx.destination);
-        return node;
     }
 
     setLength(length: number) {
@@ -100,8 +92,8 @@ export default class SoundRenderer {
         const fragmentShader = createShader(fs, WIDTH);
         const geometry = new THREE.PlaneGeometry(2, 2);
         const material = new THREE.ShaderMaterial({
-            uniforms: { ...this.uniforms, ...this.soundUniforms },
             fragmentShader,
+            uniforms: { ...this.uniforms, ...this.soundUniforms },
         });
         const plane = new THREE.Mesh(geometry, material);
         this.scene = new THREE.Scene();
@@ -174,5 +166,13 @@ export default class SoundRenderer {
         };
 
         this.renderingId = requestAnimationFrame(renderOnce);
+    }
+
+    private createNode(): AudioBufferSourceNode {
+        const node = this.ctx.createBufferSource();
+        node.loop = true;
+        node.buffer = this.audioBuffer;
+        node.connect(this.ctx.destination);
+        return node;
     }
 }

@@ -27,7 +27,7 @@ export type UniformType = (
     'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
 );
 
-export type VedaOptions = {
+export interface IVedaOptions {
     pixelRatio?: number;
     frameskip?: number;
     vertexMode?: string;
@@ -37,13 +37,13 @@ export type VedaOptions = {
 }
 
 export const DEFAULT_VEDA_OPTIONS = {
-    pixelRatio: 1,
     frameskip: 1,
+    pixelRatio: 1,
     vertexCount: 3000,
     vertexMode: 'TRIANGLES',
 };
 
-export type Pass = {
+export interface IPass {
     TARGET?: string;
     vs?: string;
     fs?: string;
@@ -52,11 +52,11 @@ export type Pass = {
     HEIGHT?: string;
 }
 
-export type Shader = Pass | Pass[]
+export type IShader = IPass | IPass[];
 
-export type Uniforms = {
+export interface IUniforms {
     [key: string]: {
         type: string;
         value: any;
-    }
+    };
 }
