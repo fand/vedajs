@@ -7,11 +7,7 @@ interface ICache {
 }
 
 export default class VideoLoader {
-  private cache: { [url: string]: ICache | null };
-
-  constructor() {
-    this.cache = {};
-  }
+  private cache: { [url: string]: ICache | null } = {};
 
   load(name: string, url: string, speed: number): THREE.VideoTexture {
     const cache = this.cache[url];

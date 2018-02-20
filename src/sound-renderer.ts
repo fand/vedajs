@@ -1,7 +1,6 @@
-/* @flow */
 import * as THREE from 'three';
-import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 import { getCtx } from './get-ctx';
+import { SAMPLE_WIDTH, SAMPLE_HEIGHT, Uniforms } from './constants';
 
 const WIDTH = 32;
 const HEIGHT = 64;
@@ -36,12 +35,6 @@ void main(){
   gl_FragColor = vec4(vh.x, vl.x, vh.y, vl.y);
 }`;
 
-export type Uniforms = {
-  [key: string]: {
-    type: string;
-    value: any;
-  }
-}
 export default class SoundRenderer {
   private target: THREE.WebGLRenderTarget;
   private scene: THREE.Scene | null = null;

@@ -1,4 +1,3 @@
-/* @flow */
 import * as THREE from 'three';
 
 interface ICache {
@@ -8,11 +7,7 @@ interface ICache {
 }
 
 export default class GifLoader {
-  private cache: { [url: string]: ICache | null };
-
-  constructor() {
-    this.cache = {};
-  }
+  private cache: { [url: string]: ICache | null } = {};
 
   update() {
     Object.keys(this.cache).forEach(k => {

@@ -9,35 +9,10 @@ import KeyLoader from './key-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import isVideo from 'is-video';
-import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
-
-// ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
-export type UniformType = (
-  '1i' | '1f' | '2f' | '3f' |
-  '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
-  'Matrix3fv' | 'Matric4fv' |
-  'i' | 'f' |
-  'v2' | 'v3' | 'v4' |
-  'c' | 'm4' | 't' |
-  'iv1' | 'iv' | 'fv1' | 'fv' |
-  'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
-);
-
-export type VedaOptions = {
-  pixelRatio?: number;
-  frameskip?: number;
-  vertexMode?: string;
-  vertexCount?: number;
-  fftSize?: number;
-  fftSmoothingTimeConstant?: number;
-}
-
-const DEFAULT_VEDA_OPTIONS = {
-  pixelRatio: 1,
-  frameskip: 1,
-  vertexCount: 3000,
-  vertexMode: 'TRIANGLES',
-};
+import {
+  DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER, DEFAULT_VEDA_OPTIONS,
+  VedaOptions, UniformType, Uniforms, Pass, Shader
+} from './constants';
 
 type RenderPassTarget = {
   name: string;
@@ -50,23 +25,6 @@ type RenderPass = {
   camera: THREE.Camera;
   target: RenderPassTarget | null;
 }
-export type Pass = {
-  TARGET?: string;
-  vs?: string;
-  fs?: string;
-  FLOAT?: boolean;
-  WIDTH?: string;
-  HEIGHT?: string;
-}
-type Uniforms = {
-  [key: string]: {
-    type: string;
-    value: any;
-  }
-}
-
-export type Shader = Pass | Pass[]
-
 const isGif = (file: string) => file.match(/\.gif$/i);
 const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);
 

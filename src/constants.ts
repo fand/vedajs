@@ -14,3 +14,49 @@ void main() {
 
 export const SAMPLE_WIDTH = 1280;
 export const SAMPLE_HEIGHT = 720;
+
+// ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
+export type UniformType = (
+  '1i' | '1f' | '2f' | '3f' |
+  '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
+  'Matrix3fv' | 'Matric4fv' |
+  'i' | 'f' |
+  'v2' | 'v3' | 'v4' |
+  'c' | 'm4' | 't' |
+  'iv1' | 'iv' | 'fv1' | 'fv' |
+  'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
+);
+
+export type VedaOptions = {
+  pixelRatio?: number;
+  frameskip?: number;
+  vertexMode?: string;
+  vertexCount?: number;
+  fftSize?: number;
+  fftSmoothingTimeConstant?: number;
+}
+
+export const DEFAULT_VEDA_OPTIONS = {
+  pixelRatio: 1,
+  frameskip: 1,
+  vertexCount: 3000,
+  vertexMode: 'TRIANGLES',
+};
+
+export type Pass = {
+  TARGET?: string;
+  vs?: string;
+  fs?: string;
+  FLOAT?: boolean;
+  WIDTH?: string;
+  HEIGHT?: string;
+}
+
+export type Shader = Pass | Pass[]
+
+export type Uniforms = {
+  [key: string]: {
+    type: string;
+    value: any;
+  }
+}

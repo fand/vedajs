@@ -1,14 +1,9 @@
-/* @flow */
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
 import { SAMPLE_WIDTH, SAMPLE_HEIGHT } from './constants';
 
 export default class SoundLoader {
-  private cache: { [url: string]: THREE.DataTexture | null };
-
-  constructor() {
-    this.cache = {};
-  }
+  private cache: { [url: string]: THREE.DataTexture | null } = {};
 
   load(url: string): Promise<THREE.DataTexture> {
     const cache = this.cache[url];
