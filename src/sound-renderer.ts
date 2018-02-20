@@ -36,7 +36,7 @@ void main(){
   gl_FragColor = vec4(vh.x, vl.x, vh.y, vl.y);
 }`;
 
-type Uniforms = {
+export type Uniforms = {
   [key: string]: {
     type: string;
     value: any;

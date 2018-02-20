@@ -12,7 +12,7 @@ import isVideo from 'is-video';
 import { DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER } from './constants';
 
 // ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
-type UniformType = (
+export type UniformType = (
   '1i' | '1f' | '2f' | '3f' |
   '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
   'Matrix3fv' | 'Matric4fv' |
@@ -23,7 +23,7 @@ type UniformType = (
   'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
 );
 
-type VedaOptions = {
+export type VedaOptions = {
   pixelRatio?: number;
   frameskip?: number;
   vertexMode?: string;
@@ -50,7 +50,7 @@ type RenderPass = {
   camera: THREE.Camera;
   target: RenderPassTarget | null;
 }
-type Pass = {
+export type Pass = {
   TARGET?: string;
   vs?: string;
   fs?: string;
@@ -65,7 +65,7 @@ type Uniforms = {
   }
 }
 
-type Shader = Pass | Pass[]
+export type Shader = Pass | Pass[]
 
 const isGif = (file: string) => file.match(/\.gif$/i);
 const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getCtx } from './get-ctx';
 
-type AudioOptions = {
+export type AudioOptions = {
   fftSize?: number;
   fftSmoothingTimeConstant?: number;
 }

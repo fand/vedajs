@@ -28,9 +28,9 @@
   },
   "license": "MIT",
   "main": "lib/index.js",
-  "types": "index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -d",
     "watch": "tsc -w",
     "prepublish": "npm run test && npm run build",
     "test": "eslint src && flow && npm run build",
