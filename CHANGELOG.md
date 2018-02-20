@@ -1,3 +1,6 @@
+### 0.7.0
+* Replaced code from Flowtype to TypeScript
+
 ### 0.6.3
 * Accept `WIDTH`, `HEIGHT` properties in `PASSES`
 
