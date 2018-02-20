@@ -3,6 +3,7 @@
   "description": "Shader Art Framework",
   "version": "0.6.3",
   "author": "fand <fand.gmork@gmail.com>",
+  "bugs": "https://github.com/fand/vedajs/issues",
   "dependencies": {
     "is-video": "^1.0.1",
     "three": "^0.89.0"
@@ -15,27 +16,26 @@
     "tslint": "^5.9.1",
     "typescript": "^2.7.2"
   },
-  "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tsc -d",
-    "watch": "tsc -w",
-    "prepublish": "npm run test && npm run build",
-    "test": "tslint -c tslint.json 'src/**/*.ts' && npm run build",
-    "precommit": "npm run build && git add ."
-  },
   "files": [
     "README.md",
     "package.json",
     "lib"
   ],
-  "repository": "https://github.com/fand/veda",
-  "bugs": "https://github.com/fand/veda/issues",
-  "homepage": "https://github.com/fand/veda",
+  "homepage": "https://veda.gl/vedajs",
   "keywords": [
-    "WebGL",
     "GLSL",
-    "Shader"
-  ]
+    "Shader",
+    "WebGL"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": "https://github.com/fand/vedajs",
+  "scripts": {
+    "build": "tsc -d",
+    "precommit": "npm run build && git add .",
+    "prepublish": "npm run test && npm run build",
+    "test": "tslint -c tslint.json 'src/**/*.ts'",
+    "watch": "tsc -w"
+  },
+  "types": "lib/index.d.ts"
 }
