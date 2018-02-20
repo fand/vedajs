@@ -1,3 +1,2 @@
-declare var require: any;
-const Veda = require('./veda');
+import Veda from './veda';
 export default Veda;
