@@ -1,4 +1,4 @@
-import Veda from '../../../src';
+import Veda from '../../..';
 const textarea = document.querySelector('textarea');
 const canvas = document.querySelector('canvas');
 const INITIAL_FS = `
@@ -25,5 +25,10 @@ const update = () => {
 
 update();
 setInterval(update, 1000);
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth * 0.5;
+  canvas.height = window.innerHeight;
+});
 
 veda.play();
