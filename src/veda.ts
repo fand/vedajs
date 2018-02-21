@@ -9,7 +9,9 @@ import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
 
-import isVideo from 'is-video';
+declare var require: any;
+const isVideo = require('is-video');
+
 import {
     DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER, DEFAULT_VEDA_OPTIONS,
     IVedaOptions, UniformType, IUniforms, IPass, IShader,

@@ -1,8 +1,3 @@
 declare module 'is-video' {
-    function isVideo(url: string): boolean;
-    export default isVideo;
+    export default function isVideo(url: string): boolean;
 }
-
-// declare module 'three' {
-//     export var x: string;
-// }
