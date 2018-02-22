@@ -19,18 +19,16 @@
 ![license MIT](https://img.shields.io/npm/l/vedajs.svg)
 [![Greenkeeper badge](https://badges.greenkeeper.io/fand/vedajs.svg)](https://greenkeeper.io/)
 [![hashtag #vedajs](https://img.shields.io/badge/hashtag-vedajs-blue.svg)](https://twitter.com/search?f=tweets&q=%23vedajs&src=typd)
+
 </div>
 <br>
 <br>
-
-
 
 ## Install
 
 ```
 npm install vedajs
 ```
-
 
 ## Usage
 
@@ -44,7 +42,6 @@ veda.loadFragmentShader(code);
 
 veda.play();
 ```
-
 
 ## Advanced Usage
 
@@ -60,7 +57,6 @@ This is equivalent to
 veda.loadShader({ fs: code });
 ```
 
-
 ### Vertex shader
 
 ```js
@@ -73,7 +69,6 @@ This is equivalent to
 veda.loadShader({ vs: code });
 ```
 
-
 ### Using both
 
 Pass a shader object to `loadShader`.
@@ -85,20 +80,21 @@ veda.loadShader({
 });
 ```
 
-
 ### Multipath rendering
 
 Pass an array of shaders to `loadShader`.
 
 ```js
-veda.loadShader([{
-  vs: vertexShaderFor1stPass,
-  fs: fragmentShaderFor1stPass
-}, {
-  fs: fragmentShaderFor2ndPass
-}]);
+veda.loadShader([
+  {
+    vs: vertexShaderFor1stPass,
+    fs: fragmentShaderFor1stPass,
+  },
+  {
+    fs: fragmentShaderFor2ndPass,
+  },
+]);
 ```
-
 
 ### Audio input
 
@@ -107,14 +103,12 @@ veda.toggleAudio(true);
 veda.loadShader(shader);
 ```
 
-
 ### MIDI input
 
 ```js
 veda.toggleMidi(true);
 veda.loadShader(shader);
 ```
-
 
 ### WebCam input
 
@@ -123,14 +117,12 @@ veda.toggleCamera(true);
 veda.loadShader(shader);
 ```
 
-
 ## Keyboard input
 
 ```js
 veda.toggleKeyboard(true);
 veda.loadShader(shader);
 ```
-
 
 ## Gamepad input
 
@@ -139,7 +131,6 @@ veda.toggleGamepad(true);
 veda.loadShader(shader);
 ```
 
-
 ## Sound shader
 
 ```js
@@ -147,15 +138,13 @@ veda.loadSoundShader(shader);
 veda.playSound();
 ```
 
-
 ## Author
 
 Takayosi Amagi
 
-- Website: [gmork.in](https://gmork.in)
-- Twitter: [@amagitakayosi](https://twitter.com/amagitakayosi)
-- GitHub: [fand](https://github.com/fand)
-
+* Website: [gmork.in](https://gmork.in)
+* Twitter: [@amagitakayosi](https://twitter.com/amagitakayosi)
+* GitHub: [fand](https://github.com/fand)
 
 ## LICENSE
 

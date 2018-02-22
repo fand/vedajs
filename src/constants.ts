@@ -16,16 +16,36 @@ export const SAMPLE_WIDTH = 1280;
 export const SAMPLE_HEIGHT = 720;
 
 // ref. https://github.com/mrdoob/three.js/wiki/Uniforms-types
-export type UniformType = (
-    '1i' | '1f' | '2f' | '3f' |
-    '1iv' | '3iv' | '1fv' | '2fv' | '3fv' | '4fv' |
-    'Matrix3fv' | 'Matric4fv' |
-    'i' | 'f' |
-    'v2' | 'v3' | 'v4' |
-    'c' | 'm4' | 't' |
-    'iv1' | 'iv' | 'fv1' | 'fv' |
-    'v2v' |'v3v' |'v4v' |'m4v' | 'tv'
-);
+export type UniformType =
+    | '1i'
+    | '1f'
+    | '2f'
+    | '3f'
+    | '1iv'
+    | '3iv'
+    | '1fv'
+    | '2fv'
+    | '3fv'
+    | '4fv'
+    | 'Matrix3fv'
+    | 'Matric4fv'
+    | 'i'
+    | 'f'
+    | 'v2'
+    | 'v3'
+    | 'v4'
+    | 'c'
+    | 'm4'
+    | 't'
+    | 'iv1'
+    | 'iv'
+    | 'fv1'
+    | 'fv'
+    | 'v2v'
+    | 'v3v'
+    | 'v4v'
+    | 'm4v'
+    | 'tv';
 
 export interface IVedaOptions {
     pixelRatio?: number;

@@ -26,15 +26,18 @@ export default class CameraLoader {
 
     enable() {
         this.willPlay = new Promise((resolve, reject) => {
-            navigator.mediaDevices.getUserMedia({ video: true }).then((stream: MediaStream) => {
-                this.stream = stream;
-                this.video.src = window.URL.createObjectURL(stream);
-                this.video.play();
-                resolve();
-            }, err => {
-                console.error(err);
-                reject();
-            });
+            navigator.mediaDevices.getUserMedia({ video: true }).then(
+                (stream: MediaStream) => {
+                    this.stream = stream;
+                    this.video.src = window.URL.createObjectURL(stream);
+                    this.video.play();
+                    resolve();
+                },
+                err => {
+                    console.error(err);
+                    reject();
+                },
+            );
         });
     }
 
@@ -42,7 +45,9 @@ export default class CameraLoader {
         this.texture.dispose();
         if (this.willPlay) {
             this.willPlay.then(() => {
-                this.stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+                this.stream
+                    .getTracks()
+                    .forEach((t: MediaStreamTrack) => t.stop());
             });
         }
     }

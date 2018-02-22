@@ -31,7 +31,7 @@ export default class MidiLoader {
         access.inputs.forEach(i => {
             i.onmidimessage = (m: any) => this.onmidimessage(m.data);
         });
-    }
+    };
 
     onmidimessage = (midi: number[]): void => {
         if (!this.isEnabled) {
@@ -43,7 +43,7 @@ export default class MidiLoader {
         this.midiTexture.needsUpdate = true;
 
         // note on
-        if (0x90 <= midi[0] && midi[0] < 0xA0) {
+        if (0x90 <= midi[0] && midi[0] < 0xa0) {
             this.noteArray[midi[1]] = midi[2] * 2; // Scale [0, 128) to [0, 256)
             this.noteTexture.needsUpdate = true;
         }
@@ -53,17 +53,18 @@ export default class MidiLoader {
             this.noteArray[midi[1]] = 0;
             this.noteTexture.needsUpdate = true;
         }
-    }
+    };
 
     enable() {
         this.isEnabled = true;
 
         if (!navigator.requestMIDIAccess) {
-            console.error('[VEDA] This browser doesn\'t support Web MIDI API.');
+            console.error("[VEDA] This browser doesn't support Web MIDI API.");
             return;
         }
 
-        navigator.requestMIDIAccess({ sysex: false })
+        navigator
+            .requestMIDIAccess({ sysex: false })
             .then((access: WebMidi.MIDIAccess) => {
                 this.onstatechange(access);
                 access.onstatechange = () => this.onstatechange(access);

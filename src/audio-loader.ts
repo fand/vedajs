@@ -64,16 +64,21 @@ export default class AudioLoader {
 
     enable(): void {
         this.willPlay = new Promise<void>((resolve, reject) => {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                this.stream = stream;
-                this.input = (this.ctx.createMediaStreamSource as (s: any) => MediaStreamAudioSourceNode)(stream);
-                this.input.connect(this.analyser);
-                this.isEnabled = true;
-                resolve();
-            }, err => {
-                console.error(err);
-                reject();
-            });
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(
+                stream => {
+                    this.stream = stream;
+                    this.input = (this.ctx.createMediaStreamSource as (
+                        s: any,
+                    ) => MediaStreamAudioSourceNode)(stream);
+                    this.input.connect(this.analyser);
+                    this.isEnabled = true;
+                    resolve();
+                },
+                err => {
+                    console.error(err);
+                    reject();
+                },
+            );
         });
     }
 
@@ -82,7 +87,9 @@ export default class AudioLoader {
             this.willPlay.then(() => {
                 this.isEnabled = false;
                 this.input && this.input.disconnect();
-                this.stream.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+                this.stream
+                    .getTracks()
+                    .forEach((t: MediaStreamTrack) => t.stop());
             });
         }
     }
@@ -95,7 +102,10 @@ export default class AudioLoader {
     }
 
     getVolume(): number {
-        return this.spectrumArray.reduce((x, y) => x + y, 0) / this.spectrumArray.length;
+        return (
+            this.spectrumArray.reduce((x, y) => x + y, 0) /
+            this.spectrumArray.length
+        );
     }
 
     setFftSize(fftSize: number): void {

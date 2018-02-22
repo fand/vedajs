@@ -16,18 +16,19 @@ export default class KeyLoader {
     }
 
     onKeyDown = (e: any) => {
-        if (e.keyCode === 27) { // ESC
+        if (e.keyCode === 27) {
+            // ESC
             this.array.fill(0);
         } else {
             this.array[e.keyCode] = 255;
         }
         this.texture.needsUpdate = true;
-    }
+    };
 
     onKeyUp = (e: any) => {
         this.array[e.keyCode] = 0;
         this.texture.needsUpdate = true;
-    }
+    };
 
     enable() {
         (document.body as any).addEventListener('keydown', this.onKeyDown);

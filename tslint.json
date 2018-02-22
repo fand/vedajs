@@ -1,10 +1,12 @@
 {
   "defaultSeverity": "error",
   "extends": [
-    "tslint:recommended"
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
   ],
-  "jsRules": {},
   "rules": {
+    "prettier": true,
     "arrow-parens": [true, "ban-single-arg-parens"],
     "member-access": [true, "no-public"],
     "member-ordering": false,
@@ -14,11 +16,8 @@
     "no-var-requires": false,
     "no-unused-expression": [true, "allow-fast-null-checks"],
     "object-literal-sort-keys": false,
-    "ordered-imports": [true, {
-      "import-sources-order": "lowercase-last",
-      "named-imports-order": "any"
-    }],
-    "quotemark": [true, "single"]
-  },
-  "rulesDirectory": []
+    "object-literal-key-quotes": [true, "as-needed"],
+    "ordered-imports": false,
+    "variable-name": [true, "allow-leading-underscore"]
+  }
 }

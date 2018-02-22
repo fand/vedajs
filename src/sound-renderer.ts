@@ -55,7 +55,11 @@ export default class SoundRenderer {
 
     constructor(uniforms: IUniforms) {
         this.ctx = getCtx();
-        this.audioBuffer = this.ctx.createBuffer(2, this.ctx.sampleRate * this.soundLength, this.ctx.sampleRate);
+        this.audioBuffer = this.ctx.createBuffer(
+            2,
+            this.ctx.sampleRate * this.soundLength,
+            this.ctx.sampleRate,
+        );
         this.node = this.createNode();
         this.start = this.ctx.currentTime;
 
@@ -64,7 +68,9 @@ export default class SoundRenderer {
         canvas.height = HEIGHT;
         this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
         this.wctx = this.renderer.getContext();
-        this.target = new THREE.WebGLRenderTarget(WIDTH, HEIGHT, { format: THREE.RGBAFormat });
+        this.target = new THREE.WebGLRenderTarget(WIDTH, HEIGHT, {
+            format: THREE.RGBAFormat,
+        });
 
         this.uniforms = uniforms;
         this.soundUniforms = {
@@ -75,7 +81,11 @@ export default class SoundRenderer {
 
     setLength(length: number) {
         this.soundLength = length;
-        this.audioBuffer = this.ctx.createBuffer(2, this.ctx.sampleRate * this.soundLength, this.ctx.sampleRate);
+        this.audioBuffer = this.ctx.createBuffer(
+            2,
+            this.ctx.sampleRate * this.soundLength,
+            this.ctx.sampleRate,
+        );
         const node = this.createNode();
 
         this.start = this.ctx.currentTime;
@@ -135,7 +145,8 @@ export default class SoundRenderer {
         const allPixels = this.ctx.sampleRate * this.soundLength;
         const numBlocks = allPixels / PIXELS;
 
-        const timeOffset = (this.ctx.currentTime - this.start) % this.soundLength;
+        const timeOffset =
+            (this.ctx.currentTime - this.start) % this.soundLength;
         let pixelsForTimeOffset = timeOffset * this.ctx.sampleRate;
         pixelsForTimeOffset -= pixelsForTimeOffset % PIXELS;
 
@@ -145,16 +156,33 @@ export default class SoundRenderer {
 
             // Update uniform
             this.soundUniforms.iBlockOffset.value = off / this.ctx.sampleRate;
-            this.renderer.render(this.scene as any, this.camera as any, this.target, true);
+            this.renderer.render(
+                this.scene as any,
+                this.camera as any,
+                this.target,
+                true,
+            );
 
             // Get pixels
             const pixels = new Uint8Array(PIXELS * 4);
-            this.wctx.readPixels(0, 0, WIDTH, HEIGHT, this.wctx.RGBA, this.wctx.UNSIGNED_BYTE, pixels);
+            this.wctx.readPixels(
+                0,
+                0,
+                WIDTH,
+                HEIGHT,
+                this.wctx.RGBA,
+                this.wctx.UNSIGNED_BYTE,
+                pixels,
+            );
 
             for (let i = 0; i < PIXELS; i++) {
                 const ii = (off + i) % allPixels;
-                outputDataL[ii] = (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 - 1;
-                outputDataR[ii] = (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 - 1;
+                outputDataL[ii] =
+                    (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 -
+                    1;
+                outputDataR[ii] =
+                    (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 -
+                    1;
             }
 
             j++;
@@ -166,7 +194,7 @@ export default class SoundRenderer {
         };
 
         this.renderingId = requestAnimationFrame(renderOnce);
-    }
+    };
 
     private createNode(): AudioBufferSourceNode {
         const node = this.ctx.createBufferSource();

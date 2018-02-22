@@ -13,8 +13,14 @@ declare var require: any;
 const isVideo = require('is-video');
 
 import {
-    DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER, DEFAULT_VEDA_OPTIONS,
-    IVedaOptions, UniformType, IUniforms, IPass, IShader,
+    DEFAULT_FRAGMENT_SHADER,
+    DEFAULT_VERTEX_SHADER,
+    DEFAULT_VEDA_OPTIONS,
+    IVedaOptions,
+    UniformType,
+    IUniforms,
+    IPass,
+    IShader,
 } from './constants';
 
 interface IRenderPassTarget {
@@ -33,7 +39,11 @@ interface IRenderPass {
 const isGif = (file: string) => file.match(/\.gif$/i);
 const isSound = (file: string) => file.match(/\.(mp3|wav)$/i);
 
-const createTarget = (width: number, height: number, textureType: THREE.TextureDataType) => {
+const createTarget = (
+    width: number,
+    height: number,
+    textureType: THREE.TextureDataType,
+) => {
     return new THREE.WebGLRenderTarget(width, height, {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.NearestFilter,
@@ -85,14 +95,16 @@ export default class Veda {
 
         // Create a target for backbuffer
         this.targets = [
-            new THREE.WebGLRenderTarget(
-                0, 0,
-                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat },
-            ),
-            new THREE.WebGLRenderTarget(
-                0, 0,
-                { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat },
-            ),
+            new THREE.WebGLRenderTarget(0, 0, {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.NearestFilter,
+                format: THREE.RGBAFormat,
+            }),
+            new THREE.WebGLRenderTarget(0, 0, {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.NearestFilter,
+                format: THREE.RGBAFormat,
+            }),
         ];
 
         // for TextureLoader & VideoLoader
@@ -185,13 +197,21 @@ export default class Veda {
         if (vs) {
             // Create an object for vertexMode
             const geometry = new THREE.BufferGeometry();
-            const vertices = new Float32Array(this.uniforms.vertexCount.value * 3);
-            geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            const vertices = new Float32Array(
+                this.uniforms.vertexCount.value * 3,
+            );
+            geometry.addAttribute(
+                'position',
+                new THREE.BufferAttribute(vertices, 3),
+            );
             const vertexIds = new Float32Array(this.uniforms.vertexCount.value);
             vertexIds.forEach((_, i) => {
                 vertexIds[i] = i;
             });
-            geometry.addAttribute('vertexId', new THREE.BufferAttribute(vertexIds, 1));
+            geometry.addAttribute(
+                'vertexId',
+                new THREE.BufferAttribute(vertexIds, 1),
+            );
 
             const material = new THREE.ShaderMaterial({
                 vertexShader: vs,
@@ -262,20 +282,30 @@ export default class Veda {
         let target: IRenderPassTarget | null = null;
         if (pass.TARGET) {
             const targetName = pass.TARGET;
-            const textureType = pass.FLOAT ? THREE.FloatType : THREE.UnsignedByteType;
+            const textureType = pass.FLOAT
+                ? THREE.FloatType
+                : THREE.UnsignedByteType;
 
             let getWidth = ($WIDTH: number, _: number) => $WIDTH;
             let getHeight = (_: number, $HEIGHT: number) => $HEIGHT;
             if (pass.WIDTH) {
                 try {
                     // eslint-disable-next-line no-new-func
-                    getWidth = new Function('$WIDTH', '$HEIGHT', `return ${pass.WIDTH}`) as WidthHeightFunc;
+                    getWidth = new Function(
+                        '$WIDTH',
+                        '$HEIGHT',
+                        `return ${pass.WIDTH}`,
+                    ) as WidthHeightFunc;
                 } catch (e) {}
             }
             if (pass.HEIGHT) {
                 try {
                     // eslint-disable-next-line no-new-func
-                    getHeight = new Function('$WIDTH', '$HEIGHT', `return ${pass.HEIGHT}`) as WidthHeightFunc;
+                    getHeight = new Function(
+                        '$WIDTH',
+                        '$HEIGHT',
+                        `return ${pass.HEIGHT}`,
+                    ) as WidthHeightFunc;
                 } catch (e) {}
             }
 
@@ -286,7 +316,10 @@ export default class Veda {
                 name: targetName,
                 getWidth,
                 getHeight,
-                targets: [createTarget(w, h, textureType), createTarget(w, h, textureType)],
+                targets: [
+                    createTarget(w, h, textureType),
+                    createTarget(w, h, textureType),
+                ],
             };
             this.uniforms[targetName] = {
                 type: 't',
@@ -325,7 +358,9 @@ export default class Veda {
         // Create new Passes
         this.passes = passes.map(pass => {
             if (!pass.fs && !pass.vs) {
-                throw new TypeError('Veda.loadShader: Invalid argument. Shaders must have fs or vs property.');
+                throw new TypeError(
+                    'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
+                );
             }
             return this.createRenderPass(pass);
         });
@@ -333,7 +368,11 @@ export default class Veda {
         this.uniforms.FRAMEINDEX.value = 0;
     }
 
-    async loadTexture(name: string, textureUrl: string, speed: number = 1): Promise<void> {
+    async loadTexture(
+        name: string,
+        textureUrl: string,
+        speed: number = 1,
+    ): Promise<void> {
         let texture;
         if (isVideo(textureUrl)) {
             texture = this.videoLoader.load(name, textureUrl, speed);
@@ -371,38 +410,53 @@ export default class Veda {
     }
 
     private mousemove = (e: MouseEvent) => {
-        if (!this.canvas) { return; }
+        if (!this.canvas) {
+            return;
+        }
         const rect = this.canvas.getBoundingClientRect();
         const root = document.documentElement;
         if (root) {
             const left = rect.top + root.scrollLeft;
             const top = rect.top + root.scrollTop;
-            this.uniforms.mouse.value.x = (e.pageX - left) / this.canvas.offsetWidth;
-            this.uniforms.mouse.value.y = 1 - (e.pageY - top) / this.canvas.offsetHeight;
+            this.uniforms.mouse.value.x =
+                (e.pageX - left) / this.canvas.offsetWidth;
+            this.uniforms.mouse.value.y =
+                1 - (e.pageY - top) / this.canvas.offsetHeight;
         }
-    }
+    };
 
     private mousedown = (e: MouseEvent) => {
         const b = e.buttons;
-        this.uniforms.mouseButtons.value = new THREE.Vector3((b >> 0) & 1, (b >> 1) & 1, (b >> 2) & 1);
-    }
+        this.uniforms.mouseButtons.value = new THREE.Vector3(
+            (b >> 0) & 1,
+            (b >> 1) & 1,
+            (b >> 2) & 1,
+        );
+    };
 
     private mouseup = this.mousedown;
 
     resize = (width: number, height: number) => {
-        if (!this.renderer) { return; }
+        if (!this.renderer) {
+            return;
+        }
         this.renderer.setSize(width, height);
 
-        const [bufferWidth, bufferHeight] = [width / this.pixelRatio, height / this.pixelRatio];
+        const [bufferWidth, bufferHeight] = [
+            width / this.pixelRatio,
+            height / this.pixelRatio,
+        ];
         this.passes.forEach(p => {
             if (p.target) {
-                p.target.targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
+                p.target.targets.forEach(t =>
+                    t.setSize(bufferWidth, bufferHeight),
+                );
             }
         });
         this.targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
         this.uniforms.resolution.value.x = bufferWidth;
         this.uniforms.resolution.value.y = bufferHeight;
-    }
+    };
 
     animate = () => {
         this.frame++;
@@ -414,7 +468,7 @@ export default class Veda {
         if (this.frame % this.frameskip === 0) {
             this.render();
         }
-    }
+    };
 
     loadSoundShader(fs: string): void {
         this.soundRenderer.loadShader(fs);
@@ -471,8 +525,16 @@ export default class Veda {
             if (target) {
                 const $width = canvas.offsetWidth / this.pixelRatio;
                 const $height = canvas.offsetHeight / this.pixelRatio;
-                target.targets[1].setSize(target.getWidth($width, $height), target.getHeight($width, $height));
-                renderer.render(pass.scene, pass.camera, target.targets[1], true);
+                target.targets[1].setSize(
+                    target.getWidth($width, $height),
+                    target.getHeight($width, $height),
+                );
+                renderer.render(
+                    pass.scene,
+                    pass.camera,
+                    target.targets[1],
+                    true,
+                );
 
                 // Swap buffers after render so that we can use the buffer in latter passes
                 target.targets = [target.targets[1], target.targets[0]];
