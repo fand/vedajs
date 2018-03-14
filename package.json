@@ -6,7 +6,7 @@
   "bugs": "https://github.com/fand/vedajs/issues",
   "dependencies": {
     "is-video": "^1.0.1",
-    "three": "^0.90.0"
+    "three": "^0.91.0"
   },
   "devDependencies": {
     "@types/three": "^0.89.10",
