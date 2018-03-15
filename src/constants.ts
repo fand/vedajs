@@ -64,6 +64,7 @@ export const DEFAULT_VEDA_OPTIONS = {
 };
 
 export interface IPass {
+    OBJ?: string;
     TARGET?: string;
     vs?: string;
     fs?: string;
