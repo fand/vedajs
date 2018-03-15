@@ -5,6 +5,7 @@ import GamepadLoader from './gamepad-loader';
 import GifLoader from './gif-loader';
 import KeyLoader from './key-loader';
 import MidiLoader from './midi-loader';
+import ObjLoader from './obj-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
@@ -76,6 +77,7 @@ export default class Veda {
     private videoLoader: VideoLoader;
     private gifLoader: GifLoader;
     private soundLoader: SoundLoader;
+    private objLoader: ObjLoader;
     private uniforms: IUniforms;
     private soundRenderer: SoundRenderer;
 
@@ -118,6 +120,7 @@ export default class Veda {
         this.videoLoader = new VideoLoader();
         this.gifLoader = new GifLoader();
         this.soundLoader = new SoundLoader();
+        this.objLoader = new ObjLoader();
 
         // Prepare uniforms
         this.start = Date.now();
