@@ -1,3 +1,8 @@
+### 0.8.0
+
+* Support `.obj` file
+  * VEDA will load OBJ file if `OBJ` property is specified in `PASSES`
+
 ### 0.7.0
 
 * Replaced code from Flowtype to TypeScript
