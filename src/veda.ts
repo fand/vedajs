@@ -195,19 +195,25 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(fs?: string, vs?: string) {
+    private createPlane(fs?: string, vs?: string, obj?: THREE.BufferGeometry) {
         let plane;
         if (vs) {
             // Create an object for vertexMode
-            const geometry = new THREE.BufferGeometry();
-            const vertices = new Float32Array(
-                this.uniforms.vertexCount.value * 3,
-            );
-            geometry.addAttribute(
-                'position',
-                new THREE.BufferAttribute(vertices, 3),
-            );
-            const vertexIds = new Float32Array(this.uniforms.vertexCount.value);
+            const geometry = obj || new THREE.BufferGeometry();
+            if (!obj) {
+                const vertices = new Float32Array(
+                    this.uniforms.vertexCount.value * 3,
+                );
+                geometry.addAttribute(
+                    'position',
+                    new THREE.BufferAttribute(vertices, 3),
+                );
+            }
+            const vertexCount = obj
+                ? obj.getAttribute('position').count
+                : this.uniforms.vertexCount.value;
+
+            const vertexIds = new Float32Array(vertexCount);
             vertexIds.forEach((_, i) => {
                 vertexIds[i] = i;
             });
@@ -216,7 +222,7 @@ export default class Veda {
                 new THREE.BufferAttribute(vertexIds, 1),
             );
 
-            const material = new THREE.ShaderMaterial({
+            const material = new THREE.RawShaderMaterial({
                 vertexShader: vs,
                 fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
                 blending: THREE.AdditiveBlending,
@@ -251,7 +257,7 @@ export default class Veda {
             }
         } else {
             // Create plane
-            const geometry = new THREE.PlaneGeometry(2, 2);
+            const geometry = obj || new THREE.PlaneGeometry(2, 2);
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
                 fragmentShader: fs,
@@ -269,7 +275,7 @@ export default class Veda {
         return plane;
     }
 
-    private createRenderPass(pass: IPass): IRenderPass {
+    private async createRenderPass(pass: IPass): Promise<IRenderPass> {
         if (!this.canvas) {
             throw new Error('Call setCanvas() before loading shaders');
         }
@@ -279,8 +285,14 @@ export default class Veda {
         camera.position.set(0, 0, 1);
         camera.lookAt(scene.position);
 
-        const plane = this.createPlane(pass.fs, pass.vs);
-        scene.add(plane);
+        if (pass.OBJ) {
+            const mesh = await this.objLoader.load(pass.OBJ);
+            const plane = this.createPlane(pass.fs, pass.vs, mesh);
+            scene.add(plane);
+        } else {
+            const plane = this.createPlane(pass.fs, pass.vs);
+            scene.add(plane);
+        }
 
         let target: IRenderPassTarget | null = null;
         if (pass.TARGET) {
@@ -341,7 +353,7 @@ export default class Veda {
         this.loadShader([{ vs }]);
     }
 
-    loadShader(shader: IShader): void {
+    async loadShader(shader: IShader): Promise<void> {
         let passes;
         if (shader instanceof Array) {
             passes = shader;
@@ -359,14 +371,16 @@ export default class Veda {
         });
 
         // Create new Passes
-        this.passes = passes.map(pass => {
-            if (!pass.fs && !pass.vs) {
-                throw new TypeError(
-                    'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
-                );
-            }
-            return this.createRenderPass(pass);
-        });
+        this.passes = await Promise.all(
+            passes.map(pass => {
+                if (!pass.fs && !pass.vs) {
+                    throw new TypeError(
+                        'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
+                    );
+                }
+                return this.createRenderPass(pass);
+            }),
+        );
 
         this.uniforms.FRAMEINDEX.value = 0;
     }
@@ -548,14 +562,20 @@ export default class Veda {
         });
 
         const lastPass = this.passes[this.passes.length - 1];
+        if (lastPass) {
+            // Render last pass to canvas even if target is specified
+            if (lastPass.target) {
+                renderer.render(lastPass.scene, lastPass.camera, undefined);
+            }
 
-        // Render last pass to canvas even if target is specified
-        if (lastPass.target) {
-            renderer.render(lastPass.scene, lastPass.camera, undefined);
+            // Render result to backbuffer
+            renderer.render(
+                lastPass.scene,
+                lastPass.camera,
+                this.targets[1],
+                true,
+            );
         }
-
-        // Render result to backbuffer
-        renderer.render(lastPass.scene, lastPass.camera, this.targets[1], true);
 
         this.uniforms.FRAMEINDEX.value++;
     }
