@@ -6,7 +6,8 @@
   "bugs": "https://github.com/fand/vedajs/issues",
   "dependencies": {
     "is-video": "^1.0.1",
-    "three": "^0.90.0"
+    "three": "^0.90.0",
+    "three-obj-loader": "^1.1.3"
   },
   "devDependencies": {
     "@types/three": "^0.89.10",
@@ -36,7 +37,7 @@
   "repository": "https://github.com/fand/vedajs",
   "scripts": {
     "build": "tsc -d",
-    "precommit": "lint-staged && npm run build && git add .",
+    "precommit": "lint-staged",
     "prepublish": "npm run test && npm run build",
     "test": "tslint -c tslint.json 'src/**/*.ts'",
     "format": "tslint -c tslint.json --fix 'src/**/*.ts'",
