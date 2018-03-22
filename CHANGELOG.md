@@ -1,3 +1,6 @@
+### 0.8.1
+* Fix `stopSound()` error
+
 ### 0.8.0
 
 * Support `.obj` file

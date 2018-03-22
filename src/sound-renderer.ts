@@ -124,14 +124,16 @@ export default class SoundRenderer {
     }
 
     stop() {
-        this.isPlaying = false;
+        if (this.isPlaying) {
+            this.isPlaying = false;
 
-        // Destroy old node
-        this.node.stop();
-        this.node.disconnect();
+            // Destroy old node
+            this.node.stop();
+            this.node.disconnect();
 
-        // Create new node
-        this.node = this.createNode();
+            // Create new node
+            this.node = this.createNode();
+        }
     }
 
     render = () => {
