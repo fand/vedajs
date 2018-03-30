@@ -1,11 +1,11 @@
-import Veda from '../..';
+import Veda from '../../../src';
 
 const veda = new Veda({ frameskip: 2 });
 
 // This line causes TypeScript error!
 // const veda = new Veda({ frameskip: 'hello' });
 
-veda.setCanvas(document.querySelector('canvas'));
+veda.setCanvas(document.querySelector('canvas')!);
 
 // This line causes TypeScript error!
 // veda.setCanvas(document.querySelector('body'));

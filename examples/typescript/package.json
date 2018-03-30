@@ -9,9 +9,10 @@
   "author": "fand <fand@gmork.in>",
   "license": "MIT",
   "devDependencies": {
-    "ts-loader": "^3.0.3",
-    "typescript": "^2.5.3",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.3"
+    "ts-loader": "^4.1.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
   }
 }

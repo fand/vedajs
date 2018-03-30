@@ -1,19 +1,17 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   entry: path.resolve(__dirname, 'src/index.js'),
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
   },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
   module: {
-    loaders: [{
-      test: /\.js?$/,
-      loader: 'babel-loader',
-      options: {
-        "presets": ['babel-preset-flow', 'babel-preset-es2017', 'babel-preset-stage-2'].map(require.resolve),
-      },
-    }],
+    rules: [{ test: /\.ts?$/, loader: 'ts-loader' }],
   },
   devServer: {
     contentBase: path.join(__dirname, 'public'),

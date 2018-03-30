@@ -7,7 +7,7 @@ Simple GLSL editor built with Veda.
 
 ```
 $ yarn
-$ yarn dev
+$ yarn start
 ```
 
 then open http://localhost:8080/.

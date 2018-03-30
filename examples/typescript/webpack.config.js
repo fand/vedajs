@@ -1,16 +1,19 @@
-const webpack = require("webpack");
 const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'index.ts'),
+  mode: 'development',
+  entry: path.resolve(__dirname, 'src/index.ts'),
   output: {
-    path: __dirname,
+    path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
   },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
   module: {
-    loaders: [{ test: /\.ts?$/, loader: 'ts-loader' }],
+    rules: [{ test: /\.ts?$/, loader: 'ts-loader' }],
   },
   devServer: {
-    contentBase: __dirname,
+    contentBase: path.join(__dirname, 'public'),
   },
 };

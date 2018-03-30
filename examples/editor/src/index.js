@@ -1,4 +1,4 @@
-import Veda from '../../..';
+import Veda from '../../../src';
 const textarea = document.querySelector('textarea');
 const canvas = document.querySelector('canvas');
 const INITIAL_FS = `
