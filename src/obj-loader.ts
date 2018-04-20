@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { IPassModel } from './constants';
 
 declare const require: any;
 require('three-obj-loader')(THREE); // tslint:disable-line
@@ -13,7 +14,9 @@ export default class ObjLoader {
 
     private loader = new THREE.OBJLoader();
 
-    load(url: string): Promise<THREE.BufferGeometry> {
+    load(model: IPassModel): Promise<THREE.BufferGeometry> {
+        const url = model.PATH;
+
         const cache = this.cache[url];
         if (cache) {
             return Promise.resolve(cache.obj);

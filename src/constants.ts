@@ -63,8 +63,12 @@ export const DEFAULT_VEDA_OPTIONS = {
     vertexMode: 'TRIANGLES',
 };
 
+export interface IPassModel {
+    PATH: string;
+}
+
 export interface IPass {
-    OBJ?: string;
+    MODEL?: IPassModel;
     TARGET?: string;
     vs?: string;
     fs?: string;

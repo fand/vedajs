@@ -285,8 +285,8 @@ export default class Veda {
         camera.position.set(0, 0, 1);
         camera.lookAt(scene.position);
 
-        if (pass.OBJ) {
-            const mesh = await this.objLoader.load(pass.OBJ);
+        if (pass.MODEL && pass.MODEL.PATH) {
+            const mesh = await this.objLoader.load(pass.MODEL);
             const plane = this.createPlane(pass.fs, pass.vs, mesh);
             scene.add(plane);
         } else {
