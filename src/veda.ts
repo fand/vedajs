@@ -362,9 +362,17 @@ export default class Veda {
         camera.lookAt(scene.position);
 
         if (pass.MODEL && pass.MODEL.PATH) {
-            const mesh = await this.objLoader.load(pass.MODEL);
-            const plane = this.createMesh(mesh, pass.fs, pass.vs);
-            scene.add(plane);
+            const obj = await this.objLoader.load(pass.MODEL);
+            obj.traverse(o => {
+                if (
+                    o instanceof THREE.Mesh &&
+                    o.geometry instanceof THREE.BufferGeometry
+                ) {
+                    const mesh = this.createMesh(o, pass.fs, pass.vs);
+                    console.log(mesh);
+                    scene.add(mesh);
+                }
+            });
         } else {
             const plane = this.createPlane(pass.fs, pass.vs);
             scene.add(plane);

@@ -11,7 +11,7 @@ const MTLLoader: IConstructable<THREE.MTLLoader> = require('three-mtl-loader'); 
 
 interface ICache {
     url: string;
-    obj: THREE.Mesh;
+    obj: THREE.Object3D;
 }
 
 export default class ObjLoader {
@@ -20,7 +20,7 @@ export default class ObjLoader {
     private objLoader = new THREE.OBJLoader();
     private mtlLoader = new MTLLoader();
 
-    async load(model: IPassModel): Promise<THREE.Mesh> {
+    async load(model: IPassModel): Promise<THREE.Object3D> {
         const url = model.PATH;
         const key = `${model.PATH}:${model.MATERIAL || '_'}`;
 
@@ -38,12 +38,43 @@ export default class ObjLoader {
             this.objLoader.setMaterials(null as any);
         }
 
-        return this.loadObj(model.PATH).then((group: any) => {
-            let obj: any = group.children[0];
-            obj.geometry = this.fixObj(obj.geometry);
-            this.cache[url] = { url, obj };
-            return obj;
+        const obj = await this.loadObj(model.PATH);
+
+        let box: THREE.Box3;
+        obj.traverse(o => {
+            if (
+                o instanceof THREE.Mesh &&
+                o.geometry instanceof THREE.BufferGeometry
+            ) {
+                o.geometry.computeBoundingBox();
+
+                if (!box) {
+                    box = o.geometry.boundingBox;
+                } else {
+                    box.union(o.geometry.boundingBox);
+                }
+            }
         });
+
+        const sphere = new THREE.Sphere();
+        box!.getBoundingSphere(sphere);
+        const scale = 1 / sphere.radius;
+        const offset = sphere.center;
+
+        obj.traverse(o => {
+            if (
+                o instanceof THREE.Mesh &&
+                o.geometry instanceof THREE.BufferGeometry
+            ) {
+                o.geometry.translate(-offset.x, -offset.y, -offset.z);
+                o.geometry.scale(scale, scale, scale);
+                o.updateMatrix();
+            }
+        });
+
+        this.cache[url] = { url, obj };
+
+        return obj;
     }
 
     private loadMtl(url: string): Promise<THREE.MaterialCreator> {
@@ -63,14 +94,5 @@ export default class ObjLoader {
         return new Promise((resolve, reject) => {
             this.objLoader.load(url, resolve, undefined, reject);
         });
-    }
-
-    private fixObj(obj: THREE.BufferGeometry): THREE.BufferGeometry {
-        obj.computeBoundingSphere();
-        const offset = obj.boundingSphere.center;
-        const scale = 1 / obj.boundingSphere.radius;
-        obj.scale(scale, scale, scale);
-        obj.translate(-offset.x, -offset.y, -offset.z);
-        return obj;
     }
 }
