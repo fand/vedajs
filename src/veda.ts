@@ -124,16 +124,19 @@ export default class Veda {
 
         // Prepare uniforms
         this.start = Date.now();
-        this.uniforms = {
-            FRAMEINDEX: { type: 'i', value: 0 },
-            PASSINDEX: { type: 'i', value: 0 },
-            backbuffer: { type: 't', value: new THREE.Texture() },
-            mouse: { type: 'v2', value: new THREE.Vector2() },
-            mouseButtons: { type: 'v3', value: new THREE.Vector3() },
-            resolution: { type: 'v2', value: new THREE.Vector2() },
-            time: { type: 'f', value: 0.0 },
-            vertexCount: { type: 'f', value: rc.vertexCount },
-        };
+        this.uniforms = THREE.UniformsUtils.merge([
+            {
+                FRAMEINDEX: { type: 'i', value: 0 },
+                PASSINDEX: { type: 'i', value: 0 },
+                backbuffer: { type: 't', value: new THREE.Texture() },
+                mouse: { type: 'v2', value: new THREE.Vector2() },
+                mouseButtons: { type: 'v3', value: new THREE.Vector3() },
+                resolution: { type: 'v2', value: new THREE.Vector2() },
+                time: { type: 'f', value: 0.0 },
+                vertexCount: { type: 'f', value: rc.vertexCount },
+            },
+            THREE.UniformsLib.common,
+        ]);
 
         this.soundRenderer = new SoundRenderer(this.uniforms);
         this.textureLoader = new THREE.TextureLoader();
@@ -195,22 +198,28 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(fs?: string, vs?: string, obj?: THREE.BufferGeometry) {
+    private createPlane(
+        fs?: string,
+        vs?: string,
+        obj?: THREE.Mesh,
+    ): THREE.Mesh {
         let plane;
         if (vs) {
             // Create an object for vertexMode
-            const geometry = obj || new THREE.BufferGeometry();
+            const geometry: THREE.BufferGeometry = obj
+                ? (obj.geometry as any)
+                : new THREE.BufferGeometry();
             if (!obj) {
                 const vertices = new Float32Array(
                     this.uniforms.vertexCount.value * 3,
                 );
-                geometry.addAttribute(
+                (geometry as any).addAttribute(
                     'position',
                     new THREE.BufferAttribute(vertices, 3),
                 );
             }
             const vertexCount = obj
-                ? obj.getAttribute('position').count
+                ? geometry.getAttribute('position').count
                 : this.uniforms.vertexCount.value;
 
             const vertexIds = new Float32Array(vertexCount);
@@ -238,6 +247,13 @@ export default class Veda {
                 shaderTextureLOD: false,
             };
 
+            if (obj && obj.material && (obj.material as any).map) {
+                material.uniforms.material = {
+                    value: (obj.material as any).map!,
+                };
+                material.uniforms.material.value.needsUpdate = true;
+            }
+
             if (this.vertexMode === 'POINTS') {
                 plane = new THREE.Points(geometry, material);
             } else if (this.vertexMode === 'LINE_LOOP') {
@@ -257,7 +273,7 @@ export default class Veda {
             }
         } else {
             // Create plane
-            const geometry = obj || new THREE.PlaneGeometry(2, 2);
+            const geometry = obj ? obj.geometry : new THREE.PlaneGeometry(2, 2);
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
                 fragmentShader: fs,

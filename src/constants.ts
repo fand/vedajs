@@ -1,4 +1,5 @@
 export const DEFAULT_VERTEX_SHADER = `
+varying vec2 vUv;
 void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -65,6 +66,7 @@ export const DEFAULT_VEDA_OPTIONS = {
 
 export interface IPassModel {
     PATH: string;
+    MATERIAL?: string;
 }
 
 export interface IPass {
