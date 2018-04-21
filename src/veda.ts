@@ -198,29 +198,89 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(
-        fs?: string,
-        vs?: string,
-        obj?: THREE.Mesh,
-    ): THREE.Mesh {
+    private createPlane(fs?: string, vs?: string): THREE.Mesh {
         let plane;
         if (vs) {
             // Create an object for vertexMode
-            const geometry: THREE.BufferGeometry = obj
-                ? (obj.geometry as any)
-                : new THREE.BufferGeometry();
-            if (!obj) {
-                const vertices = new Float32Array(
-                    this.uniforms.vertexCount.value * 3,
-                );
-                (geometry as any).addAttribute(
-                    'position',
-                    new THREE.BufferAttribute(vertices, 3),
-                );
+            const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
+
+            const vertices = new Float32Array(
+                this.uniforms.vertexCount.value * 3,
+            );
+            geometry.addAttribute(
+                'position',
+                new THREE.BufferAttribute(vertices, 3),
+            );
+
+            const vertexCount = this.uniforms.vertexCount.value;
+            const vertexIds = new Float32Array(vertexCount);
+            vertexIds.forEach((_, i) => {
+                vertexIds[i] = i;
+            });
+            geometry.addAttribute(
+                'vertexId',
+                new THREE.BufferAttribute(vertexIds, 1),
+            );
+
+            const material = new THREE.RawShaderMaterial({
+                vertexShader: vs,
+                fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
+                blending: THREE.AdditiveBlending,
+                depthTest: true,
+                transparent: true,
+                uniforms: this.uniforms,
+            });
+            material.side = THREE.DoubleSide;
+            material.extensions = {
+                derivatives: false,
+                drawBuffers: false,
+                fragDepth: false,
+                shaderTextureLOD: false,
+            };
+
+            if (this.vertexMode === 'POINTS') {
+                plane = new THREE.Points(geometry, material);
+            } else if (this.vertexMode === 'LINE_LOOP') {
+                plane = new (THREE as any).LineLoop(geometry, material);
+            } else if (this.vertexMode === 'LINE_STRIP') {
+                plane = new THREE.Line(geometry, material);
+            } else if (this.vertexMode === 'LINES') {
+                plane = new THREE.LineSegments(geometry, material);
+            } else if (this.vertexMode === 'TRI_STRIP') {
+                plane = new THREE.Mesh(geometry, material);
+                plane.setDrawMode(THREE.TriangleStripDrawMode);
+            } else if (this.vertexMode === 'TRI_FAN') {
+                plane = new THREE.Mesh(geometry, material);
+                plane.setDrawMode(THREE.TriangleFanDrawMode);
+            } else {
+                plane = new THREE.Mesh(geometry, material);
             }
-            const vertexCount = obj
-                ? geometry.getAttribute('position').count
-                : this.uniforms.vertexCount.value;
+        } else {
+            // Create plane
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            const material = new THREE.ShaderMaterial({
+                vertexShader: DEFAULT_VERTEX_SHADER,
+                fragmentShader: fs,
+                uniforms: this.uniforms,
+            });
+            material.extensions = {
+                derivatives: true,
+                drawBuffers: false,
+                fragDepth: false,
+                shaderTextureLOD: false,
+            };
+            plane = new THREE.Mesh(geometry, material);
+        }
+
+        return plane;
+    }
+
+    private createMesh(obj: THREE.Mesh, fs?: string, vs?: string): THREE.Mesh {
+        let plane;
+        if (vs) {
+            // Create an object for vertexMode
+            const geometry: THREE.BufferGeometry = obj.geometry as any;
+            const vertexCount = geometry.getAttribute('position').count;
 
             const vertexIds = new Float32Array(vertexCount);
             vertexIds.forEach((_, i) => {
@@ -247,7 +307,7 @@ export default class Veda {
                 shaderTextureLOD: false,
             };
 
-            if (obj && obj.material && (obj.material as any).map) {
+            if (obj.material && (obj.material as any).map) {
                 material.uniforms.material = {
                     value: (obj.material as any).map!,
                 };
@@ -273,7 +333,7 @@ export default class Veda {
             }
         } else {
             // Create plane
-            const geometry = obj ? obj.geometry : new THREE.PlaneGeometry(2, 2);
+            const geometry = obj.geometry;
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
                 fragmentShader: fs,
@@ -303,7 +363,7 @@ export default class Veda {
 
         if (pass.MODEL && pass.MODEL.PATH) {
             const mesh = await this.objLoader.load(pass.MODEL);
-            const plane = this.createPlane(pass.fs, pass.vs, mesh);
+            const plane = this.createMesh(mesh, pass.fs, pass.vs);
             scene.add(plane);
         } else {
             const plane = this.createPlane(pass.fs, pass.vs);
