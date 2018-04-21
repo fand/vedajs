@@ -199,9 +199,9 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(fs?: string, vs?: string): THREE.Mesh {
+    private createPlane(pass: IPass): THREE.Mesh {
         let plane;
-        if (vs) {
+        if (pass.vs) {
             // Create an object for vertexMode
             const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
@@ -224,8 +224,8 @@ export default class Veda {
             );
 
             const material = new THREE.RawShaderMaterial({
-                vertexShader: vs,
-                fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
+                vertexShader: pass.vs,
+                fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
                 blending: THREE.AdditiveBlending,
                 depthTest: true,
                 transparent: true,
@@ -261,7 +261,7 @@ export default class Veda {
             const geometry = new THREE.PlaneGeometry(2, 2);
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: fs,
+                fragmentShader: pass.fs,
                 uniforms: this.uniforms,
             });
             material.extensions = {
@@ -280,11 +280,10 @@ export default class Veda {
         obj: THREE.Mesh,
         materialId: number,
         vertexIdOffset: number,
-        fs?: string,
-        vs?: string,
+        pass: IPass,
     ): THREE.Mesh {
         let plane;
-        if (vs) {
+        if (pass.vs) {
             // Create an object for vertexMode
             const geometry: THREE.BufferGeometry = obj.geometry as any;
             const vertexCount = geometry.getAttribute('position').count;
@@ -299,8 +298,8 @@ export default class Veda {
             );
 
             const material = new THREE.RawShaderMaterial({
-                vertexShader: vs,
-                fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
+                vertexShader: pass.vs,
+                fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
                 blending: THREE.AdditiveBlending,
                 depthTest: true,
                 transparent: true,
@@ -343,7 +342,7 @@ export default class Veda {
             const geometry = obj.geometry;
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: fs,
+                fragmentShader: pass.fs,
                 uniforms: this.uniforms,
             });
             material.extensions = {
@@ -379,13 +378,7 @@ export default class Veda {
                     o instanceof THREE.Mesh &&
                     o.geometry instanceof THREE.BufferGeometry
                 ) {
-                    const mesh = this.createMesh(
-                        o,
-                        materialId,
-                        vertexId,
-                        pass.fs,
-                        pass.vs,
-                    );
+                    const mesh = this.createMesh(o, materialId, vertexId, pass);
                     scene.add(mesh);
 
                     if (o.material && (o.material as any).map) {
@@ -398,7 +391,7 @@ export default class Veda {
                 }
             });
         } else {
-            const plane = this.createPlane(pass.fs, pass.vs);
+            const plane = this.createPlane(pass);
             scene.add(plane);
         }
 
