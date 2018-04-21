@@ -35,6 +35,7 @@ interface IRenderPass {
     scene: THREE.Scene;
     camera: THREE.Camera;
     target: IRenderPassTarget | null;
+    materials: THREE.Texture[];
 }
 
 const isGif = (file: string) => file.match(/\.gif$/i);
@@ -275,7 +276,13 @@ export default class Veda {
         return plane;
     }
 
-    private createMesh(obj: THREE.Mesh, fs?: string, vs?: string): THREE.Mesh {
+    private createMesh(
+        obj: THREE.Mesh,
+        materialId: number,
+        vertexIdOffset: number,
+        fs?: string,
+        vs?: string,
+    ): THREE.Mesh {
         let plane;
         if (vs) {
             // Create an object for vertexMode
@@ -284,7 +291,7 @@ export default class Veda {
 
             const vertexIds = new Float32Array(vertexCount);
             vertexIds.forEach((_, i) => {
-                vertexIds[i] = i;
+                vertexIds[i] = i + vertexIdOffset;
             });
             geometry.addAttribute(
                 'vertexId',
@@ -307,12 +314,12 @@ export default class Veda {
                 shaderTextureLOD: false,
             };
 
-            if (obj.material && (obj.material as any).map) {
-                material.uniforms.material = {
-                    value: (obj.material as any).map!,
-                };
-                material.uniforms.material.value.needsUpdate = true;
-            }
+            const objectIds = new Float32Array(vertexCount);
+            objectIds.fill(materialId);
+            geometry.addAttribute(
+                'objectId',
+                new THREE.BufferAttribute(objectIds, 1),
+            );
 
             if (this.vertexMode === 'POINTS') {
                 plane = new THREE.Points(geometry, material);
@@ -361,16 +368,33 @@ export default class Veda {
         camera.position.set(0, 0, 1);
         camera.lookAt(scene.position);
 
+        const materials: THREE.Texture[] = [];
+
         if (pass.MODEL && pass.MODEL.PATH) {
             const obj = await this.objLoader.load(pass.MODEL);
+            let materialId = 0;
+            let vertexId = 0;
             obj.traverse(o => {
                 if (
                     o instanceof THREE.Mesh &&
                     o.geometry instanceof THREE.BufferGeometry
                 ) {
-                    const mesh = this.createMesh(o, pass.fs, pass.vs);
-                    console.log(mesh);
+                    const mesh = this.createMesh(
+                        o,
+                        materialId,
+                        vertexId,
+                        pass.fs,
+                        pass.vs,
+                    );
                     scene.add(mesh);
+
+                    if (o.material && (o.material as any).map) {
+                        materials[materialId] = (o.material as any).map!;
+                    }
+
+                    materialId++;
+                    vertexId += (mesh.geometry as any).attributes.vertexId
+                        .length;
                 }
             });
         } else {
@@ -426,7 +450,7 @@ export default class Veda {
             };
         }
 
-        return { scene, camera, target };
+        return { scene, camera, target, materials };
     }
 
     loadFragmentShader(fs: string): void {
@@ -621,6 +645,16 @@ export default class Veda {
 
         this.passes.forEach((pass: IRenderPass, i: number) => {
             this.uniforms.PASSINDEX.value = i;
+
+            pass.materials.forEach((m, objectId) => {
+                if (m) {
+                    this.uniforms[`material${objectId}`] = {
+                        type: 't',
+                        value: m,
+                    };
+                    m.needsUpdate = true;
+                }
+            });
 
             const target = pass.target;
             if (target) {
