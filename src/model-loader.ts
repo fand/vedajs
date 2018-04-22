@@ -14,7 +14,7 @@ interface ICache {
     obj: THREE.Object3D;
 }
 
-export default class ObjLoader {
+export default class ModelLoader {
     private cache: { [url: string]: ICache | null } = {};
 
     private objLoader = new THREE.OBJLoader();

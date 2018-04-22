@@ -5,7 +5,7 @@ import GamepadLoader from './gamepad-loader';
 import GifLoader from './gif-loader';
 import KeyLoader from './key-loader';
 import MidiLoader from './midi-loader';
-import ObjLoader from './obj-loader';
+import ModelLoader from './model-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
@@ -96,7 +96,7 @@ export default class Veda {
     private videoLoader: VideoLoader;
     private gifLoader: GifLoader;
     private soundLoader: SoundLoader;
-    private objLoader: ObjLoader;
+    private modelLoader: ModelLoader;
     private uniforms: IUniforms;
     private soundRenderer: SoundRenderer;
 
@@ -139,7 +139,7 @@ export default class Veda {
         this.videoLoader = new VideoLoader();
         this.gifLoader = new GifLoader();
         this.soundLoader = new SoundLoader();
-        this.objLoader = new ObjLoader();
+        this.modelLoader = new ModelLoader();
 
         // Prepare uniforms
         this.start = Date.now();
@@ -388,7 +388,7 @@ export default class Veda {
         const materials: THREE.Texture[] = [];
 
         if (pass.MODEL && pass.MODEL.PATH) {
-            const obj = await this.objLoader.load(pass.MODEL);
+            const obj = await this.modelLoader.load(pass.MODEL);
             let materialId = 0;
             let vertexId = 0;
             obj.traverse(o => {
