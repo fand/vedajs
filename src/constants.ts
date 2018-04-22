@@ -77,7 +77,10 @@ export interface IPass {
     FLOAT?: boolean;
     WIDTH?: string;
     HEIGHT?: string;
+    BLEND?: BlendMode;
 }
+
+export type BlendMode = 'NO' | 'NORMAL' | 'ADD' | 'SUB' | 'MUL';
 
 export type IShader = IPass | IPass[];
 

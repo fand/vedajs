@@ -22,6 +22,7 @@ import {
     IUniforms,
     IPass,
     IShader,
+    BlendMode,
 } from './constants';
 
 interface IRenderPassTarget {
@@ -55,6 +56,23 @@ const createTarget = (
 };
 
 type WidthHeightFunc = (w: number, _: number) => number;
+
+const blendModeToConst = (blend?: BlendMode) => {
+    switch (blend) {
+        case 'NO':
+            return THREE.NoBlending;
+        case 'NORMAL':
+            return THREE.NormalBlending;
+        case 'ADD':
+            return THREE.AdditiveBlending;
+        case 'SUB':
+            return THREE.SubtractiveBlending;
+        case 'MUL':
+            return THREE.MultiplyBlending;
+        default:
+            return THREE.NoBlending;
+    }
+};
 
 export default class Veda {
     private pixelRatio: number;
@@ -226,7 +244,7 @@ export default class Veda {
             const material = new THREE.RawShaderMaterial({
                 vertexShader: pass.vs,
                 fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
-                blending: THREE.AdditiveBlending,
+                blending: blendModeToConst(pass.BLEND),
                 depthTest: true,
                 transparent: true,
                 uniforms: this.uniforms,
@@ -300,7 +318,7 @@ export default class Veda {
             const material = new THREE.RawShaderMaterial({
                 vertexShader: pass.vs,
                 fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
-                blending: THREE.AdditiveBlending,
+                blending: blendModeToConst(pass.BLEND),
                 depthTest: true,
                 transparent: true,
                 uniforms: this.uniforms,
