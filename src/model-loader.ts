@@ -14,6 +14,18 @@ interface ICache {
     obj: THREE.Object3D;
 }
 
+const extractPaths = (url: string) => {
+    const match = url.match(/^(.*\\)(.*)$/) || url.match(/^(.*\/)(.*)\/?$/); // windows local file // other
+    if (!match) {
+        return null;
+    }
+
+    return {
+        path: match[1],
+        basename: match[2],
+    };
+};
+
 export default class ModelLoader {
     private cache: { [url: string]: ICache | null } = {};
 
@@ -42,7 +54,7 @@ export default class ModelLoader {
 
         obj = this.fixObj(obj);
         this.cache[url] = { url, obj };
-        console.log(obj);
+
         return obj;
     }
 
@@ -52,8 +64,11 @@ export default class ModelLoader {
                 this.jsonLoader.load(
                     model.PATH,
                     (geometry, materials) => {
-                        const material = materials[0];
-                        resolve(new THREE.Mesh(geometry, material));
+                        if (materials && Array.isArray(materials)) {
+                            resolve(new THREE.Mesh(geometry, materials[0]));
+                        } else {
+                            resolve(new THREE.Mesh(geometry));
+                        }
                     },
                     undefined,
                     reject,
@@ -87,7 +102,6 @@ export default class ModelLoader {
     private async loadObjAndMtl(model: IPassModel): Promise<THREE.Object3D> {
         if (model.MATERIAL) {
             const materials = await this.loadMtl(model.MATERIAL);
-            console.log(materials);
             materials.preload();
             this.objLoader.setMaterials(materials);
         } else {
@@ -98,15 +112,14 @@ export default class ModelLoader {
     }
 
     private loadMtl(url: string): Promise<THREE.MaterialCreator> {
-        const match = url.match(/^(.*\\)(.*)$/) || url.match(/^(.*\/)(.*)\/?$/); // windows local file // other
-        if (!match) {
+        const paths = extractPaths(url);
+        if (paths === null) {
             return Promise.reject(new TypeError('Invalid URL: ' + url));
         }
 
-        const [, path, basename] = match;
-        this.mtlLoader.setPath(path);
+        this.mtlLoader.setPath(paths.path);
         return new Promise((resolve, reject) => {
-            this.mtlLoader.load(basename, resolve, undefined, reject);
+            this.mtlLoader.load(paths.basename, resolve, undefined, reject);
         });
     }
 
