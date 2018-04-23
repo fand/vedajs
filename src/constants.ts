@@ -1,5 +1,8 @@
 export const DEFAULT_VERTEX_SHADER = `
+precision mediump float;
 varying vec2 vUv;
+varying float vObjectId;
+varying vec4 v_color;
 void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -7,6 +10,8 @@ void main() {
 
 export const DEFAULT_FRAGMENT_SHADER = `
 precision mediump float;
+varying vec2 vUv;
+varying float vObjectId;
 varying vec4 v_color;
 void main() {
     gl_FragColor = v_color;
