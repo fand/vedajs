@@ -1,4 +1,16 @@
+### 0.9.0
+
+* Rename `OBJ` property to `MODEL`
+  * VEDA loads 3D model file specified in `MODEL` property in `PASSES`
+  * Supported formats: `.obj` `.json`
+  * If `.mtl` file is specified in `MODEL.MATERIAL`, VEDA loads the materials as textures
+    * Textures will be named `material0`, `material1`, etc.
+* Add `BLEND` in `PASSES` for blend function of fragment colors
+  * `BLEND` must be one of `NO`, `NORMAL`, `ADD`, `SUB` and `MUL`
+  * These values correspond to [Three.js's blending mode constants](https://threejs.org/docs/#api/constants/Materials).
+
 ### 0.8.1
+
 * Fix `stopSound()` error
 
 ### 0.8.0
