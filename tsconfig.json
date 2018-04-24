@@ -11,8 +11,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "include": ["src", "typings"],
-  "exclude": ["examples"],
+  "exclude": ["examples"]
 }
