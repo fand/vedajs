@@ -5,7 +5,7 @@ import GamepadLoader from './gamepad-loader';
 import GifLoader from './gif-loader';
 import KeyLoader from './key-loader';
 import MidiLoader from './midi-loader';
-import ObjLoader from './obj-loader';
+import ModelLoader from './model-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
@@ -22,6 +22,7 @@ import {
     IUniforms,
     IPass,
     IShader,
+    BlendMode,
 } from './constants';
 
 interface IRenderPassTarget {
@@ -35,6 +36,7 @@ interface IRenderPass {
     scene: THREE.Scene;
     camera: THREE.Camera;
     target: IRenderPassTarget | null;
+    materials: THREE.Texture[];
 }
 
 const isGif = (file: string) => file.match(/\.gif$/i);
@@ -54,6 +56,23 @@ const createTarget = (
 };
 
 type WidthHeightFunc = (w: number, _: number) => number;
+
+const blendModeToConst = (blend?: BlendMode) => {
+    switch (blend) {
+        case 'NO':
+            return THREE.NoBlending;
+        case 'NORMAL':
+            return THREE.NormalBlending;
+        case 'ADD':
+            return THREE.AdditiveBlending;
+        case 'SUB':
+            return THREE.SubtractiveBlending;
+        case 'MUL':
+            return THREE.MultiplyBlending;
+        default:
+            return THREE.NoBlending;
+    }
+};
 
 export default class Veda {
     private pixelRatio: number;
@@ -77,7 +96,7 @@ export default class Veda {
     private videoLoader: VideoLoader;
     private gifLoader: GifLoader;
     private soundLoader: SoundLoader;
-    private objLoader: ObjLoader;
+    private modelLoader: ModelLoader;
     private uniforms: IUniforms;
     private soundRenderer: SoundRenderer;
 
@@ -120,20 +139,23 @@ export default class Veda {
         this.videoLoader = new VideoLoader();
         this.gifLoader = new GifLoader();
         this.soundLoader = new SoundLoader();
-        this.objLoader = new ObjLoader();
+        this.modelLoader = new ModelLoader();
 
         // Prepare uniforms
         this.start = Date.now();
-        this.uniforms = {
-            FRAMEINDEX: { type: 'i', value: 0 },
-            PASSINDEX: { type: 'i', value: 0 },
-            backbuffer: { type: 't', value: new THREE.Texture() },
-            mouse: { type: 'v2', value: new THREE.Vector2() },
-            mouseButtons: { type: 'v3', value: new THREE.Vector3() },
-            resolution: { type: 'v2', value: new THREE.Vector2() },
-            time: { type: 'f', value: 0.0 },
-            vertexCount: { type: 'f', value: rc.vertexCount },
-        };
+        this.uniforms = THREE.UniformsUtils.merge([
+            {
+                FRAMEINDEX: { type: 'i', value: 0 },
+                PASSINDEX: { type: 'i', value: 0 },
+                backbuffer: { type: 't', value: new THREE.Texture() },
+                mouse: { type: 'v2', value: new THREE.Vector2() },
+                mouseButtons: { type: 'v3', value: new THREE.Vector3() },
+                resolution: { type: 'v2', value: new THREE.Vector2() },
+                time: { type: 'f', value: 0.0 },
+                vertexCount: { type: 'f', value: rc.vertexCount },
+            },
+            THREE.UniformsLib.common,
+        ]);
 
         this.soundRenderer = new SoundRenderer(this.uniforms);
         this.textureLoader = new THREE.TextureLoader();
@@ -195,24 +217,21 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(fs?: string, vs?: string, obj?: THREE.BufferGeometry) {
+    private createPlane(pass: IPass): THREE.Mesh {
         let plane;
-        if (vs) {
+        if (pass.vs) {
             // Create an object for vertexMode
-            const geometry = obj || new THREE.BufferGeometry();
-            if (!obj) {
-                const vertices = new Float32Array(
-                    this.uniforms.vertexCount.value * 3,
-                );
-                geometry.addAttribute(
-                    'position',
-                    new THREE.BufferAttribute(vertices, 3),
-                );
-            }
-            const vertexCount = obj
-                ? obj.getAttribute('position').count
-                : this.uniforms.vertexCount.value;
+            const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
+            const vertices = new Float32Array(
+                this.uniforms.vertexCount.value * 3,
+            );
+            geometry.addAttribute(
+                'position',
+                new THREE.BufferAttribute(vertices, 3),
+            );
+
+            const vertexCount = this.uniforms.vertexCount.value;
             const vertexIds = new Float32Array(vertexCount);
             vertexIds.forEach((_, i) => {
                 vertexIds[i] = i;
@@ -223,9 +242,9 @@ export default class Veda {
             );
 
             const material = new THREE.RawShaderMaterial({
-                vertexShader: vs,
-                fragmentShader: fs || DEFAULT_FRAGMENT_SHADER,
-                blending: THREE.AdditiveBlending,
+                vertexShader: pass.vs,
+                fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
+                blending: blendModeToConst(pass.BLEND),
                 depthTest: true,
                 transparent: true,
                 uniforms: this.uniforms,
@@ -257,10 +276,91 @@ export default class Veda {
             }
         } else {
             // Create plane
-            const geometry = obj || new THREE.PlaneGeometry(2, 2);
+            const geometry = new THREE.PlaneGeometry(2, 2);
             const material = new THREE.ShaderMaterial({
                 vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: fs,
+                fragmentShader: pass.fs,
+                uniforms: this.uniforms,
+            });
+            material.extensions = {
+                derivatives: true,
+                drawBuffers: false,
+                fragDepth: false,
+                shaderTextureLOD: false,
+            };
+            plane = new THREE.Mesh(geometry, material);
+        }
+
+        return plane;
+    }
+
+    private createMesh(
+        obj: THREE.Mesh,
+        materialId: number,
+        vertexIdOffset: number,
+        pass: IPass,
+    ): THREE.Mesh {
+        let plane;
+        if (pass.vs) {
+            // Create an object for vertexMode
+            const geometry: THREE.BufferGeometry = obj.geometry as any;
+            const vertexCount = geometry.getAttribute('position').count;
+
+            const vertexIds = new Float32Array(vertexCount);
+            vertexIds.forEach((_, i) => {
+                vertexIds[i] = i + vertexIdOffset;
+            });
+            geometry.addAttribute(
+                'vertexId',
+                new THREE.BufferAttribute(vertexIds, 1),
+            );
+
+            const material = new THREE.RawShaderMaterial({
+                vertexShader: pass.vs,
+                fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
+                blending: blendModeToConst(pass.BLEND),
+                depthTest: true,
+                transparent: true,
+                uniforms: this.uniforms,
+            });
+            material.side = THREE.DoubleSide;
+            material.extensions = {
+                derivatives: false,
+                drawBuffers: false,
+                fragDepth: false,
+                shaderTextureLOD: false,
+            };
+
+            const objectIds = new Float32Array(vertexCount);
+            objectIds.fill(materialId);
+            geometry.addAttribute(
+                'objectId',
+                new THREE.BufferAttribute(objectIds, 1),
+            );
+
+            if (this.vertexMode === 'POINTS') {
+                plane = new THREE.Points(geometry, material);
+            } else if (this.vertexMode === 'LINE_LOOP') {
+                plane = new (THREE as any).LineLoop(geometry, material);
+            } else if (this.vertexMode === 'LINE_STRIP') {
+                plane = new THREE.Line(geometry, material);
+            } else if (this.vertexMode === 'LINES') {
+                plane = new THREE.LineSegments(geometry, material);
+            } else if (this.vertexMode === 'TRI_STRIP') {
+                plane = new THREE.Mesh(geometry, material);
+                plane.setDrawMode(THREE.TriangleStripDrawMode);
+            } else if (this.vertexMode === 'TRI_FAN') {
+                plane = new THREE.Mesh(geometry, material);
+                plane.setDrawMode(THREE.TriangleFanDrawMode);
+            } else {
+                plane = new THREE.Mesh(geometry, material);
+            }
+        } else {
+            // Create plane
+            const geometry = obj.geometry;
+            const material = new THREE.ShaderMaterial({
+                vertexShader: DEFAULT_VERTEX_SHADER,
+                fragmentShader: pass.fs,
                 uniforms: this.uniforms,
             });
             material.extensions = {
@@ -285,12 +385,31 @@ export default class Veda {
         camera.position.set(0, 0, 1);
         camera.lookAt(scene.position);
 
-        if (pass.OBJ) {
-            const mesh = await this.objLoader.load(pass.OBJ);
-            const plane = this.createPlane(pass.fs, pass.vs, mesh);
-            scene.add(plane);
+        const materials: THREE.Texture[] = [];
+
+        if (pass.MODEL && pass.MODEL.PATH) {
+            const obj = await this.modelLoader.load(pass.MODEL);
+            let materialId = 0;
+            let vertexId = 0;
+            obj.traverse(o => {
+                if (
+                    o instanceof THREE.Mesh &&
+                    o.geometry instanceof THREE.BufferGeometry
+                ) {
+                    const mesh = this.createMesh(o, materialId, vertexId, pass);
+                    scene.add(mesh);
+
+                    if (o.material && (o.material as any).map) {
+                        materials[materialId] = (o.material as any).map!;
+                    }
+
+                    materialId++;
+                    vertexId += (mesh.geometry as any).attributes.vertexId
+                        .length;
+                }
+            });
         } else {
-            const plane = this.createPlane(pass.fs, pass.vs);
+            const plane = this.createPlane(pass);
             scene.add(plane);
         }
 
@@ -342,7 +461,7 @@ export default class Veda {
             };
         }
 
-        return { scene, camera, target };
+        return { scene, camera, target, materials };
     }
 
     loadFragmentShader(fs: string): void {
@@ -537,6 +656,16 @@ export default class Veda {
 
         this.passes.forEach((pass: IRenderPass, i: number) => {
             this.uniforms.PASSINDEX.value = i;
+
+            pass.materials.forEach((m, objectId) => {
+                if (m) {
+                    this.uniforms[`material${objectId}`] = {
+                        type: 't',
+                        value: m,
+                    };
+                    m.needsUpdate = true;
+                }
+            });
 
             const target = pass.target;
             if (target) {

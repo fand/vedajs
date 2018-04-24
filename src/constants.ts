@@ -1,4 +1,8 @@
 export const DEFAULT_VERTEX_SHADER = `
+precision mediump float;
+varying vec2 vUv;
+varying float vObjectId;
+varying vec4 v_color;
 void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -6,6 +10,8 @@ void main() {
 
 export const DEFAULT_FRAGMENT_SHADER = `
 precision mediump float;
+varying vec2 vUv;
+varying float vObjectId;
 varying vec4 v_color;
 void main() {
     gl_FragColor = v_color;
@@ -63,15 +69,23 @@ export const DEFAULT_VEDA_OPTIONS = {
     vertexMode: 'TRIANGLES',
 };
 
+export interface IPassModel {
+    PATH: string;
+    MATERIAL?: string;
+}
+
 export interface IPass {
-    OBJ?: string;
+    MODEL?: IPassModel;
     TARGET?: string;
     vs?: string;
     fs?: string;
     FLOAT?: boolean;
     WIDTH?: string;
     HEIGHT?: string;
+    BLEND?: BlendMode;
 }
+
+export type BlendMode = 'NO' | 'NORMAL' | 'ADD' | 'SUB' | 'MUL';
 
 export type IShader = IPass | IPass[];
 
