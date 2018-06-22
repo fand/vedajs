@@ -34,7 +34,7 @@ export default class GamepadLoader {
                 this.array[i] = button.pressed ? 255 : 0;
             });
             gamepad.axes.forEach((axis: any, i: number) => {
-                this.array[i + 128] = axis * 128 + 128;
+                this.array[i + 128] = Math.min(axis * 128 + 128, 255);
             });
         });
 
