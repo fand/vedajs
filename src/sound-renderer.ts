@@ -180,10 +180,12 @@ export default class SoundRenderer {
             for (let i = 0; i < PIXELS; i++) {
                 const ii = (off + i) % allPixels;
                 outputDataL[ii] =
-                    (pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535 * 2 -
+                    ((pixels[i * 4 + 0] * 256 + pixels[i * 4 + 1]) / 65535) *
+                        2 -
                     1;
                 outputDataR[ii] =
-                    (pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535 * 2 -
+                    ((pixels[i * 4 + 2] * 256 + pixels[i * 4 + 3]) / 65535) *
+                        2 -
                     1;
             }
 
