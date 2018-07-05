@@ -65,7 +65,12 @@ export default class ModelLoader {
                     model.PATH,
                     (geometry, materials) => {
                         if (materials && Array.isArray(materials)) {
-                            resolve(new THREE.Mesh(geometry, materials[0] as THREE.MeshMaterialType));
+                            resolve(
+                                new THREE.Mesh(
+                                    geometry,
+                                    materials[0] as THREE.MeshMaterial,
+                                ),
+                            );
                         } else {
                             resolve(new THREE.Mesh(geometry));
                         }
