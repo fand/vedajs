@@ -12,7 +12,7 @@ export default class CameraLoader {
         this.video.loop = true;
         this.video.muted = true;
         this.video.style.position = 'fixed';
-        this.video.style.top = '99.99999%';
+        this.video.style.top = '99.9%';
         this.video.style.width = '1px';
         this.video.style.height = '1px';
 
