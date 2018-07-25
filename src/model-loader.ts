@@ -68,7 +68,7 @@ export default class ModelLoader {
                             resolve(
                                 new THREE.Mesh(
                                     geometry,
-                                    materials[0] as THREE.MeshMaterial,
+                                    materials[0] as THREE.MeshMaterialType,
                                 ),
                             );
                         } else {
