@@ -8,19 +8,13 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@types/three@^0.92.14":
-  version "0.92.14"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.92.14.tgz#a9a4febad61b9e6ef6446b8151f1398ac6524dea"
-  dependencies:
-    "@types/webvr-api" "*"
+"@types/three@^0.93.0":
+  version "0.93.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.0.tgz#2bd9faf2648568eae6c2cafae70fa8c3df619326"
 
 "@types/webmidi@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
-
-"@types/webvr-api@*":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/webvr-api/-/webvr-api-0.0.34.tgz#8fa49028de925c7b8bce3d559d3374ce2c89ee28"
 
 ansi-escapes@^1.0.0:
   version "1.4.0"
