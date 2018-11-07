@@ -249,7 +249,7 @@ export default class Veda {
                 vertexShader: pass.vs,
                 fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
                 blending: blendModeToConst(pass.BLEND),
-                depthTest: true,
+                depthTest: false,
                 transparent: true,
                 uniforms: this.uniforms,
             });
