@@ -255,10 +255,10 @@ export default class Veda {
             });
             material.side = THREE.DoubleSide;
             material.extensions = {
-                derivatives: false,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                derivatives: true,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
 
             if (this.vertexMode === 'POINTS') {
@@ -288,9 +288,9 @@ export default class Veda {
             });
             material.extensions = {
                 derivatives: true,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
             plane = new THREE.Mesh(geometry, material);
         }
@@ -329,10 +329,10 @@ export default class Veda {
             });
             material.side = THREE.DoubleSide;
             material.extensions = {
-                derivatives: false,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                derivatives: true,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
 
             const objectIds = new Float32Array(vertexCount);
@@ -369,9 +369,9 @@ export default class Veda {
             });
             material.extensions = {
                 derivatives: true,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
             plane = new THREE.Mesh(geometry, material);
         }
