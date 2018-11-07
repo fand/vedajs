@@ -70,7 +70,7 @@ const blendModeToConst = (blend?: BlendMode) => {
         case 'MUL':
             return THREE.MultiplyBlending;
         default:
-            return THREE.NoBlending;
+            return THREE.NormalBlending;
     }
 };
 
