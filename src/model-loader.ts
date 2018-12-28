@@ -8,6 +8,7 @@ interface IConstructable<T> {
     new (): T;
 }
 const MTLLoader: IConstructable<THREE.MTLLoader> = require('three-mtl-loader'); // tslint:disable-line
+const GLTFLoader: IConstructable<THREE.GLTFLoader> = require('three-gltf-loader'); // tslint:disable-line
 
 interface ICache {
     url: string;
@@ -32,7 +33,7 @@ export default class ModelLoader {
     private objLoader = new THREE.OBJLoader();
     private mtlLoader = new MTLLoader();
     private objectLoader = new THREE.ObjectLoader();
-    private jsonLoader = new THREE.JSONLoader();
+    private gltfLoader = new GLTFLoader();
 
     async load(model: IPassModel): Promise<THREE.Object3D> {
         const url = model.PATH;
@@ -48,6 +49,8 @@ export default class ModelLoader {
             obj = await this.loadObjAndMtl(model);
         } else if (/\.js(on)?\/?$/.test(url)) {
             obj = await this.loadJson(model);
+        } else if (/\.gltf|.glb\/?$/.test(url)) {
+            obj = await this.loadGLTF(model);
         } else {
             throw new TypeError('Unsupported model URL: ' + url);
         }
@@ -61,26 +64,39 @@ export default class ModelLoader {
     private async loadJson(model: IPassModel): Promise<THREE.Object3D> {
         const obj = await Promise.race([
             new Promise<THREE.Object3D>((resolve, reject) => {
-                this.jsonLoader.load(
+                this.objectLoader.load(model.PATH, resolve, undefined, reject);
+            }),
+
+            // timeout
+            new Promise<THREE.Object3D>((_resolve, reject) => {
+                setTimeout(() => reject('Request Timeout'), 50000);
+            }),
+        ]);
+
+        if (
+            obj instanceof THREE.Mesh &&
+            obj.geometry instanceof THREE.Geometry
+        ) {
+            obj.geometry = new THREE.BufferGeometry().fromGeometry(
+                obj.geometry,
+            );
+        }
+
+        const group = new THREE.Group();
+        group.add(obj);
+
+        return group;
+    }
+
+    private async loadGLTF(model: IPassModel): Promise<THREE.Object3D> {
+        const obj = await Promise.race([
+            new Promise<THREE.Object3D>((resolve, reject) => {
+                this.gltfLoader.load(
                     model.PATH,
-                    (geometry, materials) => {
-                        if (materials && Array.isArray(materials)) {
-                            resolve(
-                                new THREE.Mesh(
-                                    geometry,
-                                    materials[0] as THREE.MeshMaterialType,
-                                ),
-                            );
-                        } else {
-                            resolve(new THREE.Mesh(geometry));
-                        }
-                    },
+                    gltf => resolve(gltf.scene),
                     undefined,
                     reject,
                 );
-            }),
-            new Promise<THREE.Object3D>((resolve, reject) => {
-                this.objectLoader.load(model.PATH, resolve, undefined, reject);
             }),
 
             // timeout

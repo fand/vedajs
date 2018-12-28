@@ -8,19 +8,13 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@types/three@^0.92.14":
-  version "0.92.14"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.92.14.tgz#a9a4febad61b9e6ef6446b8151f1398ac6524dea"
-  dependencies:
-    "@types/webvr-api" "*"
+"@types/three@^0.93.14":
+  version "0.93.14"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.14.tgz#59d6a1483502beb2cd1aaf1976ad23900b3770cc"
 
 "@types/webmidi@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
-
-"@types/webvr-api@*":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/webvr-api/-/webvr-api-0.0.34.tgz#8fa49028de925c7b8bce3d559d3374ce2c89ee28"
 
 ansi-escapes@^1.0.0:
   version "1.4.0"
@@ -1471,6 +1465,10 @@ symbol-observable@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
+three-gltf-loader@^1.99.1:
+  version "1.99.1"
+  resolved "https://registry.yarnpkg.com/three-gltf-loader/-/three-gltf-loader-1.99.1.tgz#08a798857b16dd03d1fa31bf535ff86a5c20b394"
+
 three-mtl-loader@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/three-mtl-loader/-/three-mtl-loader-1.0.2.tgz#d0060f1afb8bc2c166ea56cebad250d73da18563"
@@ -1485,9 +1483,9 @@ three@^0.87.1:
   version "0.87.1"
   resolved "https://registry.yarnpkg.com/three/-/three-0.87.1.tgz#466a34edc4543459ced9b9d7d276b65216fe2ba8"
 
-three@^0.94.0:
-  version "0.94.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.94.0.tgz#4ce6db7f2bfbf79c2d73444aa6e3cfc08a32d762"
+three@^0.99.0:
+  version "0.99.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.99.0.tgz#65711fda7a16501da83948121437d824df1fea19"
 
 through@2, through@~2.3, through@~2.3.1:
   version "2.3.8"
