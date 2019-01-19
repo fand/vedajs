@@ -77,7 +77,6 @@ const blendModeToConst = (blend?: BlendMode) => {
 export default class Veda {
     private pixelRatio: number;
     private frameskip: number;
-    private start: number;
     private isPlaying: boolean = false;
     private frame: number = 0;
 
@@ -142,7 +141,6 @@ export default class Veda {
         this.modelLoader = new ModelLoader();
 
         // Prepare uniforms
-        this.start = Date.now();
         this.uniforms = THREE.UniformsUtils.merge([
             {
                 FRAMEINDEX: { type: 'i', value: 0 },
@@ -195,7 +193,7 @@ export default class Veda {
     }
 
     resetTime(): void {
-        this.start = Date.now();
+        this.uniforms.time.value = 0;
     }
 
     setCanvas(canvas: HTMLCanvasElement): void {
@@ -643,7 +641,8 @@ export default class Veda {
         const canvas = this.canvas;
         const renderer = this.renderer;
 
-        this.uniforms.time.value = (Date.now() - this.start) / 1000;
+        const dt = (1 / 60) * this.frameskip;
+        this.uniforms.time.value += dt;
         this.targets = [this.targets[1], this.targets[0]];
         this.uniforms.backbuffer.value = this.targets[0].texture;
 
