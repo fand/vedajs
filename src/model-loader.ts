@@ -4,9 +4,7 @@ import { IPassModel } from './constants';
 declare const require: any;
 require('three-obj-loader')(THREE); // tslint:disable-line
 
-interface IConstructable<T> {
-    new (): T;
-}
+type IConstructable<T> = new () => T;
 const MTLLoader: IConstructable<THREE.MTLLoader> = require('three-mtl-loader'); // tslint:disable-line
 
 interface ICache {
