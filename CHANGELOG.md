@@ -1,3 +1,8 @@
+### 0.9.1
+
+* Fix delta of `time` even if the rendering causes junk frames
+
+
 ### 0.9.0
 
 * Rename `OBJ` property to `MODEL`
