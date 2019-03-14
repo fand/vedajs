@@ -70,14 +70,13 @@ const blendModeToConst = (blend?: BlendMode) => {
         case 'MUL':
             return THREE.MultiplyBlending;
         default:
-            return THREE.NoBlending;
+            return THREE.NormalBlending;
     }
 };
 
 export default class Veda {
     private pixelRatio: number;
     private frameskip: number;
-    private start: number;
     private isPlaying: boolean = false;
     private frame: number = 0;
 
@@ -142,7 +141,6 @@ export default class Veda {
         this.modelLoader = new ModelLoader();
 
         // Prepare uniforms
-        this.start = Date.now();
         this.uniforms = THREE.UniformsUtils.merge([
             {
                 FRAMEINDEX: { type: 'i', value: 0 },
@@ -195,7 +193,7 @@ export default class Veda {
     }
 
     resetTime(): void {
-        this.start = Date.now();
+        this.uniforms.time.value = 0;
     }
 
     setCanvas(canvas: HTMLCanvasElement): void {
@@ -249,16 +247,16 @@ export default class Veda {
                 vertexShader: pass.vs,
                 fragmentShader: pass.fs || DEFAULT_FRAGMENT_SHADER,
                 blending: blendModeToConst(pass.BLEND),
-                depthTest: true,
+                depthTest: false,
                 transparent: true,
                 uniforms: this.uniforms,
             });
             material.side = THREE.DoubleSide;
             material.extensions = {
-                derivatives: false,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                derivatives: true,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
 
             if (this.vertexMode === 'POINTS') {
@@ -288,9 +286,9 @@ export default class Veda {
             });
             material.extensions = {
                 derivatives: true,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
             plane = new THREE.Mesh(geometry, material);
         }
@@ -329,10 +327,10 @@ export default class Veda {
             });
             material.side = THREE.DoubleSide;
             material.extensions = {
-                derivatives: false,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                derivatives: true,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
 
             const objectIds = new Float32Array(vertexCount);
@@ -369,9 +367,9 @@ export default class Veda {
             });
             material.extensions = {
                 derivatives: true,
-                drawBuffers: false,
-                fragDepth: false,
-                shaderTextureLOD: false,
+                drawBuffers: true,
+                fragDepth: true,
+                shaderTextureLOD: true,
             };
             plane = new THREE.Mesh(geometry, material);
         }
@@ -643,7 +641,8 @@ export default class Veda {
         const canvas = this.canvas;
         const renderer = this.renderer;
 
-        this.uniforms.time.value = (Date.now() - this.start) / 1000;
+        const dt = (1 / 60) * this.frameskip;
+        this.uniforms.time.value += dt;
         this.targets = [this.targets[1], this.targets[0]];
         this.uniforms.backbuffer.value = this.targets[0].texture;
 
