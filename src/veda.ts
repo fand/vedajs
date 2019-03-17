@@ -78,7 +78,9 @@ export default class Veda {
     private pixelRatio: number;
     private frameskip: number;
     private isPlaying: boolean = false;
+    private start: number;
     private frame: number = 0;
+    private isRecording: boolean = false;
 
     private passes: IRenderPass[];
 
@@ -141,6 +143,7 @@ export default class Veda {
         this.modelLoader = new ModelLoader();
 
         // Prepare uniforms
+        this.start = Date.now();
         this.uniforms = THREE.UniformsUtils.merge([
             {
                 FRAMEINDEX: { type: 'i', value: 0 },
@@ -193,6 +196,7 @@ export default class Veda {
     }
 
     resetTime(): void {
+        this.start = Date.now();
         this.uniforms.time.value = 0;
     }
 
@@ -641,8 +645,17 @@ export default class Veda {
         const canvas = this.canvas;
         const renderer = this.renderer;
 
-        const dt = (1 / 60) * this.frameskip;
-        this.uniforms.time.value += dt;
+        if (this.isRecording) {
+            const dt = (1 / 60) * this.frameskip;
+            const relTime = this.uniforms.time.value + dt;
+            this.uniforms.time.value = relTime;
+
+            // update start so that time dosn't change after stopRecording
+            this.start = Date.now() - relTime * 1000;
+        } else {
+            this.uniforms.time.value = (Date.now() - this.start) / 1000;
+        }
+
         this.targets = [this.targets[1], this.targets[0]];
         this.uniforms.backbuffer.value = this.targets[0].texture;
 
@@ -777,5 +790,13 @@ export default class Veda {
         } else {
             this.gamepadLoader.disable();
         }
+    }
+
+    startRecording(): void {
+        this.isRecording = true;
+    }
+
+    stopRecording(): void {
+        this.isRecording = false;
     }
 }
