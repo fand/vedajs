@@ -1,3 +1,7 @@
+### 0.10.1
+
+- Use RMS for `volume` computation
+
 ### 0.10.0
 
 - Add `startRecording`, `stopRecording`

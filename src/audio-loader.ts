@@ -102,10 +102,11 @@ export default class AudioLoader {
     }
 
     getVolume(): number {
-        return (
-            this.spectrumArray.reduce((x, y) => x + y, 0) /
-            this.spectrumArray.length
-        );
+        let v = 0;
+        this.samplesArray.forEach(x => {
+            v += Math.pow(x / 128 - 1, 2);
+        });
+        return Math.sqrt(v / this.samplesArray.length);
     }
 
     setFftSize(fftSize: number): void {
