@@ -23,10 +23,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@types/three@^0.93.15":
-  version "0.93.15"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.15.tgz#8fbb4ee8c0648372a305469d16e37d0a939f91c3"
-  integrity sha512-AE9kgUDqMrInTfMYzZ8NqgBMzUgHvv+JwUQxCmlWZOfs+TCJDn7CVcvcOyftiUO3MAH1bddwaK0ZvZ/9M1rO5A==
+"@types/three@^0.93.31":
+  version "0.93.31"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.31.tgz#9698891a463b5c1ef0fc65f46114fe4f70f87ba2"
+  integrity sha512-lR9eLY3gnrUDAdW4ujITgVTPEv1Oy2yoL3LlfKAnjQuzyjGSR+PvQuXuWmaDCD1IyWhkqbnol1nJwaW0MGe35A==
 
 "@types/webmidi@^2.0.2":
   version "2.0.2"
