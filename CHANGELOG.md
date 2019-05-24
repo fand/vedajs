@@ -1,3 +1,6 @@
+### 0.11.0
+- Add `getTime()`
+
 ### 0.10.1
 
 - Use RMS for `volume` computation
