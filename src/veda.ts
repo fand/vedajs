@@ -195,6 +195,10 @@ export default class Veda {
         this.soundRenderer.setLength(length);
     }
 
+    getTime(): number {
+        return (Date.now() - this.start) / 1000;
+    }
+
     resetTime(): void {
         this.start = Date.now();
         this.uniforms.time.value = 0;
@@ -653,7 +657,7 @@ export default class Veda {
             // update start so that time dosn't change after stopRecording
             this.start = Date.now() - relTime * 1000;
         } else {
-            this.uniforms.time.value = (Date.now() - this.start) / 1000;
+            this.uniforms.time.value = this.getTime();
         }
 
         this.targets = [this.targets[1], this.targets[0]];
