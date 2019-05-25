@@ -23,6 +23,7 @@
   dependencies:
     any-observable "^0.3.0"
 
+
 "@types/three@^0.93.15":
   version "0.93.15"
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.15.tgz#8fbb4ee8c0648372a305469d16e37d0a939f91c3"
@@ -32,6 +33,7 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
   integrity sha512-m/5kolDeFVi/tiE2OFaj0KCfz1mfefBh7MZ1RXowd8hP455b0qkkeOLUhjXK0fDDU+e8WKVJ7EP+NG8+LwCghA==
+
 
 ansi-escapes@^3.0.0:
   version "3.1.0"
@@ -1891,6 +1893,10 @@ symbol-observable@^1.1.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
 
+three-gltf-loader@^1.99.1:
+  version "1.99.1"
+  resolved "https://registry.yarnpkg.com/three-gltf-loader/-/three-gltf-loader-1.99.1.tgz#08a798857b16dd03d1fa31bf535ff86a5c20b394"
+
 three-mtl-loader@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/three-mtl-loader/-/three-mtl-loader-1.0.2.tgz#d0060f1afb8bc2c166ea56cebad250d73da18563"
@@ -1907,11 +1913,6 @@ three@^0.100.0:
   version "0.100.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.100.0.tgz#262841c0b7d88ebd62af73f28d9f578963b3aa00"
   integrity sha512-/lN2rdE1OqIwJr4/HcSaOisiCY0uVA0sqPpbCG5nil2uICEdS0LfGwSVYTtZDsIpR76r3++h5H3Hzg5D+SJBRQ==
-
-three@^0.87.1:
-  version "0.87.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.87.1.tgz#466a34edc4543459ced9b9d7d276b65216fe2ba8"
-  integrity sha1-Rmo07cRUNFnO2bnX0na2Uhb+K6g=
 
 to-object-path@^0.3.0:
   version "0.3.0"
