@@ -28,10 +28,10 @@
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.15.tgz#8fbb4ee8c0648372a305469d16e37d0a939f91c3"
   integrity sha512-AE9kgUDqMrInTfMYzZ8NqgBMzUgHvv+JwUQxCmlWZOfs+TCJDn7CVcvcOyftiUO3MAH1bddwaK0ZvZ/9M1rO5A==
 
-"@types/webmidi@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
-  integrity sha512-m/5kolDeFVi/tiE2OFaj0KCfz1mfefBh7MZ1RXowd8hP455b0qkkeOLUhjXK0fDDU+e8WKVJ7EP+NG8+LwCghA==
+"@types/webmidi@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.3.tgz#2c04998688e4d0b558b2fa3b84af1a705c5a6ec3"
+  integrity sha512-ui4QxwMIf1I601Pw1FgWJqBOOitrWbeox8XENUIR/R7iQ2r3/BROXBpaYq8fKkk6AvGmBKN9oolURHC36KUI0Q==
 
 ansi-escapes@^3.0.0:
   version "3.1.0"
