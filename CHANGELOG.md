@@ -1,3 +1,6 @@
+### 0.11.1
+- Fix video not playing
+
 ### 0.11.0
 - Add `getTime()`
 

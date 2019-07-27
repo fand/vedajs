@@ -28,6 +28,10 @@ export default class VideoLoader {
         video.muted = true;
         video.playbackRate = speed;
 
+        // Play video manually because "autoplay" attribute is not working now.
+        // ref. https://github.com/electron/electron/issues/13525
+        video.play();
+
         const texture = new THREE.VideoTexture(video);
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
