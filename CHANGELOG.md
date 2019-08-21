@@ -1,3 +1,6 @@
+### 0.11.2
+- Change texture min/mag filter to THREE.LinearFilter
+
 ### 0.11.1
 - Fix video not playing
 

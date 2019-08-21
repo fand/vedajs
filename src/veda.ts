@@ -528,6 +528,8 @@ export default class Veda {
             texture = await this.soundLoader.load(textureUrl);
         } else {
             texture = this.textureLoader.load(textureUrl);
+            texture.magFilter = THREE.LinearFilter;
+            texture.minFilter = THREE.LinearFilter;
         }
 
         this.uniforms[name] = {
