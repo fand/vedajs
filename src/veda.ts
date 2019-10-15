@@ -502,15 +502,16 @@ export default class Veda {
         // Create new Passes.
         // Each passes must be processed sequentially
         // so that model loader can load materials for each models correctly.
-        this.passes = [];
+        const newRenderPasses = [];
         for (const pass of passes) {
             if (!pass.fs && !pass.vs) {
                 throw new TypeError(
                     'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
                 );
             }
-            this.passes.push(await this.createRenderPass(pass));
+            newRenderPasses.push(await this.createRenderPass(pass));
         }
+        this.passes = newRenderPasses;
 
         this.uniforms.FRAMEINDEX.value = 0;
     }

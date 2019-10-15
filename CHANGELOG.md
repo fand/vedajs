@@ -1,3 +1,6 @@
+### 0.12.1
+- Load all materials at the same time
+
 ### 0.12.0
 - Fix materials on multiple models not loaded correctly
 
