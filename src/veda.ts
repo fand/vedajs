@@ -499,17 +499,18 @@ export default class Veda {
             }
         });
 
-        // Create new Passes
-        this.passes = await Promise.all(
-            passes.map(pass => {
-                if (!pass.fs && !pass.vs) {
-                    throw new TypeError(
-                        'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
-                    );
-                }
-                return this.createRenderPass(pass);
-            }),
-        );
+        // Create new Passes.
+        // Each passes must be processed sequentially
+        // so that model loader can load materials for each models correctly.
+        this.passes = [];
+        for (const pass of passes) {
+            if (!pass.fs && !pass.vs) {
+                throw new TypeError(
+                    'Veda.loadShader: Invalid argument. Shaders must have fs or vs property.',
+                );
+            }
+            this.passes.push(await this.createRenderPass(pass));
+        }
 
         this.uniforms.FRAMEINDEX.value = 0;
     }

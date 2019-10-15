@@ -1,3 +1,6 @@
+### 0.12.0
+- Fix materials on multiple models not loaded correctly
+
 ### 0.11.2
 - Change texture min/mag filter to THREE.LinearFilter
 
