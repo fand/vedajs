@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@fand/gifuct-js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@fand/gifuct-js/-/gifuct-js-1.0.0.tgz#8e001acdc20b74222805360d42c702409b9e0321"
+  integrity sha512-8jduCVQcvK7L9O+1q/DL/AYPW+PYm4glkS7hkLE9+GSUABfVj62MJv6EbHY6PNbbvyYx8voDLmvB5ppQoIyF9g==
+
 "@iamstarkov/listr-update-renderer@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@iamstarkov/listr-update-renderer/-/listr-update-renderer-0.4.1.tgz#d7c48092a2dcf90fd672b6c8b458649cb350c77e"

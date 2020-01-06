@@ -525,7 +525,7 @@ export default class Veda {
         if (isVideo(textureUrl)) {
             texture = this.videoLoader.load(name, textureUrl, speed);
         } else if (isGif(textureUrl)) {
-            texture = this.gifLoader.load(name, textureUrl);
+            texture = await this.gifLoader.load(name, textureUrl);
         } else if (isSound(textureUrl)) {
             texture = await this.soundLoader.load(textureUrl);
         } else {

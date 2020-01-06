@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+import GIFPlayer from './gif-player';
 
 interface ICache {
     name: string;
-    img: HTMLImageElement;
     texture: THREE.Texture;
+    gif: GIFPlayer;
 }
 
 export default class GifLoader {
@@ -13,42 +14,32 @@ export default class GifLoader {
         Object.keys(this.cache).forEach(k => {
             const cache = this.cache[k];
             if (cache) {
+                cache.gif.update();
                 cache.texture.needsUpdate = true;
             }
         });
     }
 
-    load(name: string, url: string): THREE.Texture {
+    async load(name: string, url: string): Promise<THREE.Texture> {
         const cache = this.cache[url];
         if (cache) {
             return cache.texture;
         }
 
-        const img = document.createElement('img');
-        (document.body as any).appendChild(img);
+        const gif = await GIFPlayer.create(url, 1);
+        const canvas = gif.getCanvas();
 
-        img.classList.add('veda-video-source');
-        img.style.position = 'fixed';
-        img.style.top = '99.99999%';
-        img.style.width = '1px';
-        img.style.height = '1px';
-        img.src = url;
-
-        const texture = new THREE.Texture(img);
+        const texture = new THREE.Texture(canvas);
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
         texture.format = THREE.RGBFormat;
 
-        this.cache[url] = { name, img, texture };
+        this.cache[url] = { name, texture, gif };
 
         return texture;
     }
 
     unload(url: string): void {
-        const cache = this.cache[url];
-        if (cache) {
-            (document.body as any).removeChild(cache.img);
-        }
         this.cache[url] = null;
     }
 }
