@@ -540,18 +540,20 @@ export default class Veda {
         };
     }
 
-    unloadTexture(name: string, textureUrl: string, remove: boolean): void {
+    unloadTexture(name: string, textureUrl?: string): void {
         const texture = this.uniforms[name];
         texture.value.dispose();
 
-        if (remove && isVideo(textureUrl)) {
-            this.videoLoader.unload(textureUrl);
-        }
-        if (remove && isGif(textureUrl)) {
-            this.gifLoader.unload(textureUrl);
-        }
-        if (remove && isSound(textureUrl)) {
-            this.soundLoader.unload(textureUrl);
+        if (textureUrl !== undefined) {
+            if (isVideo(textureUrl)) {
+                this.videoLoader.unload(textureUrl);
+            }
+            if (isGif(textureUrl)) {
+                this.gifLoader.unload(textureUrl);
+            }
+            if (isSound(textureUrl)) {
+                this.soundLoader.unload(textureUrl);
+            }
         }
     }
 

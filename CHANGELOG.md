@@ -1,16 +1,29 @@
+### 0.14.0
+
+- Change `Veda.unloadTexture` arguments
+
+### 0.13.0
+
+- Fix gif loader not working in Chrome
+
 ### 0.12.1
+
 - Load all materials at the same time
 
 ### 0.12.0
+
 - Fix materials on multiple models not loaded correctly
 
 ### 0.11.2
+
 - Change texture min/mag filter to THREE.LinearFilter
 
 ### 0.11.1
+
 - Fix video not playing
 
 ### 0.11.0
+
 - Add `getTime()`
 
 ### 0.10.1
