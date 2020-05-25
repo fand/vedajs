@@ -103,7 +103,7 @@ export default class Veda {
 
     private vertexMode: string;
 
-    constructor(rcOpt: IVedaOptions) {
+    constructor(rcOpt: IVedaOptions = {}) {
         const rc = {
             ...DEFAULT_VEDA_OPTIONS,
             ...rcOpt,
