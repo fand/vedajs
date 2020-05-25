@@ -1,3 +1,9 @@
+### 0.15.0
+
+- Allow initializing Veda without opts
+- Add texture size to uniform as `vec2 [name]Size`;
+  - When texrure `image` is loaded, `imageSize` is automatically loaded.
+
 ### 0.14.0
 
 - Change `Veda.unloadTexture` arguments
