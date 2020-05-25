@@ -521,22 +521,42 @@ export default class Veda {
         textureUrl: string,
         speed: number = 1,
     ): Promise<void> {
-        let texture;
+        let texture: THREE.Texture;
+        let size: THREE.Vector2;
+
         if (isVideo(textureUrl)) {
             texture = this.videoLoader.load(name, textureUrl, speed);
+
+            // Wait for video to be loaded
+            await new Promise((resolve, reject) => {
+                texture.image.addEventListener('loadeddata', resolve);
+                setTimeout(reject, 3000);
+            });
+
+            const video = texture.image as HTMLVideoElement;
+            size = new THREE.Vector2(video.videoWidth, video.videoHeight);
         } else if (isGif(textureUrl)) {
             texture = await this.gifLoader.load(name, textureUrl);
+            size = new THREE.Vector2(texture.image.width, texture.image.height);
         } else if (isSound(textureUrl)) {
             texture = await this.soundLoader.load(textureUrl);
+            size = new THREE.Vector2(texture.image.width, texture.image.height);
         } else {
-            texture = this.textureLoader.load(textureUrl);
+            texture = await new Promise(r =>
+                this.textureLoader.load(textureUrl, tx => r(tx)),
+            );
             texture.magFilter = THREE.LinearFilter;
             texture.minFilter = THREE.LinearFilter;
+            size = new THREE.Vector2(texture.image.width, texture.image.height);
         }
 
         this.uniforms[name] = {
             type: 't',
             value: texture,
+        };
+        this.uniforms[name + 'Size'] = {
+            type: 'v2',
+            value: size,
         };
     }
 
@@ -555,6 +575,9 @@ export default class Veda {
                 this.soundLoader.unload(textureUrl);
             }
         }
+
+        delete this.uniforms[name];
+        delete this.uniforms[name + 'Size'];
     }
 
     setUniform(name: string, type: UniformType, value: any) {
