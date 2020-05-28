@@ -542,8 +542,8 @@ export default class Veda {
             texture = await this.soundLoader.load(textureUrl);
             size = new THREE.Vector2(texture.image.width, texture.image.height);
         } else {
-            texture = await new Promise(r =>
-                this.textureLoader.load(textureUrl, tx => r(tx)),
+            texture = await new Promise((resolve, reject) =>
+                this.textureLoader.load(textureUrl, resolve, undefined, reject),
             );
             texture.magFilter = THREE.LinearFilter;
             texture.minFilter = THREE.LinearFilter;
@@ -562,6 +562,10 @@ export default class Veda {
 
     unloadTexture(name: string, textureUrl?: string): void {
         const texture = this.uniforms[name];
+        if (!texture) {
+            return;
+        }
+
         texture.value.dispose();
 
         if (textureUrl !== undefined) {
