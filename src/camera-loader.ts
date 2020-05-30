@@ -15,6 +15,7 @@ export default class CameraLoader {
         this.video.style.top = '99.9%';
         this.video.style.width = '1px';
         this.video.style.height = '1px';
+        this.video.style.zIndex = '-1';
 
         (document.body as any).appendChild(this.video);
 
@@ -29,7 +30,7 @@ export default class CameraLoader {
             navigator.mediaDevices.getUserMedia({ video: true }).then(
                 (stream: MediaStream) => {
                     this.stream = stream;
-                    this.video.src = window.URL.createObjectURL(stream);
+                    this.video.srcObject = stream;
                     this.video.play();
                     resolve();
                 },
