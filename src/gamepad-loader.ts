@@ -3,17 +3,17 @@ import * as THREE from 'three';
 export default class GamepadLoader {
     texture: THREE.DataTexture;
     isEnabled: boolean = false;
-    private array: Uint8Array;
+    private array: Float32Array;
     private isConnected: boolean = false;
 
     constructor() {
-        this.array = new Uint8Array(128 * 2);
+        this.array = new Float32Array(128 * 2);
         this.texture = new THREE.DataTexture(
             this.array,
             128,
             2,
             THREE.LuminanceFormat,
-            THREE.UnsignedByteType,
+            THREE.FloatType,
         );
 
         window.addEventListener('gamepadconnected', () => {
@@ -31,10 +31,10 @@ export default class GamepadLoader {
                 return;
             }
             gamepad.buttons.forEach((button: any, i: number) => {
-                this.array[i] = button.pressed ? 255 : 0;
+                this.array[i] = button.pressed ? 1 : 0;
             });
             gamepad.axes.forEach((axis: any, i: number) => {
-                this.array[i + 128] = axis * 128 + 128;
+                this.array[i + 128] = axis;
             });
         });
 
