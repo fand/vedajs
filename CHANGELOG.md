@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.16.0
+
+- Stop using deprecated THREE.JSONLoader
+
 ## 0.15.0
 
 - Allow initializing Veda without opts
