@@ -158,12 +158,9 @@ export default class SoundRenderer {
 
             // Update uniform
             this.soundUniforms.iBlockOffset.value = off / this.ctx.sampleRate;
-            this.renderer.render(
-                this.scene as any,
-                this.camera as any,
-                this.target,
-                true,
-            );
+            this.renderer.setRenderTarget(this.target);
+            this.renderer.render(this.scene as any, this.camera as any);
+            this.renderer.setRenderTarget(null);
 
             // Get pixels
             const pixels = new Uint8Array(PIXELS * 4);

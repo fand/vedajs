@@ -1,11 +1,7 @@
 import * as THREE from 'three';
 import { IPassModel } from './constants';
-
-declare const require: any;
-require('three-obj-loader')(THREE); // tslint:disable-line
-
-type IConstructable<T> = new () => T;
-const MTLLoader: IConstructable<THREE.MTLLoader> = require('three-mtl-loader'); // tslint:disable-line
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 interface ICache {
     url: string;
@@ -27,7 +23,7 @@ const extractPaths = (url: string) => {
 export default class ModelLoader {
     private cache: { [url: string]: ICache | null } = {};
 
-    private objLoader = new THREE.OBJLoader();
+    private objLoader = new OBJLoader();
     private mtlLoader = new MTLLoader();
 
     async load(model: IPassModel): Promise<THREE.Object3D> {
@@ -56,6 +52,7 @@ export default class ModelLoader {
         if (model.MATERIAL) {
             const materials = await this.loadMtl(model.MATERIAL);
             materials.preload();
+
             this.objLoader.setMaterials(materials);
         } else {
             this.objLoader.setMaterials(null as any);
@@ -64,7 +61,7 @@ export default class ModelLoader {
         return this.loadObj(model.PATH);
     }
 
-    private loadMtl(url: string): Promise<THREE.MaterialCreator> {
+    private loadMtl(url: string): Promise<MTLLoader.MaterialCreator> {
         const paths = extractPaths(url);
         if (paths === null) {
             return Promise.reject(new TypeError('Invalid URL: ' + url));
@@ -90,7 +87,9 @@ export default class ModelLoader {
                 o.geometry instanceof THREE.BufferGeometry
             ) {
                 o.geometry.computeBoundingBox();
-
+                if (o.geometry.boundingBox === null) {
+                    return;
+                }
                 if (box === null) {
                     box = o.geometry.boundingBox;
                 } else {
