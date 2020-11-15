@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "commonjs",
+    "baseUrl": ".",
+    "rootDir": "./src",
     "lib": ["es2015", "es2017", "dom"],
     "sourceMap": true,
     "outDir": "lib",
@@ -13,6 +15,6 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node"
   },
-  "include": ["src", "typings"],
+  "include": ["src"],
   "exclude": ["examples"]
 }

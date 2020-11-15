@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import AudioLoader from './audio-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
@@ -9,10 +10,7 @@ import ModelLoader from './model-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
-
-declare var require: any;
-const isVideo = require('is-video');
+import isVideo from './is-video';
 
 import {
     DEFAULT_FRAGMENT_SHADER,
@@ -24,6 +22,7 @@ import {
     IPass,
     IShader,
     BlendMode,
+    DEFAULT_3_VERTEX_SHADER,
 } from './constants';
 
 interface IRenderPassTarget {
@@ -295,11 +294,21 @@ export default class Veda {
         } else {
             // Create plane
             const geometry = new THREE.PlaneGeometry(2, 2);
-            const material = new THREE.ShaderMaterial({
-                vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: pass.fs,
-                uniforms: this.uniforms,
-            });
+            let material: THREE.ShaderMaterial;
+            if (!!pass.GLSL3) {
+                material = new THREE.RawShaderMaterial({
+                    vertexShader: DEFAULT_3_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            } else {
+                material = new THREE.ShaderMaterial({
+                    vertexShader: DEFAULT_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            }
+
             material.extensions = {
                 derivatives: true,
                 drawBuffers: true,
@@ -382,11 +391,21 @@ export default class Veda {
         } else {
             // Create plane
             const geometry = obj.geometry;
-            const material = new THREE.ShaderMaterial({
-                vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: pass.fs,
-                uniforms: this.uniforms,
-            });
+            let material: THREE.ShaderMaterial;
+            if (!!pass.GLSL3) {
+                material = new THREE.RawShaderMaterial({
+                    vertexShader: DEFAULT_3_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            } else {
+                material = new THREE.ShaderMaterial({
+                    vertexShader: DEFAULT_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            }
+
             material.extensions = {
                 derivatives: true,
                 drawBuffers: true,
