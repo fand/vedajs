@@ -2,7 +2,6 @@ export const DEFAULT_VERTEX_SHADER = `
 varying vec2 vUv;
 varying float vObjectId;
 varying vec4 v_color;
-invariant gl_Position;
 
 void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
