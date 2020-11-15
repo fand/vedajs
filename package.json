@@ -36,7 +36,7 @@
         "WebGL"
     ],
     "license": "MIT",
-    "main": "lib/index.js",
+    "main": "index.js",
     "repository": "https://github.com/fand/vedajs",
     "scripts": {
         "build": "run-p build:rollup",
