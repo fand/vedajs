@@ -37,15 +37,13 @@ void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }`;
 
-export const DEFAULT_FRAGMENT_SHADER = `#version 300 es
+export const DEFAULT_FRAGMENT_SHADER = `
 precision mediump float;
-out vec4 FragColor;
-
 varying vec2 vUv;
 varying float vObjectId;
 varying vec4 v_color;
 void main() {
-    FragColor = v_color;
+    gl_FragColor = v_color;
 }
 `;
 
