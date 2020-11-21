@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
+    "target": "ES6",
+    "module": "ES6",
     "baseUrl": ".",
     "rootDir": "./src",
     "lib": ["es2015", "es2017", "dom"],
@@ -14,8 +14,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
   },
   "include": ["src"],
   "exclude": ["examples"]

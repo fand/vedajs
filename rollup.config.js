@@ -8,13 +8,7 @@ export default {
         dir: '.',
         format: 'cjs',
         exports: 'named',
+        outro: `module.exports.default = module.exports;`,
     },
-    plugins: [
-        typescript({
-            module: 'es6',
-            target: 'es6',
-        }),
-        nodeResolve(),
-        commonjs(),
-    ],
+    plugins: [typescript({}), nodeResolve(), commonjs()],
 };
