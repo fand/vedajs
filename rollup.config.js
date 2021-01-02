@@ -8,7 +8,7 @@ export default {
         dir: '.',
         format: 'cjs',
         exports: 'named',
-        outro: `module.exports.default = module.exports;`,
+        //outro: `module.exports.default = module.exports;`,
     },
     plugins: [typescript({}), nodeResolve(), commonjs()],
 };
