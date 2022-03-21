@@ -2,7 +2,7 @@
     "name": "vedajs",
     "description": "Shader Art Framework",
     "version": "0.16.0",
-    "author": "fand <fand.gmork@gmail.com>",
+    "author": "AMAGI <mail@amagi.dev>",
     "bugs": "https://github.com/fand/vedajs/issues",
     "dependencies": {
         "@fand/gifuct-js": "^1.0.0",
