@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import AudioLoader from './audio-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
@@ -9,9 +10,7 @@ import ModelLoader from './model-loader';
 import SoundLoader from './sound-loader';
 import SoundRenderer from './sound-renderer';
 import VideoLoader from './video-loader';
-
-declare var require: any;
-const isVideo = require('is-video');
+import isVideo from './is-video';
 
 import {
     DEFAULT_FRAGMENT_SHADER,
@@ -23,6 +22,7 @@ import {
     IPass,
     IShader,
     BlendMode,
+    DEFAULT_3_VERTEX_SHADER,
 } from './constants';
 
 interface IRenderPassTarget {
@@ -217,6 +217,7 @@ export default class Veda {
             alpha: true,
             preserveDrawingBuffer: true,
         });
+        console.log(this.renderer.capabilities.isWebGL2);
         this.renderer.setPixelRatio(1 / this.pixelRatio);
         this.resize(canvas.offsetWidth, canvas.offsetHeight);
         window.addEventListener('mousemove', this.mousemove);
@@ -231,12 +232,12 @@ export default class Veda {
         let plane;
         if (pass.vs) {
             // Create an object for vertexMode
-            const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
+            let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
             const vertices = new Float32Array(
                 this.uniforms.vertexCount.value * 3,
             );
-            geometry.addAttribute(
+            geometry.setAttribute(
                 'position',
                 new THREE.BufferAttribute(vertices, 3),
             );
@@ -246,7 +247,7 @@ export default class Veda {
             vertexIds.forEach((_, i) => {
                 vertexIds[i] = i;
             });
-            geometry.addAttribute(
+            geometry.setAttribute(
                 'vertexId',
                 new THREE.BufferAttribute(vertexIds, 1),
             );
@@ -276,22 +277,38 @@ export default class Veda {
             } else if (this.vertexMode === 'LINES') {
                 plane = new THREE.LineSegments(geometry, material);
             } else if (this.vertexMode === 'TRI_STRIP') {
+                geometry = BufferGeometryUtils.toTrianglesDrawMode(
+                    geometry,
+                    THREE.TriangleStripDrawMode,
+                );
                 plane = new THREE.Mesh(geometry, material);
-                plane.setDrawMode(THREE.TriangleStripDrawMode);
             } else if (this.vertexMode === 'TRI_FAN') {
+                geometry = BufferGeometryUtils.toTrianglesDrawMode(
+                    geometry,
+                    THREE.TriangleFanDrawMode,
+                );
                 plane = new THREE.Mesh(geometry, material);
-                plane.setDrawMode(THREE.TriangleFanDrawMode);
             } else {
                 plane = new THREE.Mesh(geometry, material);
             }
         } else {
             // Create plane
             const geometry = new THREE.PlaneGeometry(2, 2);
-            const material = new THREE.ShaderMaterial({
-                vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: pass.fs,
-                uniforms: this.uniforms,
-            });
+            let material: THREE.ShaderMaterial;
+            if (!!pass.GLSL3) {
+                material = new THREE.RawShaderMaterial({
+                    vertexShader: DEFAULT_3_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            } else {
+                material = new THREE.ShaderMaterial({
+                    vertexShader: DEFAULT_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            }
+
             material.extensions = {
                 derivatives: true,
                 drawBuffers: true,
@@ -313,14 +330,14 @@ export default class Veda {
         let plane;
         if (pass.vs) {
             // Create an object for vertexMode
-            const geometry: THREE.BufferGeometry = obj.geometry as any;
+            let geometry: THREE.BufferGeometry = obj.geometry as any;
             const vertexCount = geometry.getAttribute('position').count;
 
             const vertexIds = new Float32Array(vertexCount);
             vertexIds.forEach((_, i) => {
                 vertexIds[i] = i + vertexIdOffset;
             });
-            geometry.addAttribute(
+            geometry.setAttribute(
                 'vertexId',
                 new THREE.BufferAttribute(vertexIds, 1),
             );
@@ -343,7 +360,7 @@ export default class Veda {
 
             const objectIds = new Float32Array(vertexCount);
             objectIds.fill(materialId);
-            geometry.addAttribute(
+            geometry.setAttribute(
                 'objectId',
                 new THREE.BufferAttribute(objectIds, 1),
             );
@@ -357,22 +374,38 @@ export default class Veda {
             } else if (this.vertexMode === 'LINES') {
                 plane = new THREE.LineSegments(geometry, material);
             } else if (this.vertexMode === 'TRI_STRIP') {
+                geometry = BufferGeometryUtils.toTrianglesDrawMode(
+                    geometry,
+                    THREE.TriangleStripDrawMode,
+                );
                 plane = new THREE.Mesh(geometry, material);
-                plane.setDrawMode(THREE.TriangleStripDrawMode);
             } else if (this.vertexMode === 'TRI_FAN') {
+                geometry = BufferGeometryUtils.toTrianglesDrawMode(
+                    geometry,
+                    THREE.TriangleFanDrawMode,
+                );
                 plane = new THREE.Mesh(geometry, material);
-                plane.setDrawMode(THREE.TriangleFanDrawMode);
             } else {
                 plane = new THREE.Mesh(geometry, material);
             }
         } else {
             // Create plane
             const geometry = obj.geometry;
-            const material = new THREE.ShaderMaterial({
-                vertexShader: DEFAULT_VERTEX_SHADER,
-                fragmentShader: pass.fs,
-                uniforms: this.uniforms,
-            });
+            let material: THREE.ShaderMaterial;
+            if (!!pass.GLSL3) {
+                material = new THREE.RawShaderMaterial({
+                    vertexShader: DEFAULT_3_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            } else {
+                material = new THREE.ShaderMaterial({
+                    vertexShader: DEFAULT_VERTEX_SHADER,
+                    fragmentShader: pass.fs,
+                    uniforms: this.uniforms,
+                });
+            }
+
             material.extensions = {
                 derivatives: true,
                 drawBuffers: true,
@@ -728,18 +761,15 @@ export default class Veda {
                     target.getWidth($width, $height),
                     target.getHeight($width, $height),
                 );
-                renderer.render(
-                    pass.scene,
-                    pass.camera,
-                    target.targets[1],
-                    true,
-                );
+                renderer.setRenderTarget(target.targets[1]);
+                renderer.render(pass.scene, pass.camera);
+                renderer.setRenderTarget(null);
 
                 // Swap buffers after render so that we can use the buffer in latter passes
                 target.targets = [target.targets[1], target.targets[0]];
                 this.uniforms[target.name].value = target.targets[0].texture;
             } else {
-                renderer.render(pass.scene, pass.camera, undefined);
+                renderer.render(pass.scene, pass.camera);
             }
         });
 
@@ -747,16 +777,13 @@ export default class Veda {
         if (lastPass) {
             // Render last pass to canvas even if target is specified
             if (lastPass.target) {
-                renderer.render(lastPass.scene, lastPass.camera, undefined);
+                renderer.render(lastPass.scene, lastPass.camera);
             }
 
             // Render result to backbuffer
-            renderer.render(
-                lastPass.scene,
-                lastPass.camera,
-                this.targets[1],
-                true,
-            );
+            renderer.setRenderTarget(this.targets[1]);
+            renderer.render(lastPass.scene, lastPass.camera);
+            renderer.setRenderTarget(null);
         }
 
         this.uniforms.FRAMEINDEX.value++;

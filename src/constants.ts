@@ -1,12 +1,41 @@
 export const DEFAULT_VERTEX_SHADER = `
-precision mediump float;
 varying vec2 vUv;
 varying float vObjectId;
 varying vec4 v_color;
+
 void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
+
+export const DEFAULT_3_VERTEX_SHADER = `#version 300 es
+#define attribute in
+#define varying out
+#define texture2D texture
+precision highp float;
+precision highp int;
+invariant gl_Position;
+
+uniform mat4 modelMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat3 normalMatrix;
+uniform vec3 cameraPosition;
+uniform bool isOrthographic;
+
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec2 uv;
+
+
+varying vec2 vUv;
+varying float vObjectId;
+varying vec4 v_color;
+
+void main() {
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`;
 
 export const DEFAULT_FRAGMENT_SHADER = `
 precision mediump float;
@@ -83,6 +112,7 @@ export interface IPass {
     WIDTH?: string;
     HEIGHT?: string;
     BLEND?: BlendMode;
+    GLSL3?: boolean;
 }
 
 export type BlendMode = 'NO' | 'NORMAL' | 'ADD' | 'SUB' | 'MUL';
