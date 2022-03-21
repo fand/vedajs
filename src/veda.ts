@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import AudioLoader from './audio-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
@@ -434,7 +434,7 @@ export default class Veda {
             const obj = await this.modelLoader.load(pass.MODEL);
             let materialId = 0;
             let vertexId = 0;
-            obj.traverse(o => {
+            obj.traverse((o) => {
                 if (
                     o instanceof THREE.Mesh &&
                     o.geometry instanceof THREE.BufferGeometry
@@ -524,7 +524,7 @@ export default class Veda {
         }
 
         // Dispose old targets
-        this.passes.forEach(pass => {
+        this.passes.forEach((pass) => {
             const target = pass.target;
             if (target) {
                 target.targets[0].texture.dispose();
@@ -658,14 +658,14 @@ export default class Veda {
             width / this.pixelRatio,
             height / this.pixelRatio,
         ];
-        this.passes.forEach(p => {
+        this.passes.forEach((p) => {
             if (p.target) {
-                p.target.targets.forEach(t =>
+                p.target.targets.forEach((t) =>
                     t.setSize(bufferWidth, bufferHeight),
                 );
             }
         });
-        this.targets.forEach(t => t.setSize(bufferWidth, bufferHeight));
+        this.targets.forEach((t) => t.setSize(bufferWidth, bufferHeight));
         this.uniforms.resolution.value.x = bufferWidth;
         this.uniforms.resolution.value.y = bufferHeight;
     };

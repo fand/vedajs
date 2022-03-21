@@ -22,11 +22,11 @@ export default class CameraLoader {
         this.texture = new THREE.VideoTexture(this.video);
         this.texture.minFilter = THREE.LinearFilter;
         this.texture.magFilter = THREE.LinearFilter;
-        this.texture.format = THREE.RGBFormat;
+        this.texture.format = THREE.RGBAFormat;
     }
 
     enable() {
-        this.willPlay = new Promise((resolve, reject) => {
+        this.willPlay = new Promise<void>((resolve, reject) => {
             navigator.mediaDevices.getUserMedia({ video: true }).then(
                 (stream: MediaStream) => {
                     this.stream = stream;
@@ -34,7 +34,7 @@ export default class CameraLoader {
                     this.video.play();
                     resolve();
                 },
-                err => {
+                (err) => {
                     console.error(err);
                     reject();
                 },

@@ -36,10 +36,7 @@ const videoExtensions = [
     'yuv',
 ];
 
-export default function(filepath: string) {
-    const ext = path
-        .extname(filepath)
-        .slice(1)
-        .toLowerCase();
+export default function (filepath: string) {
+    const ext = path.extname(filepath).slice(1).toLowerCase();
     return videoExtensions.includes(ext);
 }

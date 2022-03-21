@@ -28,7 +28,7 @@ export default class MidiLoader {
     }
 
     onstatechange = (access: WebMidi.MIDIAccess) => {
-        access.inputs.forEach(i => {
+        access.inputs.forEach((i) => {
             i.onmidimessage = (m: any) => this.onmidimessage(m.data);
         });
     };

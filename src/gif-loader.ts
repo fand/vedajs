@@ -11,7 +11,7 @@ export default class GifLoader {
     private cache: { [url: string]: ICache | null } = {};
 
     update() {
-        Object.keys(this.cache).forEach(k => {
+        Object.keys(this.cache).forEach((k) => {
             const cache = this.cache[k];
             if (cache) {
                 cache.gif.update();
@@ -32,7 +32,7 @@ export default class GifLoader {
         const texture = new THREE.Texture(canvas);
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBFormat;
+        texture.format = THREE.RGBAFormat;
 
         this.cache[url] = { name, texture, gif };
 

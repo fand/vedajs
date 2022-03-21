@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { IPassModel } from './constants';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 interface ICache {
     url: string;
@@ -81,7 +81,7 @@ export default class ModelLoader {
 
     private fixObj(obj: THREE.Object3D) {
         let box: THREE.Box3 | null = null;
-        obj.traverse(o => {
+        obj.traverse((o) => {
             if (
                 o instanceof THREE.Mesh &&
                 o.geometry instanceof THREE.BufferGeometry
@@ -102,13 +102,14 @@ export default class ModelLoader {
         if (box === null) {
             return obj;
         }
+        box = box as THREE.Box3;
 
         const sphere = new THREE.Sphere();
-        box!.getBoundingSphere(sphere);
+        box.getBoundingSphere(sphere);
         const scale = 1 / sphere.radius;
         const offset = sphere.center;
 
-        obj.traverse(o => {
+        obj.traverse((o) => {
             if (
                 o instanceof THREE.Mesh &&
                 o.geometry instanceof THREE.BufferGeometry

@@ -24,8 +24,8 @@ export default class SoundLoader {
             xhr.open('GET', url);
             xhr.send(null);
         })
-            .then(res => ctx.decodeAudioData(res))
-            .then(audioBuffer => {
+            .then((res) => ctx.decodeAudioData(res))
+            .then((audioBuffer) => {
                 const c0 = audioBuffer.getChannelData(0); // -1 to 1
                 const c1 =
                     audioBuffer.numberOfChannels === 2

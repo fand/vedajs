@@ -11,8 +11,8 @@ export default class GIFPlayer {
 
     static async create(src: string, pixelRatio: number): Promise<GIFPlayer> {
         const gif = await fetch(src)
-            .then(resp => resp.arrayBuffer())
-            .then(buff => new GIF(buff));
+            .then((resp) => resp.arrayBuffer())
+            .then((buff) => new GIF(buff));
 
         const frames = gif.decompressFrames(true);
         const width = (gif.raw as any).lsd.width;

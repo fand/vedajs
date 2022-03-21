@@ -92,6 +92,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/three@^0.138.0":
+  version "0.138.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.138.0.tgz#ec9f1d1fd8dffea2e0572f9d815ff5a35cf4dc6b"
+  integrity sha512-D8AoV7h2kbCfrv/DcebHOFh1WDwyus3HdooBkAwcBikXArdqnsQ38PQ85JCunnvun160oA9jz53GszF3zch3tg==
+
 "@types/webmidi@2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.6.tgz#c9b1428bbc5d5f49cc6201eae0dc5e2b3fd23e0e"

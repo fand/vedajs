@@ -65,16 +65,18 @@ export default class AudioLoader {
     enable(): void {
         this.willPlay = new Promise<void>((resolve, reject) => {
             navigator.mediaDevices.getUserMedia({ audio: true }).then(
-                stream => {
+                (stream) => {
                     this.stream = stream;
-                    this.input = (this.ctx.createMediaStreamSource as (
-                        s: any,
-                    ) => MediaStreamAudioSourceNode)(stream);
+                    this.input = (
+                        this.ctx.createMediaStreamSource as (
+                            s: any,
+                        ) => MediaStreamAudioSourceNode
+                    )(stream);
                     this.input.connect(this.analyser);
                     this.isEnabled = true;
                     resolve();
                 },
-                err => {
+                (err) => {
                     console.error(err);
                     reject();
                 },
@@ -103,7 +105,7 @@ export default class AudioLoader {
 
     getVolume(): number {
         let v = 0;
-        this.samplesArray.forEach(x => {
+        this.samplesArray.forEach((x) => {
             v += Math.pow(x / 128 - 1, 2);
         });
         return Math.sqrt(v / this.samplesArray.length);
