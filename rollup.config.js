@@ -9,6 +9,7 @@ export default {
         format: 'cjs',
         exports: 'named',
         //outro: `module.exports.default = module.exports;`,
+        sourcemap: true,
     },
     plugins: [typescript({}), nodeResolve(), commonjs()],
 };
