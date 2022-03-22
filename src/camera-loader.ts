@@ -3,8 +3,8 @@ import * as THREE from 'three';
 export default class CameraLoader {
     texture: THREE.VideoTexture;
     private video: HTMLVideoElement;
-    private stream: any;
-    private willPlay: Promise<any> | null = null;
+    private stream: MediaStream | undefined;
+    private willPlay: Promise<void> | null = null;
 
     constructor() {
         this.video = document.createElement('video');
@@ -17,7 +17,7 @@ export default class CameraLoader {
         this.video.style.height = '1px';
         this.video.style.zIndex = '-1';
 
-        (document.body as any).appendChild(this.video);
+        document.body.appendChild(this.video);
 
         this.texture = new THREE.VideoTexture(this.video);
         this.texture.minFilter = THREE.LinearFilter;
@@ -47,7 +47,7 @@ export default class CameraLoader {
         if (this.willPlay) {
             this.willPlay.then(() => {
                 this.stream
-                    .getTracks()
+                    ?.getTracks()
                     .forEach((t: MediaStreamTrack) => t.stop());
             });
         }

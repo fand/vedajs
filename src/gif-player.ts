@@ -15,10 +15,10 @@ export default class GIFPlayer {
             .then((buff) => new GIF(buff));
 
         const frames = gif.decompressFrames(true);
-        const width = (gif.raw as any).lsd.width;
-        const height = (gif.raw as any).lsd.height;
+        const width = gif.raw.lsd.width;
+        const height = gif.raw.lsd.height;
 
-        return new GIFPlayer(frames as any, width, height, pixelRatio);
+        return new GIFPlayer(frames, width, height, pixelRatio);
     }
 
     private constructor(
@@ -29,7 +29,13 @@ export default class GIFPlayer {
     ) {
         this.frames = frames;
         this.canvas = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d')!;
+
+        const ctx = this.canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('Failed to create canvas 2D context');
+        }
+        this.ctx = ctx;
+
         this.pixelRatio = pixelRatio;
 
         // Override canvas size by image size

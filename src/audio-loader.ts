@@ -11,11 +11,21 @@ const DEFAULT_AUDIO_OPTIONS = {
     fftSmoothingTimeConstant: 0.8,
 };
 
+/**
+ * THREE.DataTexture uses a plain object to hold image data instead of ImageData type.
+ * This allows us to mutate data on update.
+ */
+type MutableImageData = {
+    data: BufferSource;
+    width: number;
+    height: number;
+};
+
 export default class AudioLoader {
     spectrum: THREE.DataTexture;
     samples: THREE.DataTexture;
-    isPlaying: boolean = false;
-    isEnabled: boolean = false;
+    isPlaying = false;
+    isEnabled = false;
 
     private ctx: AudioContext;
     private gain: GainNode;
@@ -24,9 +34,9 @@ export default class AudioLoader {
 
     private spectrumArray: Uint8Array;
     private samplesArray: Uint8Array;
-    private stream: any;
+    private stream: MediaStream | undefined;
 
-    private willPlay: Promise<any> | null = null;
+    private willPlay: Promise<void> | null = null;
 
     constructor(rcOpt: IAudioOptions) {
         const rc = {
@@ -35,14 +45,16 @@ export default class AudioLoader {
         };
 
         this.ctx = getCtx();
-        this.gain = this.ctx.createGain();
         this.analyser = this.ctx.createAnalyser();
-        this.analyser.connect(this.gain);
+        this.analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
+        this.analyser.fftSize = rc.fftSize;
+
+        this.gain = this.ctx.createGain();
         this.gain.gain.setValueAtTime(0, this.ctx.currentTime);
+
+        this.analyser.connect(this.gain);
         this.gain.connect(this.ctx.destination);
 
-        this.analyser.fftSize = rc.fftSize;
-        this.analyser.smoothingTimeConstant = rc.fftSmoothingTimeConstant;
         this.spectrumArray = new Uint8Array(this.analyser.frequencyBinCount);
         this.samplesArray = new Uint8Array(this.analyser.frequencyBinCount);
 
@@ -63,25 +75,19 @@ export default class AudioLoader {
     }
 
     enable(): void {
-        this.willPlay = new Promise<void>((resolve, reject) => {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(
-                (stream) => {
-                    this.stream = stream;
-                    this.input = (
-                        this.ctx.createMediaStreamSource as (
-                            s: any,
-                        ) => MediaStreamAudioSourceNode
-                    )(stream);
-                    this.input.connect(this.analyser);
-                    this.isEnabled = true;
-                    resolve();
-                },
-                (err) => {
-                    console.error(err);
-                    reject();
-                },
-            );
-        });
+        this.willPlay = (async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                });
+                this.stream = stream;
+                this.input = this.ctx.createMediaStreamSource(stream);
+                this.input.connect(this.analyser);
+                this.isEnabled = true;
+            } catch (e) {
+                console.error(e);
+            }
+        })();
     }
 
     disable(): void {
@@ -90,7 +96,7 @@ export default class AudioLoader {
                 this.isEnabled = false;
                 this.input && this.input.disconnect();
                 this.stream
-                    .getTracks()
+                    ?.getTracks()
                     .forEach((t: MediaStreamTrack) => t.stop());
             });
         }
@@ -108,17 +114,22 @@ export default class AudioLoader {
         this.samplesArray.forEach((x) => {
             v += Math.pow(x / 128 - 1, 2);
         });
-        return Math.sqrt(v / this.samplesArray.length);
+        const rms = Math.sqrt(v / this.samplesArray.length);
+        return rms;
     }
 
     setFftSize(fftSize: number): void {
         this.analyser.fftSize = fftSize;
         this.spectrumArray = new Uint8Array(this.analyser.frequencyBinCount);
         this.samplesArray = new Uint8Array(this.analyser.frequencyBinCount);
-        (this.spectrum.image as any).data = this.spectrumArray;
-        (this.spectrum.image as any).width = this.analyser.frequencyBinCount;
-        (this.samples.image as any).data = this.samplesArray;
-        (this.samples.image as any).width = this.analyser.frequencyBinCount;
+
+        const spectrumImage = this.spectrum.image as MutableImageData;
+        spectrumImage.data = this.spectrumArray;
+        spectrumImage.width = this.analyser.frequencyBinCount;
+
+        const samplesImage = this.samples.image as MutableImageData;
+        samplesImage.data = this.samplesArray;
+        samplesImage.width = this.analyser.frequencyBinCount;
     }
 
     setFftSmoothingTimeConstant(fftSmoothingTimeConstant: number): void {

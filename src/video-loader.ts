@@ -45,7 +45,7 @@ export default class VideoLoader {
     unload(url: string): void {
         const cache = this.cache[url];
         if (cache) {
-            (document.body as any).removeChild(cache.video);
+            document.body.removeChild(cache.video);
         }
         this.cache[url] = null;
     }

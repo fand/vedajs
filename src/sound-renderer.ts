@@ -48,8 +48,8 @@ export default class SoundRenderer {
     private ctx: AudioContext;
     private node: AudioBufferSourceNode;
 
-    private soundLength: number = 3;
-    private isPlaying: boolean = false;
+    private soundLength = 3;
+    private isPlaying = false;
     private start: number;
     private renderingId: number | null = null;
 
@@ -154,12 +154,19 @@ export default class SoundRenderer {
 
         let j = 0;
         const renderOnce = () => {
+            if (!this.scene || !this.camera) {
+                console.warn(
+                    'renderOnce is called before scene initialization',
+                );
+                return;
+            }
+
             const off = (j * PIXELS + pixelsForTimeOffset) % allPixels;
 
             // Update uniform
             this.soundUniforms.iBlockOffset.value = off / this.ctx.sampleRate;
             this.renderer.setRenderTarget(this.target);
-            this.renderer.render(this.scene as any, this.camera as any);
+            this.renderer.render(this.scene, this.camera);
             this.renderer.setRenderTarget(null);
 
             // Get pixels

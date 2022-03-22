@@ -1,3 +1,5 @@
+import { Uniform } from 'three';
+
 export const DEFAULT_VERTEX_SHADER = `
 varying vec2 vUv;
 varying float vObjectId;
@@ -122,6 +124,6 @@ export type IShader = IPass | IPass[];
 export interface IUniforms {
     [key: string]: {
         type: string;
-        value: any;
+        value: Uniform['value'];
     };
 }

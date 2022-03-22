@@ -77,10 +77,10 @@ const blendModeToConst = (blend?: BlendMode) => {
 export default class Veda {
     private pixelRatio: number;
     private frameskip: number;
-    private isPlaying: boolean = false;
+    private isPlaying = false;
     private start: number;
-    private frame: number = 0;
-    private isRecording: boolean = false;
+    private frame = 0;
+    private isRecording = false;
 
     private passes: IRenderPass[];
 
@@ -228,7 +228,9 @@ export default class Veda {
         this.animate();
     }
 
-    private createPlane(pass: IPass): THREE.Mesh {
+    private createPlane(
+        pass: IPass,
+    ): THREE.Mesh | THREE.Points | THREE.LineLoop | THREE.Line {
         let plane;
         if (pass.vs) {
             // Create an object for vertexMode
@@ -271,7 +273,7 @@ export default class Veda {
             if (this.vertexMode === 'POINTS') {
                 plane = new THREE.Points(geometry, material);
             } else if (this.vertexMode === 'LINE_LOOP') {
-                plane = new (THREE as any).LineLoop(geometry, material);
+                plane = new THREE.LineLoop(geometry, material);
             } else if (this.vertexMode === 'LINE_STRIP') {
                 plane = new THREE.Line(geometry, material);
             } else if (this.vertexMode === 'LINES') {
@@ -295,7 +297,7 @@ export default class Veda {
             // Create plane
             const geometry = new THREE.PlaneGeometry(2, 2);
             let material: THREE.ShaderMaterial;
-            if (!!pass.GLSL3) {
+            if (pass.GLSL3) {
                 material = new THREE.RawShaderMaterial({
                     vertexShader: DEFAULT_3_VERTEX_SHADER,
                     fragmentShader: pass.fs,
@@ -326,11 +328,11 @@ export default class Veda {
         materialId: number,
         vertexIdOffset: number,
         pass: IPass,
-    ): THREE.Mesh {
+    ): THREE.Mesh | THREE.Points | THREE.LineLoop | THREE.Line {
         let plane;
         if (pass.vs) {
             // Create an object for vertexMode
-            let geometry: THREE.BufferGeometry = obj.geometry as any;
+            let geometry: THREE.BufferGeometry = obj.geometry;
             const vertexCount = geometry.getAttribute('position').count;
 
             const vertexIds = new Float32Array(vertexCount);
@@ -368,7 +370,7 @@ export default class Veda {
             if (this.vertexMode === 'POINTS') {
                 plane = new THREE.Points(geometry, material);
             } else if (this.vertexMode === 'LINE_LOOP') {
-                plane = new (THREE as any).LineLoop(geometry, material);
+                plane = new THREE.LineLoop(geometry, material);
             } else if (this.vertexMode === 'LINE_STRIP') {
                 plane = new THREE.Line(geometry, material);
             } else if (this.vertexMode === 'LINES') {
@@ -392,7 +394,7 @@ export default class Veda {
             // Create plane
             const geometry = obj.geometry;
             let material: THREE.ShaderMaterial;
-            if (!!pass.GLSL3) {
+            if (pass.GLSL3) {
                 material = new THREE.RawShaderMaterial({
                     vertexShader: DEFAULT_3_VERTEX_SHADER,
                     fragmentShader: pass.fs,
@@ -442,13 +444,13 @@ export default class Veda {
                     const mesh = this.createMesh(o, materialId, vertexId, pass);
                     scene.add(mesh);
 
-                    if (o.material && (o.material as any).map) {
-                        materials[materialId] = (o.material as any).map!;
+                    if (o.material && o.material.map) {
+                        materials[materialId] = o.material.map;
                     }
 
                     materialId++;
-                    vertexId += (mesh.geometry as any).attributes.vertexId
-                        .length;
+
+                    vertexId += mesh.geometry.attributes.vertexId.itemSize;
                 }
             });
         } else {
@@ -473,7 +475,9 @@ export default class Veda {
                         '$HEIGHT',
                         `return ${pass.WIDTH}`,
                     ) as WidthHeightFunc;
-                } catch (e) {}
+                } catch (e) {
+                    // noop
+                }
             }
             if (pass.HEIGHT) {
                 try {
@@ -483,7 +487,9 @@ export default class Veda {
                         '$HEIGHT',
                         `return ${pass.HEIGHT}`,
                     ) as WidthHeightFunc;
-                } catch (e) {}
+                } catch (e) {
+                    // noop
+                }
             }
 
             const w = this.canvas.offsetWidth / this.pixelRatio;
@@ -552,7 +558,7 @@ export default class Veda {
     async loadTexture(
         name: string,
         textureUrl: string,
-        speed: number = 1,
+        speed = 1,
     ): Promise<void> {
         let texture: THREE.Texture;
         let size: THREE.Vector2;

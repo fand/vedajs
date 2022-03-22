@@ -5,7 +5,7 @@ export default class MidiLoader {
     noteTexture: THREE.DataTexture;
     private midiArray: Uint8Array;
     private noteArray: Uint8Array;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     constructor() {
         this.midiArray = new Uint8Array(256 * 128);
@@ -29,11 +29,11 @@ export default class MidiLoader {
 
     onstatechange = (access: WebMidi.MIDIAccess) => {
         access.inputs.forEach((i) => {
-            i.onmidimessage = (m: any) => this.onmidimessage(m.data);
+            i.onmidimessage = (m) => this.onmidimessage(m.data);
         });
     };
 
-    onmidimessage = (midi: number[]): void => {
+    onmidimessage = (midi: Uint8Array): void => {
         if (!this.isEnabled) {
             return;
         }

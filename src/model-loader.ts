@@ -54,8 +54,8 @@ export default class ModelLoader {
             materials.preload();
 
             this.objLoader.setMaterials(materials);
-        } else {
-            this.objLoader.setMaterials(null as any);
+            // } else {
+            // this.objLoader.setMaterials(null as any);
         }
 
         return this.loadObj(model.PATH);

@@ -15,7 +15,7 @@ export default class KeyLoader {
         );
     }
 
-    onKeyDown = (e: any) => {
+    onKeyDown = (e: KeyboardEvent) => {
         if (e.keyCode === 27) {
             // ESC
             this.array.fill(0);
@@ -25,19 +25,19 @@ export default class KeyLoader {
         this.texture.needsUpdate = true;
     };
 
-    onKeyUp = (e: any) => {
+    onKeyUp = (e: KeyboardEvent) => {
         this.array[e.keyCode] = 0;
         this.texture.needsUpdate = true;
     };
 
     enable() {
-        (document.body as any).addEventListener('keydown', this.onKeyDown);
-        (document.body as any).addEventListener('keyup', this.onKeyUp);
+        document.body.addEventListener('keydown', this.onKeyDown);
+        document.body.addEventListener('keyup', this.onKeyUp);
     }
 
     disable() {
         this.texture.dispose();
-        (document.body as any).removeEventListener('keydown', this.onKeyDown);
-        (document.body as any).removeEventListener('keyup', this.onKeyUp);
+        document.body.removeEventListener('keydown', this.onKeyDown);
+        document.body.removeEventListener('keyup', this.onKeyUp);
     }
 }
