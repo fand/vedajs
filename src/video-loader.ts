@@ -17,16 +17,23 @@ export default class VideoLoader {
         }
 
         const video = document.createElement('video');
-        (document.body as any).appendChild(video);
+        document.body.appendChild(video);
 
-        video.classList.add('veda-video-source');
-        video.style.position = 'fixed';
-        video.style.top = '-99999px';
         video.src = url;
+        video.playbackRate = speed;
+
         video.autoplay = true;
         video.loop = true;
         video.muted = true;
-        video.playbackRate = speed;
+
+        // XXX: Prevent video stutter caused by Chromium's performance optimization
+        video.style.position = 'fixed';
+        video.style.top = '0px';
+        video.style.left = '0px';
+        video.style.width = '10px';
+        video.style.height = '10px';
+        video.style.transform = 'scale(0.01, 0.01)';
+        video.style.opacity = '0.01';
 
         // Play video manually because "autoplay" attribute is not working now.
         // ref. https://github.com/electron/electron/issues/13525
