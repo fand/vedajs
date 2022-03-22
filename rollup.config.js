@@ -5,10 +5,9 @@ import commonjs from '@rollup/plugin-commonjs';
 export default {
     input: 'src/index.ts',
     output: {
-        dir: '.',
+        file: 'lib/bundle.js',
         format: 'cjs',
         exports: 'named',
-        //outro: `module.exports.default = module.exports;`,
         sourcemap: true,
     },
     plugins: [typescript({}), nodeResolve(), commonjs()],

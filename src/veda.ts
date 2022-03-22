@@ -24,12 +24,15 @@ import {
     BlendMode,
     DEFAULT_3_VERTEX_SHADER,
 } from './constants';
+import { Uniform } from 'three';
+
+type SizeFunction = ($WIDTH: number, $HEIGHT: number) => number;
 
 interface IRenderPassTarget {
     name: string;
     targets: THREE.WebGLRenderTarget[];
-    getWidth: ($WIDTH: number, $HEIGHT: number) => any;
-    getHeight: ($WIDTH: number, $HEIGHT: number) => any;
+    getWidth: SizeFunction;
+    getHeight: SizeFunction;
 }
 
 interface IRenderPass {
@@ -465,8 +468,9 @@ export default class Veda {
                 ? THREE.FloatType
                 : THREE.UnsignedByteType;
 
-            let getWidth = ($WIDTH: number, _: number) => $WIDTH;
-            let getHeight = (_: number, $HEIGHT: number) => $HEIGHT;
+            let getWidth: SizeFunction = ($WIDTH) => $WIDTH;
+            let getHeight: SizeFunction = (_, $HEIGHT) => $HEIGHT;
+
             if (pass.WIDTH) {
                 try {
                     // eslint-disable-next-line no-new-func
@@ -623,7 +627,7 @@ export default class Veda {
         delete this.uniforms[name + 'Size'];
     }
 
-    setUniform(name: string, type: UniformType, value: any) {
+    setUniform(name: string, type: UniformType, value: Uniform['value']) {
         this.uniforms[name] = { type, value };
     }
 

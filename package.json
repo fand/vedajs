@@ -40,7 +40,7 @@
         "WebGL"
     ],
     "license": "MIT",
-    "main": "index.js",
+    "main": "lib/bundle.js",
     "module": "lib/index.js",
     "repository": "https://github.com/fand/vedajs",
     "scripts": {
