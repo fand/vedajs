@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import AudioLoader from './audio-loader';
 import CameraLoader from './camera-loader';
 import GamepadLoader from './gamepad-loader';
@@ -447,8 +447,8 @@ export default class Veda {
                     const mesh = this.createMesh(o, materialId, vertexId, pass);
                     scene.add(mesh);
 
-                    if (o.material && o.material.map) {
-                        materials[materialId] = o.material.map;
+                    if (o.material && (o.material as any).map) {
+                        materials[materialId] = (o.material as any).map;
                     }
 
                     materialId++;

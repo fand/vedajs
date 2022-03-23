@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { IPassModel } from './constants';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 interface ICache {
     url: string;
